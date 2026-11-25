@@ -24,3 +24,5 @@
 - army-modeler 병합(dcb0f01): 21종 병종·적장 6명 재모델링, 확정 이름표 반영. 다섯 전장 스모크 통과(예외 0), 근접 스크린샷 확인.
   - `bio.tints`/`wispHex`는 더 이상 읽지 않음(죽은 데이터, 유지).
   - `army-to-audio.md`: 효과음 키의 쓰임새 변화 → gugak-composer 후속 반영 대상.
+- gugak-composer 병합(6b7b27b): 드론+5음 선율, 장단, 전장별 조, 국악 신호음. 오디오를 깨운 실행에서 예외 0, `__au.dbg().err = 0`.
+  - `audio-to-army.md` 반영: 적장 근접 공격의 짐승 포효(`roar`) → `clash`(오케스트레이터 직접 수정, 한 줄). 나머지 사망음은 army-modeler가 이미 사람용 분기로 바꿔 `squelch` 호출 없음.

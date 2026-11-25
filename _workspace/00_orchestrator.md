@@ -35,3 +35,9 @@
 - `gh-pages`(orphan, 서빙 전용: index.html, .nojekyll, LICENSE, media/, vendor/LICENSE-*.txt) 푸시 → Pages 자동 활성화 확인(`has_pages: true`).
 - https://namojo.github.io/chosunwatch/ 200, 서빙 파일이 커밋된 `index.html`과 바이트 동일, 헤드리스로 라이브 URL 실행 확인(살수, lives 20, 타워 4, 예외 0).
 - QA 보고서가 나오면 S1·S2 수정 후 재배포 예정.
+
+## Phase 4 — QA 결과와 수정
+- qa-playtester 2차 실행 완료: **조건부 통과** (S1 0 · S2 1 · S3 4). 계약 위반 0, 난이도 회귀 없음(AI 자동 4개 시드 모두 2회차 진입), 드로콜 143~225.
+- S2-1(패배 뒤 "다음 전장"으로 넘어가며 level만 0) 수정: 패배하면 이번 원정의 첫 전장부터 다시(`G.boardIndex -= G.level + 1`), 판 문구 "처음부터 다시"(`G.fell`). 재현 명령으로 `살수 L0 → 살수 L0` 확인.
+- S3-1(괴물 포효 `roar` 잔존) 수정: 적장 쓰러짐 → `clash`, 돌 세례 → `hammer`, 격분 → `horn`. `sfx('roar')` 호출 0.
+- 남긴 것(S3): 적장 직함 미표시, 패배 순간 밀린 알림이 다음 소개 화면에 뜨는 경우, 쓰이지 않는 원작 코드.

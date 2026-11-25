@@ -164,7 +164,7 @@ function ar_planks(m, n, ix, iz) {
 }
 function killMonster(m, kind, dx, dz, tower) {
   const B = G.B, def = m.def, dth = def.death; if (tower) tower.kills++;
-  if (def.boss) { m.dying = 1.9; m.hp = 0; m.foe = null; G.slowmo = 1.4; sfx('roar', m.x, m.z, 1, 1); return; }
+  if (def.boss) { m.dying = 1.9; m.hp = 0; m.foe = null; G.slowmo = 1.4; sfx('clash', m.x, m.z, 1, .2); return; }
   G.slain++; G.waveKills++;
   const ix = (dx || 0) * 2.2, iz = (dz || 0) * 2.2, up = kind === 'blast' ? 1.7 : 1, sc = m.scale;
   if (dth === 'man') { shatter(e => rigMonster(e), m, [ix, 1.2 * up, iz], { spread: kind === 'blast' ? 2.6 : 1.4, up, life: .8 }); sfx('boneRattle', m.x, m.z, .7, rnd()); fxDust(m.x, m.y + .1, m.z, 3 + Math.round(sc), .5 * sc + .1, { a: .35 }); }
@@ -339,7 +339,7 @@ function updateUnits(dt) {
     if (def.stomp && m.vis) {
       m.stT -= dt;
       if (m.stT <= 0) {
-        const sp = def.stomp; m.stT = sp.every; FX.shake = Math.min(1.2, FX.shake + .8); sfx('bossStep', m.x, m.z, 1.2, 1); sfx('roar', m.x, m.z, .6, .4);
+        const sp = def.stomp; m.stT = sp.every; FX.shake = Math.min(1.2, FX.shake + .8); sfx('bossStep', m.x, m.z, 1.2, 1); sfx('hammer', m.x, m.z, 1, .2);
         // 살리타의 호령에 돌 세례가 쏟아진다: 흙먼지와 돌 파편(불·포연 없음)
         m.cast = 1; fxTimed(4, m.x, m.y + .08, m.z, sp.r * 2, sp.r * 2, .8, .68, .52, .6, .7, { ground: true }); fxDust(m.x, m.y + .1, m.z, 16, 1.8, { speed: 4 });
         for (const tw of G.towers) if (tw.alive && tw.state === 'active' && dist2(tw.x, tw.z, m.x, m.z) < sp.r * sp.r) {
@@ -350,7 +350,7 @@ function updateUnits(dt) {
     }
     let want = def.spd * m.spdMul * (1 - m.slowF) * (1 + m.haste), hopMul = 1;
     if (def.frenzy) want *= 1 + def.frenzy * (1 - m.hp / m.maxHp);
-    if (def.enrage && m.hp < m.maxHp * def.enrage[0]) { want *= def.enrage[1]; if (!m.rage) { m.rage = true; sfx('roar', m.x, m.z, 1, .9); fxDust(m.x, m.y + .2, m.z, 22, 2.0, { speed: 4 }); FX.shake = Math.min(1.2, FX.shake + .6); } }
+    if (def.enrage && m.hp < m.maxHp * def.enrage[0]) { want *= def.enrage[1]; if (!m.rage) { m.rage = true; sfx('horn', m.x, m.z, .7, .6); fxDust(m.x, m.y + .2, m.z, 22, 2.0, { speed: 4 }); FX.shake = Math.min(1.2, FX.shake + .6); } }
     if (def.hop) { if (!m.foe) m.hop = (m.hop + dt * def.hop[0] * (1 - m.slowF * .6)) % 1; hopMul = (m.hop > .22 && m.hop < .62) ? def.hop[1] : .1; }
     let v = want * hopMul, obstacle = null, og = 9;
     if (def.boss) {

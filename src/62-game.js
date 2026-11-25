@@ -190,7 +190,7 @@ function beginBattle(first) {
   G.lives = G.maxLives; G.gold = 300 + 80 * G.level; G.bountyMul = 1 + .18 * G.level; G.dmgMul = 1.55 + .2 * G.level; G.press = lerp(G.press, 1, .5); UI.goldShown = G.gold; G.k = 0; G.leaks = 0; G.leakTypes = {}; G.spawning = false; G.bossWave = false; G.nextIn = first ? .9 : 1.6; G.queue = []; AI.think = .15; AI.wait = 0;
   const n = 4 + Math.min(3, G.level);
   for (let i = 0; i < n; i++) spawnMonster(i === n - 1 && G.level > 0 ? 'knight' : 'skel', { s: B.cave.s + 2.2 + i * 1.15, lat: rr(-.7, .7), hpMul: 1 + .22 * G.level });
-  G.phase = 'play'; G.phaseT = 0;
+  G.phase = 'play'; G.phaseT = 0; G.fell = false;
 }
 function updatePhase(dt) {
   G.phaseT += dt; const B = G.B, t = G.phaseT;
@@ -203,7 +203,7 @@ function updatePhase(dt) {
   if (G.phase === 'clear') { if (t > 2.6) setPhase('crumble'); }
   else if (G.phase === 'defeat') {
     for (const tw of G.towers) { tw.em.on = damp(tw.em.on, 0, 1.5 + tw.idx * .15, dt); if (tw.flame) tw.flame.on = tw.em.on; if (tw.flame2) tw.flame2.on = tw.em.on; }
-    if (t > 4.4) { G.level = 0; G.press = Math.max(.8, G.press * .85); G.run++; setPhase('crumble'); }
+    if (t > 4.4) { G.boardIndex -= G.level + 1; G.level = 0; G.fell = true; G.press = Math.max(.8, G.press * .85); G.run++; setPhase('crumble'); }
   } else if (G.phase === 'crumble') {
     let done = true;
     for (const p of B.pieces) {

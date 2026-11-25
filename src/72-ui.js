@@ -298,7 +298,7 @@ const UI = (() => {
         const wr = U.waveRect, ask = callable && (tch || (wr && over(wr.x, wr.y, wr.w, wr.h)));
         sub = ask ? '공세 부르기 · +' + Math.round(G.nextIn * 3) : '다음 공세까지 ' + Math.ceil(G.nextIn); frac = 1 - G.nextIn / 6.5;
       } else sub = '남은 적 ' + (G.mons.length + G.queue.length);
-    } else sub = G.phase === 'defeat' ? '불씨가 스러졌다' : G.phase === 'clear' ? '적장을 물리쳤다' : '다음 전장으로';
+    } else sub = G.phase === 'defeat' ? '불씨가 스러졌다' : G.phase === 'clear' ? '적장을 물리쳤다' : G.fell ? '처음부터 다시' : '다음 전장으로';
     const bw = PX.iconSize('banner')[0] * s, wW = Math.max(bw + 3 * s + tw(wn), tw(sub), tw('다음 공세까지 00'), tw('공세 부르기 · +00')) + pad * 2 + 4 * s, hW = LH * 2 + pad * 2 + s;
     const you = U.playerActive(), CT = ['군사가 지휘 중', '직접 지휘 중'], CS = ['터를 눌러 직접 지휘', tch ? '군사에게 맡기기' : '눌러서 군사에게 맡기기'], ct = CT[+you], cs = CS[+you];
     const ic = you ? 'hand' : 'helm', icw = PX.iconSize(ic)[0] * s, g3 = 3 * s;

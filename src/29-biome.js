@@ -15,7 +15,7 @@ const BIOMES = [
     trees: [['willow', 10, 3.0, 4.6], ['sonamu', 4, 2.8, 4.2], ['broadleaf', 3, 2.6, 3.8]], stumps: 6, rocks: 42, tufts: 420,
   },
   {
-    key: 'ashen', alias: 'ansi', name: '안시성', title: '안시성 전투', year: 645, era: 'goguryeo', army: 'tang', lore: '안시성, 당 태종의 대군과 토산을 석 달 동안 막아 내다.', col: {},
+    key: 'ashen', alias: 'ansi', name: '안시성', title: '안시성 전투', year: 645, era: 'goguryeo', army: 'tang', lore: '안시성, 당 태종의 대군과 토산 공세를 석 달간 막아 내다.', col: {},
     strata: [0x8f8474, 0x3c3f4c, 0x66564a, 0x767a86, 0x70503f, 0x4c4f5c, 0x9a8e7c, 0x55483e],
     hemi: [0x6d83bd, 0x1c1f2a, 1.15], moon: [0xa9c0f6, 1.55], fill: [0x4a5f96, .3], moonPos: [14, 44, -34],
     clear: [.0035, .005, .011], mistAmb: [.05, .08, .14], mist: [-.3, .42, .75, .1], sky: [.012, .022, .045], lift: [.010, .016, .030], sat: .92, expo: 1, sprAmb: [.05, .065, .1],
@@ -27,7 +27,7 @@ const BIOMES = [
     trees: [['sonamu', 10, 2.8, 4.8], ['broadleaf', 3, 2.6, 4.0], ['tree', 2, 2.6, 4.0]], stumps: 6, rocks: 70, tufts: 320,
   },
   {
-    key: 'frost', alias: 'gwiju', name: '귀주성', title: '귀주성 전투', year: 1231, era: 'goryeo', army: 'mongol', lore: '박서와 김경손, 한겨울 귀주성에서 몽골군의 공성을 끝내 물리치다.',
+    key: 'frost', alias: 'gwiju', name: '귀주성', title: '귀주성 전투', year: 1231, era: 'goryeo', army: 'mongol', lore: '박서와 김경손, 귀주성에서 몽골군의 거듭된 공성을 끝내 막아 내다.',
     col: { stone: 0x6f7b90, stoneD: 0x454e60, stoneL: 0x9aa7b8, earth: 0x4b4a50, earthD: 0x2f3038, grass: 0x5a6068, grassD: 0x40454e, moss: 0x55606a, road: 0x7a808c, roadD: 0x555a66, mud: 0x3a3e48, bark: 0x2e2a2a, tuftA: 0x6f7a80, tuftB: 0xa9b4bc, leaf: 0x1d382f, leafL: 0x2c4f42 },
     strata: [0x7d8aa0, 0x3a4254, 0x5d6678, 0x9fb4c8, 0x4b5468, 0x6a7890, 0xb8cadb, 0x475062],
     hemi: [0x86a8e0, 0x323c50, 1.1], moon: [0xc6dcff, 1.38], fill: [0x5f7fb4, .28], moonPos: [16, 42, -34],
@@ -40,7 +40,7 @@ const BIOMES = [
     trees: [['pine', 9, 2.8, 5.4], ['sonamu', 7, 2.8, 4.6], ['tree', 4, 2.6, 4.2]], stumps: 4, rocks: 52, tufts: 110, bare: 1,
   },
   {
-    key: 'ember', alias: 'jinju', name: '진주성', title: '진주대첩', year: 1592, era: 'joseon', army: 'wa', lore: '김시민과 삼천팔백 군민, 진주성에서 이만 왜군을 엿새 만에 물리치다.',
+    key: 'ember', alias: 'jinju', name: '진주성', title: '진주대첩', year: 1592, era: 'joseon', army: 'wa', lore: '김시민과 삼천팔백 군민, 진주성에서 수만 왜군을 끝내 물리치다.',
     col: { stone: 0x403c42, stoneD: 0x242228, stoneL: 0x5e5a62, earth: 0x2e2728, earthD: 0x1c1819, grass: 0x3a2f2c, grassD: 0x261e1c, moss: 0x3a3230, road: 0x5e5652, roadD: 0x3c3634, mud: 0x1e1716, bark: 0x15110f, tuftA: 0x3a2c24, tuftB: 0x6a4a30, leaf: 0x2b2a1c, leafL: 0x4a4424 },
     strata: [0x3a363c, 0x1c1a20, 0x5a2a22, 0x2a262c, 0x6e3a24, 0x242026, 0x4a4650, 0x301a18],
     hemi: [0x5c5470, 0x2c140e, 1.18], moon: [0xc0b0d0, 1.32], fill: [0xd04a20, .2], moonPos: [18, 40, -32],

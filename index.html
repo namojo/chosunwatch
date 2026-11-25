@@ -1,24 +1,24 @@
 <!doctype html>
-<html lang="en">
+<html lang="ko">
 <head>
 <meta charset="utf-8">
-<title>Cinderwatch</title>
-<meta name="description" content="Cinderwatch: a self-playing 3D isometric tower defense in a single HTML file.">
+<title>조선워치</title>
+<meta name="description" content="조선워치 — 봉화를 지켜라. 살수에서 행주산성까지, 한국사의 다섯 전장을 지나는 3D 아이소메트릭 타워 디펜스. HTML 파일 하나로 스스로 플레이된다.">
 <meta id="vp" name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
 <meta name="theme-color" content="#020308">
 <meta name="color-scheme" content="dark">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="apple-mobile-web-app-title" content="Cinderwatch">
+<meta name="apple-mobile-web-app-title" content="조선워치">
 <meta name="format-detection" content="telephone=no">
-<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' shape-rendering='crispEdges'%3E%3Crect width='16' height='16' fill='%23090b11'/%3E%3Cpath d='M7 2h2v2h1v2h1v2h1v3h-1v2H9v1H7v-1H5v-2H4V8h1V6h1V4h1z' fill='%23ff8a3c'/%3E%3Cpath d='M7 7h2v2h1v2H9v1H7v-1H6V9h1z' fill='%23ffe2a0'/%3E%3C/svg%3E">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' shape-rendering='crispEdges'%3E%3Crect width='16' height='16' fill='%23090b11'/%3E%3Cpath d='M7 1h1v1h-1zM7 2h2v1h-2zM6 3h3v1h-3zM6 4h1v1h-1zM8 4h2v1h-2zM5 5h2v1h-2zM9 5h1v1h-1zM5 6h1v1h-1zM9 6h2v1h-2zM6 7h1v1h-1zM9 7h1v1h-1z' fill='%23ff8a3c'/%3E%3Cpath d='M7 4h1v1h-1zM7 5h2v1h-2zM6 6h3v1h-3zM7 7h2v1h-2z' fill='%23ffe2a0'/%3E%3Cpath d='M5 7h1v1h-1zM10 7h1v1h-1z' fill='%23c9481e'/%3E%3Cpath d='M4 8h8v1h-8zM3 9h10v1h-10z' fill='%23b9ad93'/%3E%3Cpath d='M4 10h8v1h-8zM4 11h1v1h-1zM6 11h2v1h-2zM9 11h3v1h-3zM4 12h8v1h-8zM3 13h2v1h-2zM6 13h4v1h-4zM11 13h2v1h-2zM3 14h10v1h-10z' fill='%238a8474'/%3E%3Cpath d='M5 11h1v1h-1zM8 11h1v1h-1zM5 13h1v1h-1zM10 13h1v1h-1zM2 15h12v1h-12z' fill='%235b5648'/%3E%3C/svg%3E">
 <style>
 html,body{position:fixed;left:0;top:0;right:0;bottom:0;margin:0;width:100%;height:100%;background:#020308;overflow:hidden;overscroll-behavior:none;touch-action:none;-webkit-text-size-adjust:100%;text-size-adjust:100%}
 body{user-select:none;-webkit-user-select:none;-webkit-touch-callout:none;-webkit-tap-highlight-color:transparent}
 canvas{position:fixed;left:0;top:0;width:100%;height:100%;display:block;touch-action:none;outline:none}
 #hud{pointer-events:none}
-#load{position:fixed;left:0;top:0;right:0;bottom:0;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:24px;color:#e8b04a;font:600 20px/1.5 ui-monospace,Menlo,Consolas,monospace;letter-spacing:.08em;pointer-events:none}
+#load{position:fixed;left:0;top:0;right:0;bottom:0;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:24px;color:#e8b04a;font:600 22px/1.5 system-ui,-apple-system,'Apple SD Gothic Neo','Malgun Gothic','Noto Sans KR','Noto Sans CJK KR',sans-serif;letter-spacing:.12em;pointer-events:none}
 #load small{color:#a79e8a;font-weight:400;font-size:13px;letter-spacing:.02em}
 #safe{position:fixed;left:0;top:0;width:0;height:0;visibility:hidden;pointer-events:none;padding:env(safe-area-inset-top,0px) env(safe-area-inset-right,0px) env(safe-area-inset-bottom,0px) env(safe-area-inset-left,0px)}
 </style>
@@ -27,7 +27,7 @@ canvas{position:fixed;left:0;top:0;width:100%;height:100%;display:block;touch-ac
 <canvas id="gl"></canvas>
 <canvas id="hud"></canvas>
 <div id="safe"></div>
-<div id="load">Cinderwatch<br><small>Lighting the beacon</small></div>
+<div id="load">조선워치<br><small>봉화를 올리는 중</small></div>
 <script>var THREE=(function(){/**
  * @license
  * Copyright 2010-2024 Three.js Authors
@@ -4131,9 +4131,60 @@ const PX = (() => {
   for (const ch in SRC) glyphs.set(ch, parse(SRC[ch]));
   const UNKNOWN = parse(UNKNOWN_SRC);
 
-  function measure(str) {
+  // ── 한글(전각) 글꼴 ─────────────────────────────────────────────────────────────
+  // src/71-hangul-data.js(tools/hangul.py 가 GNU Unifont 16px 에서 뽑은 1비트 글리프)를 쓴다.
+  // 규칙: 문자열에 7px 라틴 글꼴에 없는 글자(한글 등)가 하나라도 있으면 그 문자열 전체를 16px 격자로 그린다.
+  //       16px 격자의 한 픽셀은 HUD 배율 s 의 절반(hgScale)으로 찍는다. 한글의 잉크는 16행 중 2~15행(14px)이라
+  //       절반 배율에서 정확히 라틴 대문자 높이(CAP 7)와 같아지고, 줄 간격(LINE 9)도 그대로 맞는다.
+  //       숫자·기호만 있는 문자열(군자금 300, 1x)은 원래의 7px 글꼴로 남는다.
+  const HG = 16, HG_TOP = 2;
+  let hg = null;
+  function hgInit() {
+    hg = new Map();
+    if (typeof hg_DATA === 'undefined') return;
+    const load = (chars, bits, bytes) => {
+      const bin = bits.map(b => atob(b)).join(''); let i = 0;
+      for (const ch of chars.join('')) {
+        const rows = new Uint16Array(HG);
+        for (let r = 0; r < HG; r++) rows[r] = bytes === 2 ? (bin.charCodeAt(i + r * 2) << 8) | bin.charCodeAt(i + r * 2 + 1) : bin.charCodeAt(i + r) << 8;
+        hg.set(ch, { w: bytes * 8, rows }); i += HG * bytes;
+      }
+    };
+    load(hg_DATA.half, hg_DATA.halfBits, 1); load(hg_DATA.full, hg_DATA.fullBits, 2);
+  }
+  // 생성물에 없는 글자(글꼴 없이 빌드한 뒤 새 문구를 넣은 경우)는 시스템 글꼴로 한 번 래스터해서 쓴다.
+  function hgSynth(ch) {
+    const rows = new Uint16Array(HG); let w = HG, ink = 0;
+    try {
+      const cv = document.createElement('canvas'); cv.width = HG; cv.height = HG;
+      const c = cv.getContext('2d', { willReadFrequently: true });
+      c.font = "14px 'Apple SD Gothic Neo','Malgun Gothic','Noto Sans KR','Noto Sans CJK KR',sans-serif"; c.textBaseline = 'alphabetic'; c.fillStyle = '#fff';
+      if (c.measureText(ch).width < 9) w = 8;
+      c.fillText(ch, w === 8 ? 0 : 1, 14);
+      const d = c.getImageData(0, 0, HG, HG).data;
+      for (let r = 0; r < HG; r++) for (let x = 0; x < w; x++) if (d[(r * HG + x) * 4 + 3] > 96) { rows[r] |= 0x8000 >> x; ink++; }
+    } catch (e) {}
+    if (!ink && ch.trim()) for (let r = 3; r < 15; r++) rows[r] = r === 3 || r === 14 ? 0x3ffc : 0x2004;
+    if (ch.trim() && typeof console !== 'undefined') console.warn('PX: glyph not in 71-hangul-data.js, rebuild with Unifont: ' + ch);
+    return { w, rows };
+  }
+  function hgGlyph(ch) {
+    if (!hg) hgInit();
+    let g = hg.get(ch);
+    if (!g) { g = hgSynth(ch); hg.set(ch, g); }
+    return g;
+  }
+  const hgScale = s => Math.max(1, Math.round((s || 2) / 2));
+  function isWide(str) {
+    for (let i = 0; i < str.length; i++) if (str.charCodeAt(i) > 0x7e && !glyphs.has(str[i])) return true;
+    return false;
+  }
+
+  // 폭을 "라틴 픽셀 단위"로 돌려준다(곱하기 s = 화면 픽셀). 전각 글자는 8단위, 그 안의 반각 글자는 4단위.
+  function measure(str, s) {
     str = String(str);
     let w = 0, n = 0;
+    if (isWide(str)) { for (const ch of str) w += hgGlyph(ch).w; return s ? w * hgScale(s) / s : w / 2; }
     for (const ch of str) { w += (glyphs.get(ch) || UNKNOWN).w + GAP; n++; }
     return n ? w - GAP : 0;
   }
@@ -4147,27 +4198,33 @@ const PX = (() => {
     return entry;
   }
 
-  function run(str, color, shadow, outline) {
-    const key = 't\u0001' + str + '\u0001' + color + '\u0001' + shadow + '\u0001' + outline;
+  function run(str, color, shadow, outline, thin) {
+    const key = 't\u0001' + str + '\u0001' + color + '\u0001' + shadow + '\u0001' + outline + (thin ? '\u0001t' : '');
     const hit = cache.get(key);
     if (hit) { cache.delete(key); cache.set(key, hit); return hit; }
-    const gl = [];
+    const wide = isWide(str), gl = [], rowsN = wide ? HG : LINE, gap = wide ? 0 : GAP;
     let w = 0;
-    for (const ch of str) { const g = glyphs.get(ch) || UNKNOWN; gl.push(g); w += g.w + GAP; }
-    if (gl.length) w -= GAP;
-    const o = outline ? 1 : 0, sh = shadow ? 1 : 0;
+    for (const ch of str) { const g = wide ? hgGlyph(ch) : glyphs.get(ch) || UNKNOWN; gl.push(g); w += g.w + gap; }
+    if (gl.length) w -= gap;
+    // 한글은 획을 오른쪽으로 한 픽셀 겹쳐 찍어(굵게) HUD 의 굵은 픽셀과 무게를 맞춘다. opts.thin 이면 원래 굵기.
+    const o = outline ? 1 : 0, sh = shadow ? 1 : 0, fat = wide && !thin ? 1 : 0;
     const cv = document.createElement('canvas');
-    cv.width = Math.max(1, w + 2 * o + sh);
-    cv.height = LINE + 2 * o + sh;
+    cv.width = Math.max(1, w + 2 * o + sh + fat);
+    cv.height = rowsN + 2 * o + sh;
     const c = cv.getContext('2d');
     const paint = (dx, dy) => {
       let x = o + dx;
       for (const g of gl) {
-        for (let r = 0; r < LINE; r++) {
+        if (wide) {
+          for (let r = 0; r < HG; r++) {
+            const b = g.rows[r]; if (!b) continue;
+            for (let cx = 0; cx < g.w; cx++) if (b & (0x8000 >> cx)) { let n = 1; while (cx + n < g.w && b & (0x8000 >> (cx + n))) n++; c.fillRect(x + cx, o + r + dy, n + fat, 1); cx += n; }
+          }
+        } else for (let r = 0; r < LINE; r++) {
           let b = g.bits[r], cx = 0;
           while (b) { if (b & 1) c.fillRect(x + cx, o + r + dy, 1, 1); b >>= 1; cx++; }
         }
-        x += g.w + GAP;
+        x += g.w + gap;
       }
     };
     if (shadow) {
@@ -4178,27 +4235,29 @@ const PX = (() => {
     if (outline) { c.fillStyle = outline; for (const d of DIRS) paint(d[0], d[1]); }
     c.fillStyle = color;
     paint(0, 0);
-    return remember(key, { cv, w, o });
+    return remember(key, { cv, w, o, wide });
   }
 
   const NOOPT = {};
 
+  // (x, y) 는 글자 윗변(라틴 대문자·한글 잉크의 위쪽) 기준. s 는 HUD(라틴) 배율이고, 한글 문자열은 hgScale(s) 로 찍힌다.
   function text(ctx, str, x, y, s, color, opts) {
     str = String(str);
     if (!str.length) return 0;
     s = Math.max(1, Math.round(s || 1));
     const op = opts || NOOPT;
-    const e = run(str, color || '#ffffff', op.shadow || '', op.outline || '');
-    const wpx = e.w * s;
+    const e = run(str, color || '#ffffff', op.shadow || '', op.outline || '', op.thin);
+    const k = e.wide ? hgScale(s) : s;
+    const wpx = e.w * k;
     let dx = x;
     if (op.align === 'c') dx = x - wpx / 2; else if (op.align === 'r') dx = x - wpx;
-    dx = Math.round(dx); const dy = Math.round(y);
+    dx = Math.round(dx); const dy = Math.round(y) - (e.wide ? HG_TOP * k : 0);
     const a = op.alpha === undefined ? 1 : op.alpha;
     if (a <= 0) return wpx;
     if (ctx.imageSmoothingEnabled) ctx.imageSmoothingEnabled = false;
     const ga = ctx.globalAlpha;
     if (a < 1) ctx.globalAlpha = ga * a;
-    ctx.drawImage(e.cv, dx - e.o * s, dy - e.o * s, e.cv.width * s, e.cv.height * s);
+    ctx.drawImage(e.cv, dx - e.o * k, dy - e.o * k, e.cv.width * k, e.cv.height * k);
     if (a < 1) ctx.globalAlpha = ga;
     return wpx;
   }
@@ -4236,16 +4295,16 @@ const PX = (() => {
       '.oeEEeo.',
       '..oooo..',
     ],
-    skull: [
-      '..ooooo..',
-      '.oBBBBBo.',
-      'oBBBBBBBo',
-      'oBooBooBo',
-      'oBooBooBo',
-      'oBBBoBBbo',
-      '.oBBBBbo.',
-      '.oBoBobo.',
-      '..ooooo..',
+    slain: [
+      'B.......B',
+      'sB.....Bs',
+      '.sB...Bs.',
+      '..sB.Bs..',
+      '...sBs...',
+      '.G.BsB.G.',
+      '..GB.sG..',
+      '..WG.GW..',
+      '.W.....W.',
     ],
     banner: [
       'S.......',
@@ -4321,19 +4380,34 @@ const PX = (() => {
       '.....ooo.....',
     ],
     spire: [
-      '.....C.......',
-      '....CCc......',
-      '....CCc....C.',
-      '.....c....CC.',
-      '.........CC..',
-      '....sSk.CCCC.',
-      '....sSk...Cc.',
-      '....sCk..Cc..',
-      '....sSk..c...',
-      '...ssSkk.....',
-      '...sSSSk.....',
-      '..ssSSSkk....',
-      '..sssskkk....',
+      '....WW.......',
+      '..WWWWb......',
+      '.YWWWW.....C.',
+      '....WW....CC.',
+      '....w....CC..',
+      '....w...CCCC.',
+      '...ewG....Cc.',
+      '....w....Cc..',
+      '....w....c...',
+      '....w........',
+      '...sws.......',
+      '..sSsSk......',
+      '..sssskk.....',
+    ],
+    pocha: [
+      '..........S..',
+      '.........W.E.',
+      '........W....',
+      '.......W.....',
+      '..W...W......',
+      '..WW.W.......',
+      '...WWW.......',
+      '..w.WWW......',
+      '.w..w.sSs....',
+      '.w..w.sss....',
+      'WWWWWWWWWWW..',
+      'wwwwwwwwwww..',
+      '.oo.....oo...',
     ],
     guard: [
       '..........oB.',
@@ -4453,8 +4527,46 @@ const PX = (() => {
     return m ? [m[0], m[1]] : [0, 0];
   }
 
-  return { LINE, CAP, measure, text, icon, iconSize, icons: Object.keys(ICONS), palette: PAL };
+  return { LINE, CAP, measure, text, icon, iconSize, isWide, hgScale, icons: Object.keys(ICONS), palette: PAL };
 })();
+
+// 자동 생성물 — 직접 고치지 말 것. `python3 tools/hangul.py`(빌드가 호출)로 다시 만든다.
+// src/ 에서 쓰는 글자만 뽑은 16px 1비트 글리프. 반각 104자 + 전각 201자.
+// Glyph bitmaps derived from GNU Unifont (Unifont Regular), (c) Unifoundry and contributors.
+// Dual-licensed SIL OFL 1.1 / GPL-2.0-or-later with font embedding exception. See vendor/LICENSE-unifont.txt
+const hg_DATA = {
+  cell: 16,
+  half: [
+    " !\"#$%&'()*+,-./0123456789:;<=>?",
+    "@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_",
+    "`abcdefghijklmnopqrstuvwxyz{|}~·",
+    "×–—…←↑→↓",
+  ],
+  halfBits: [
+    'AAAAAAAAAAAAAAAAAAAAAAAAAAAICAgICAgIAAgIAAAAACIiIiIAAAAAAAAAAAAAAAAAABISEn4kJH5ISEgAAAAAAAAIPklIOA4JST4IAAAAAAAAMUpKNAgIFikpRgAAAAAAABwiIhQYKUVCRjkAAAAACAgICAAAAAAAAAAAAAAAAAAECAgQEBAQEBAICAQAAAAAIBAQCAgICAgIEBAgAAAAAAAAAAhJKhwqSQgAAAAAAAAAAAAICAh/CAgIAAAAAAAAAAAAAAAAAAAAGAgIEAAAAAAAAAAAADwAAAAAAAAAAAAAAAAAAAAAAAAYGAAAAAAAAAICBAgIEBAgQEAAAAAAAAAYJEJGSlJiQiQYAAAAAAAACBgoCAgICAgIPgAAAAAAADxCQgIMECBAQH4AAAAAAAA8QkICHAICQkI8AAAAAAAABAwUJEREfgQEBAAAAAAAAH5AQEB8AgICQjwAAAAAAAAcIEBAfEJCQkI8AAAAAAAAfgICBAQECAgICAAAAAAAADxCQkI8QkJCQjwAAAAAAAA8QkJCPgICAgQ4AAAAAAAAAAAYGAAAABgYAAAAAAAAAAAAGBgAAAAYCAgQAAAAAAAAAgQIECAQCAQCAAAAAAAAAAAAfgAAAH4AAAAAAAAAAABAIBAIBAgQIEAAAAAAAAA8QkICBAgIAAgIAAA=',
+    'AAAAABwiSlZSUlJOIB4AAAAAAAAYJCRCQn5CQkJCAAAAAAAAfEJCQnxCQkJCfAAAAAAAADxCQkBAQEBCQjwAAAAAAAB4REJCQkJCQkR4AAAAAAAAfkBAQHxAQEBAfgAAAAAAAH5AQEB8QEBAQEAAAAAAAAA8QkJAQE5CQkY6AAAAAAAAQkJCQn5CQkJCQgAAAAAAAD4ICAgICAgICD4AAAAAAAAfBAQEBAQEREQ4AAAAAAAAQkRIUGBgUEhEQgAAAAAAAEBAQEBAQEBAQH4AAAAAAABCQmZmWlpCQkJCAAAAAAAAQmJiUlJKSkZGQgAAAAAAADxCQkJCQkJCQjwAAAAAAAB8QkJCfEBAQEBAAAAAAAAAPEJCQkJCQlpmPAMAAAAAAHxCQkJ8SEREQkIAAAAAAAA8QkJAMAwCQkI8AAAAAAAAfwgICAgICAgICAAAAAAAAEJCQkJCQkJCQjwAAAAAAABBQUEiIiIUFAgIAAAAAAAAQkJCQlpaZmZCQgAAAAAAAEJCJCQYGCQkQkIAAAAAAABBQSIiFAgICAgIAAAAAAAAfgICBAgQIEBAfgAAAAAADggICAgICAgICAgOAAAAAABAQCAQEAgIBAICAAAAAABwEBAQEBAQEBAQEHAAAAAYJEIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAfwA=',
+    'ACAQCAAAAAAAAAAAAAAAAAAAAAAAADxCAj5CQkY6AAAAAABAQEBcYkJCQkJiXAAAAAAAAAAAPEJAQEBAQjwAAAAAAAICAjpGQkJCQkY6AAAAAAAAAAA8QkJ+QEBCPAAAAAAADBAQEHwQEBAQEBAAAAAAAAAAAjpEREQ4IDxCQjwAAABAQEBcYkJCQkJCQgAAAAAACAgAGAgICAgICD4AAAAAAAQEAAwEBAQEBAQESDAAAABAQEBESFBgUEhEQgAAAAAAGAgICAgICAgICD4AAAAAAAAAAHZJSUlJSUlJAAAAAAAAAABcYkJCQkJCQgAAAAAAAAAAPEJCQkJCQjwAAAAAAAAAAFxiQkJCQmJcQEAAAAAAAAA6RkJCQkJGOgICAAAAAAAAXGJCQEBAQEAAAAAAAAAAADxCQDAMAkI8AAAAAAAAEBAQfBAQEBAQDAAAAAAAAAAAQkJCQkJCRjoAAAAAAAAAAEJCQiQkJBgYAAAAAAAAAABBSUlJSUlJNgAAAAAAAAAAQkIkGBgkQkIAAAAAAAAAAEJCQkJCJhoCAjwAAAAAAAB+AgQIECBAfgAAAAAADBAQCAgQIBAICBAQDAAACAgICAgICAgICAgICAgAAAAwCAgQEAgECBAQCAgwAAAAMUlGAAAAAAAAAAAAAAAAAAAAAAAAGBgAAAAAAAA=',
+    'AAAAAAAAAEIkGCRCAAAAAAAAAAAAAAAAAH4AAAAAAAAAAAAAAAAAAAD/AAAAAAAAAAAAAAAAAAAAAAAASUkAAAAAAAAAAAAQIH8gEAAAAAAAAAgcKggICAgICAgICAgIAAAAAAAAAAgE/gQIAAAAAAgICAgICAgICAgIKhwIAAA=',
+  ],
+  full: [
+    "가강거것게겨격경계고골공과구국군권귀그극금기김까꺼꺾끌끝나남내냈",
+    "너년누눌는니다단달당대더덕동된두둘디따뜨라란러레려력로록루르를리",
+    "릭림막만맡메면모몽무문물민박방백번벌별병보본봉부불브비빠사산살삼",
+    "새서석선섯성세소속손수스습시십쓰씨아안약어없엇에여엿오올와왜요우",
+    "울워원율으은을음의이인일임자작장저적전접정제졌조족종주중증지직진",
+    "짐짓차천철첩청체쳤최축취치켜키타태터토퇴투트파팔페펜펴포플피필하",
+    "한할합해행화확휘휠",
+  ],
+  fullBits: [
+    'AAAAAAAEP4QAhACEAIQAhwEEAQQCBAwEMAQABAAEAAQAAAAAP4QAhACEAQcBBAYEOAQABAAAD/gQBBAEEAQP+AAAAAAABD+EAIQAhACEALwBBAEEAgQMBDAEAAQABAAEAAAAAD+EAIQAhAE8AQQGBDgEAAQAAACAAIABQAYwGAwAAAAAABI/kgCSAJIAkgDyARIBEgISDBIwEgASABIAEgAAAAAABD+EAIQAhAC8AIQBBAE8AgQMBDAEAAQABAAEAAAAAD+EAIQAvAEEAQQGPDgEAAQAAB/8AAQABAAEAAQAAAAAP4QAhAC8AQQBBAY8OAQABAAAD/gQBBAEEAQP+AAAAAAAEj+SAJIAkgDyAJIBEgFyAhIMEjASABIAEgASAAAAAAAAH/wABAAEAAQABAAEAAQAhACAAIB//wAAAAAAAAAAH/wABAAEAAQABACEAIB//wAAH/wABB/4EAAP/AAAAAAf/AAEAAQABAAEAIQAgH//AAAP+BAEEAQQBA/4AAAAAAAEP4QAhACEAIQAhwCEAIQEhAQEBAR/9AAEAAQAAAAAH/wABAAEAAQABAAEAAB//wCAAIAAgACAAIAAgAAAAAAf/AAEAAQABAAEAAR//wCAAIAf/AAEAAQABAAEAAAAAB/8AAQABAAEAAQABAAAf/8AgBCAEIAQABAAD/wAAAAAP4QAhACEAIQAhACEf/QEBAQ8FAQQABAAEAAP/AAAAAA/hACEAIQAhACEAIQABH/0BAQEBAQEBAQEBAQEAAAAAAAAH/wABAAEAAQABAAEAAQABAAAAAB//wAAAAAAAAAAH/wABAAEAAQABAAEf/8AAAAAH/wABAAEAAQABAAAAAAf/AAEAAQABAAEAAR//wAAAAAf/BAEEAQQBA/8AAAAAAAEP4QAhACEAIQAhAEEAQQCBAwEMAQABAAEAAQAAAAAP4QAhACEAQQBBAYEOAQABAAAH/wQBBAEEAQP/AAAAAAABD+EBIQEhASEBIcEhAkECQQSBCQEAAQABAAEAAAAAAAEP4QEhASEBIQEvASECQQJBBIEJAQABAAEAAQAAAAAP4QEhASECTwJBBIEJAQABAAAH3wBBAEEAQQBBAAAAAAffAEEAQQCBAQIAAB//wAAAAAf/AAEH/gQAA/8AAAAAB98AQQBBAIEBAgAAH//AAAAAB/8EAAf+BAAD/wAAAAAAAQgBCAEIAQgBCAHIAQgBCAEIAQfhAAEAAQABAAAAAAgBCAEIAQgByAEIAQfhAAEAAAf/BAEEAQQBA/8AAAAAAASIBIgEiASIBIgHiASIBIgEiASH5IAEgASABIAAAAAIBIgEiASIB4gEiASH5IAEgAAAggCCAIIBRQY4w==',
+    'AAAAAAAEIAQgBCAEIAQgPCAEIAQgBCAEH4QABAAEAAQAAAAAIAQgBCA8IAQgBCA8H4QABAAEEAQQABAAEAAP/AAAAAAQABAAEAAQAA/8AAAAAH//AIAAgACAAIAAgACAAAAAABAAEAAQABAAD/wAAH//AIAAgB/8AAQf+BAAD/wAAAAAEAAQABAAEAAP/AAAAAB//wAAEAAQABAAEAAP/AAAAAAABCAEIAQgBCAEIAQgBCAEIAQgBB+EAAQABAAEAAAAAAAEP4QgBCAEIAQgByAEIAQgBCAEH4QABAAEAAQAAAAAP4QgBCAEIAcgBCAEH4QABAAEEAQQABAAEAAP/AAAAAA/hCAEIAQgByAEIAQfhAAEAAAf/AAEH/gQAA/8AAAAAD+EIAQgBCAHIAQgBB+EAAQAAA/4EAQQBBAED/gAAAAAABI/kiASIBIgEiAeIBIgEiASIBIfkgASABIAEgAAAAAABD+EIAQgBCAEIDwgBCAEIAQgBB+EAAQABAAEAAAAAD+EIAQgBCA8IAQgBB+EAAQAAB/8AAQABAAEAAQAAAAAH/wQABAAEAAP/ACAAIB//wAAD/gQBBAEEAQP+AAAAAA/hCAEIAQgBB+EBAQEBH/0AAQQBBAAEAAQAA/8AAAAAB/8EAAQABAAD/wAAAAAf/8AgACAAIAAgACAAIAAAAAAH/wQABAAEAAP/AAAf/8AgACAH/wABB/4EAAP/AAAAAAABD+EIAQgBCAEIAQgBCAEIAQgBB+EAAQABAAEAAAAAAAEO4QiBCIEIgQiByIEIgQiBCIEGYQABAAEAAQAAAAAAAAffBBAEEAQQBBAEEAPPAAAAAAAAH//AAAAAAAAAAAABD+EAIQAhACEPwcgBCAEIAQgBB+EAAQABAAEAAAAAD+EAIQAhD8HIAQgBB+EAAQABBAEEAAQABAAD/wAAAAAAAQ/hACEAIQAhD88IAQgBCAEIAQfhAAEAAQABAAAAAAAEj+SAJIAkgCSP3IgEiASIBIgEh+SABIAEgASAAAAAAAEP4QAhACEALw/BCAEIDwgBCAEH4QABAAEAAQAAAAAP4QAhAC8PwQgBCA8H4QABAAAH/wABAAEAAQABAAAAAAAAB/8AAQABB/4EAAQAA/8AIAAgACAf/8AAAAAAAAAAB/8AAQf+BAAD/wAgACAf/8AAB/8AAQABAAEAAQAAAAAH/wABB/4EAAP/AAAAAB//wCAAIAAgACAAIAAgAAAAAAAAB/8AAQABB/4EAAQAA/8AAAAAAAAf/8AAAAAAAAAAB/8AAQf+BAAD/wAAH//AAAAAB/8AAQf+BAAD/wAAAAAAAQ/hACEAIQAhD8EIAQgBCAEIAQfhAAEAAQABA==',
+    'AAAAAD+EAIQAhD8EIAQgBB+EAAQAAB/8AAQABAAEAAQAAAAAP4QAhACEPwQgBCAEH4QABAAAH/wQBBAEEAQP/AAAAAA/hCCEIIQghyCEIIQfhAAEAAAf/AAEAAQABAAEAAAAAD+EIIQghCCHIIQghB+EAAQABBAEEAAQABAAD/wAAAAAP4QghCCEIIcghCCEH4QABAAAH/wQAB/4EAAP/AAAAAAAEj+SIJIgkiCSIPIgkiCSIJIgkh+SABIAEgASAAAAAD+EIIQgvCCEIIQgvB+EAAQABBAEEAAQABAAD/wAAAAAAAAf/BAEEAQQBBAEEAQP/ACAAIAAgH//AAAAAAAAAAAf/BAEEAQQBA/8AIAAgH//AAAP+BAEEAQQBA/4AAAAAB/8EAQQBBAED/wAAAAAf/8AgACAAIAAgACAAIAAAAAAH/wQBBAEEAQP/AAAAAB//wCAEIAQgBAAEAAP/AAAAAAf/BAEEAQQBA/8AAB//wCAAIAf/AAEH/gQAA/8AAAAAD+EIIQghCCEIIQghB+EAAQABBAEEAAQABAAD/wAAAAAIIQghCCEP4cghCCEH4QABAAAH/wABAAEAAQABAAAAAAghCCEIIQ/hyCEIIQfhAAEAAAP+BAEEAQQBA/4AAAAACCSIJIgkj+eIJIgkh+SABIAAA/+AAIAAgACAAIAAAAAIIQghCCEP7wghCCEH4QABAAEEAQQABAAEAAP/AAAAAAghCCEIIQ/vCCEIIQfhAAEAAAf/AAEH/gQAA/8AAAAACCEIIQgvD+EIIQgvB+EAAQAAB/8AAQf+BAAD/wAAAAAIIQghCC8P4QghCC8H4QABAAAD/gQBBAEEAQP+AAAAAAAABAEEAQQBB/8EAQQBA/8AIAAgACAf/8AAAAAAAAAABAEEAQf/BAED/wAgACAf/8AABAAEAAQABAAD/wAAAAAEAQQBB/8EAQP/ACAAIB//wAAD/gQBBAEEAQP+AAAAAAQBBAEH/wQBA/8AAAAAH//AIAAgACAAIAAgACAAAAAABAEEAQf/BAED/wAAH//AIAAgB/8AAQf+BAAD/wAAAAAAAAQBBAEEAQf/BAEEAQP/AAAAAAAAH//AAAAAAAAAAAABCCEIIQghCCEP4QghCCEIIQghB+EAAQABAAEAAAAAAAEJIQkhCSEJIQ/hySEJIQkhCSEH4QABAAEAAQAAAAAAAQEBAQEBAQEBAoHCgQKBBEEEQQghAAEAAQABAAAAAAEBAQEBAQKBwoEEQQghAAEAAQQBBAAEAAQAA/8AAAAAAQEBAQEBAoHCgQRBCCEAAQAAB/8AAQf+BAAD/wAAAAABAQEBAQECgcKBBEEIIQABAAAH/wQBBAEEAQP/A==',
+    'AAAAAAASBBIEEgQSBBIKHgoSChIREhESIJIAEgASABIAAAAAAAQEBAQEBAQEBAo8CgQKBBEEEQQghAAEAAQABAAAAAAEBAQEBAQKPAoEEQQghAAEAAAf/AAEAAQABAAEAAAAAAQEBAQEBAo8CgQRBCCEAAQABBAEEAAQABAAD/wAAAAABAQEBAQECjwKBBEEIIQABAAAAIAAgAFABjAYDAAAAAAEBAQEBAQKPAoEEQQghAAEAAAP+BAEEAQQBA/4AAAAAAASBBIEEgQSBBIKcgoSChIREhESIJIAEgASABIAAAAAAAAAgACAAIABQAIgBBAYDACAAIAAgH//AAAAAAAAAAAAgACAAUAGMBgMAIAAgH//AAAf/AAEAAQABAAEAAAAAACAAIABQAYwGAwAgACAf/8AABAAEAAQABAAD/wAAAAAAIAAgAFABjAYDAAAAAB//wCAAIAAgACAAIAAgAAAAAAAAACAAIAAgAFAAiAEEBgMAAAAAAAAf/8AAAAAAAAAAACAAIABQAYwGAwAAH//AAAAABAEEAQf/BAED/wAAAAAAAQEBAQEBAQEBAoECgQKBBEEEQQghAAEAAQABAAAAAAEBAQEBAQKBAoEEQQghAAEAAAQBBAEH/wQBA/8AAAAAAAABBAEEAQQBBAKKAooEUQAAAAAAAB//wAAAAAAAAAAAAQRBBEEEQQRBBEEEQQqhCqEKoRERAAEAAQABAAAAAAABA4EEQQghCCEIIcghCCEIIQRBA4EAAQABAAEAAAAAA4EEQQghCCHIIQRBA4EAAQABBAEEAAQABAAD/wAAAAADgQRBCCHIIQghBEHDgQABAAAH/wABAAEAAQABAAAAAAABA4EEQQghCCEILwghCCEIIQRBA4EAAQABAAEAAAAAA4EEQQghCC8IIQRBA4EAAQAABEQERAfEBEoD8YAAAAADgQRBCCEILwghBEEDgQABAAAAIAAgAFABjAYDAAAAAAAEg4SERIgkiCSIPIgkiCSIJIREg4SABIAEgASAAAAAAAEDgQRBCCEILwghCCEILwghBEEDgQABAAEAAQAAAAADgQRBCC8IIQghBE8DgQABAAAAIAAgAFABjAYDAAAAAAAAAfwCAgQBBAEEAQICAfwAIAAgACAf/8AAAAAAAAAAA/4EAQQBBAED/gAgACAf/8AAB/8AAQf+BAAD/wAAAAAAAQOBBEEIIQghCCHEQQOBAQEBAQEBH/0AAQABAAAAAAAEg4SERIgkiCSIJ4REg4SBBIEEgQSf9IAEgASAAAAAAAAB/AICBAEEAQQBAgIB/ACIAIgAiB//wAAAAAAAAAAD/gQBBAEEAQP+AAAAAB//wCAAIAAgACAAIAAgA==',
+    'AAAAAA/4EAQQBBAED/gAAH//AIAAgB/8AAQf+BAAD/wAAAAAHwQghCCEIIQfBAAEAAR/9AQEBAQEPAQEBAQEBAAAAAAfBCCEIIQghB8EAAR/9AQEBDwUBBAAEAAQAA/8AAAAAA/4EAQQBBAED/gAAH//AiACIB/8AAQf+BAAD/wAAAAAAAAH8AgIEAQQBBAECAgH8AAAAAAAAH//AAAAAAAAAAAP+BAEEAQQBA/4AAAAAH//AAAQABAAEAAQAA/8AAAAAA/4EAQQBBAED/gAAH//AAAAAB/8AAQf+BAAD/wAAAAAD/gQBBAEEAQP+AAAf/8AAAAAH/wQBBAEEAQP/AAAAAAABA4EEQQghCCEIIQRBA4EAAQABAAEf/QABAAEAAAAAAAEDgQRBCCEIIQghCCEIIQghBEEDgQABAAEAAQAAAAADgQRBCCEIIQghBEEDgQABAAEEAQQABAAEAAP/AAAAAAOBBEEIIQghCCEEQQOBAAEAAAf/AAEH/gQAA/8AAAAAA4EEQQghCCEIIQRBA4EAAQAAB/8EAQQBBAED/wAAAAAAAQ/hAQEBAQEBAoHCgQKBBEEEQQghAAEAAQABAAAAAA/hAQEBAQKBwoEEQQghAAEAAAf/AAEAAQABAAEAAAAAD+EBAQEBAoHCgQRBCCEAAQAAA/4EAQQBBAED/gAAAAAAAQ/hAQEBAQEBAo8CgQKBBEEEQQghAAEAAQABAAAAAA/hAQEBAQKPAoEEQQghAAEAAAf/AAEAAQABAAEAAAAAD+EBAQEBAo8CgQRBCCEAAQABBAEEAAQABAAD/wAAAAAP4QEBAQECjwKBBEEIIQABAAAEAQQBB/8EAQP/AAAAAA/hAQEBAQKPAoEEQQghAAEAAAP+BAEEAQQBA/4AAAAAAASP5IEEgQSBBIKcgoSChIREhESIJIAEgASABIAAAAAP4QEBAQ8CgQKBBE8IIQABAAABBAEEAQQCigxxgAAAAAAAB/8AIAAgAFAAiAEEBgMAIAAgACAf/8AAAAAAAAAAB/8AIABQAYwGAwAgACAf/8AAB/8AAQABAAEAAQAAAAAH/wAgAFABjAYDACAAIB//wAAD/gQBBAEEAQP+AAAAAAf/ACAAUAGMBgMAAAAAH//AIAAgACAAIAAgACAAAAAAB/8AIABQAYwGAwAAH//AIAAgA/4EAQQBBAED/gAAAAAH/wAgAFABjAYDAAAf/8AAAAAD/gQBBAEEAQP+AAAAAAABD+EBAQEBAQECgQKBAoEEQQRBCCEAAQABAAEAAAAAD+EBAQEBAoECgQRBCCEAAQAAB/8AAQABAAEAAQAAAAAP4QEBAQECgQKBBEEIIQABAAEEAQQABAAEAAP/A==',
+    'AAAAAD+EBAQEBAoECgQRBCCEAAQAAB/8EAQQBBAED/wAAAAAP4QEBAQECgQKBBEEIIQABAAAAIAAgAFABjAYDAAAAAAABB8EAAQ/hAQEBAcKBAoEEQQRBCCEAAQABAAEAAAAAB8EAAQ/hAQ8CgQRBCCEAAQABBAEEAAQABAAD/wAAAAAHwQABD+EBDwKBBEEIIQABAAAH/wABB/4EAAP/AAAAAAfBAAEP4QEPAoEEQQghAAEAAAQBBAEH/wQBA/8AAAAAB8EAAQ/hAQ8CgQRBCCEAAQAAA/4EAQQBBAED/gAAAAAABIfEgASP5IEEgRyChIKEhESERIgkgASABIAEgAAAAAfBAAEP7wEBAoEETwghAAEAAAEEAQQBBAKKDHGAAAAAAAEHwQABD+EBAQKBBEEIIQEBAQEBAR/9AAEAAQAAAAAAIAf/AFABjAYDAAAf/8AgACAH/wABAAEAAQABAAAAAAEBD+ECgQRBCCEAAQABH/0BAQEBAQEBAQEBAQEAAAAAAAEHwQABD+EBAQEBAoECgQRBBEEIIQABAAEAAQAAAAAAAQ/hACEAIQDvDyEAQQBPAIEDAQwBAAEAAQABAAAAAAABD+EAIQAhAOEPIQBBAEEAgQMBDAEAAQABAAEAAAAAAAEP4QgBCAEIAQ/ByAEIAQgBCAEH4QABAAEAAQAAAAAABI/kiASIBIgEj8eIBIgEiASIBIfkgASABIAEgAAAAAABD+EIAQgBCAEPzwgBCAEIAQgBB+EAAQABAAEAAAAAAAAH/wQABAAH/gQABAAD/wAgACAAIB//wAAAAAAAAAAAAQ/hCAEIAQ/BCAEIAQfhAQEBAQEBH/0AAQABAAAAAAf/BAAH/gQAA/8AAAAAH//AIAAgACAAIAAgACAAAAAAAAAH/wQABAAH/gQABAAD/wAAAAAAAB//wAAAAAAAAAAAAQ/hAAEEQQRBBEHEQQRBBEEEQQ/hAAEAAQABAAAAAA/hAAEEQQRBxEEEQQ/hAAEAAAf/AAEH/gQAA/8AAAAAAASP5IAEhESERIRchESERIREhESP5IAEgASABIAAAAAP5IAEhESEXIREhESP5IAEgASCBIIAAgACAAH/gAAAAAABD+EAAQRBBE8EQQRBBE8EQQRBD+EAAQABAAEAAAAAAAAH/wAAAQQBBAEEAQQH/wAgACAAIB//wAAAAAAAAAAH/wEEAQQBBAf/AAAf/8AAAAAH/wABB/4EAAP/AAAAAAABD+EAAQRBBEEEQQRBBEEEQQRBD+EAAQABAAEAAAAAD+EAAQRBBEEEQQRBD+EAAQAAB/8AAQf+BAAD/wAAAAAAAQPBAAEP8QABA8HEIQQhBCEEIQPBAAEAAQABA==',
+    'AAAAAAQEf8QABB8HIIQghB8EAAQABBAEEAAQABAAD/wAAAAABAR/xAAEHwcghCCEHwQABAAAH/wABB/4EAAP/AAAAAAEBH/EAAQfByCEIIQfBAAEAAAQBBAEH/wQBA/8AAAAAAASDxIAEj/SABIPHhCSEJIQkhCSDxIAEgASABIAAAAABBJ/0gASHx4gkiCSHxIAEgAAB/wIAggCCAIH/AAAAAAABB8EAAR/xAAEHwcghCCEHwQEBAQEf/QABAAEAAAAAAQEf8QRBCCHHwQEBAQEf/QAAB/8AAQABAAEAAQAAAAABAR/xBEEIIQfBAAEAAR/9AQEBAQEBAQEBAQEBAAAAAAEBH/EEQQghB8EAAR/9AQEBAAf/AAEH/gQAA/8',
+  ],
+};
 
 
 const UI = (() => {
@@ -4470,7 +4582,11 @@ const UI = (() => {
   U.proj = proj;
   U.playerActive = () => U.manual;
   U.setManual = on => { U.manual = !!on; if (!on) { U.menu = null; U.armed = null; } };
-  U.banner = (text, dur, big) => { U.msg = { text, t: 0, dur, big }; };
+  // 배너. 전장이 솟아오르는 동안(phase 'rise')에는 '612년 · 살수대첩' 아래에 그 전장의 사기 한 줄(bio.lore)을 덧붙이고 더 오래 띄운다.
+  U.banner = (text, dur, big) => {
+    const bio = G.phase === 'rise' && G.B ? G.B.bio : null, sub = bio && bio.lore ? bio.lore : '';
+    U.msg = { text, t: 0, dur: sub ? Math.max(dur, 6.4) : dur, big, sub, era: !!bio };
+  };
   U.ping = (x, y, z, byPlayer) => { fxTimed(4, x, y + .12, z, 5, 5, byPlayer ? 1.0 : 1.5, byPlayer ? 1.4 : 1.1, byPlayer ? 1.8 : .5, .7, .55, { ground: true }); };
   U.closeMenu = () => { U.menu = null; U.armed = null; };
   U.coinFrom = (x, y, z, value) => {
@@ -4483,9 +4599,17 @@ const UI = (() => {
     c.fillStyle = o.bd || COLR.bd; c.fillRect(x + s, y, w - 2 * s, h); c.fillRect(x, y + s, w, h - 2 * s);
     c.fillStyle = o.bg || COLR.bg; c.fillRect(x + 2 * s, y + s, w - 4 * s, h - 2 * s); c.fillRect(x + s, y + 2 * s, w - 2 * s, h - 4 * s);
     if (o.hi) { c.fillStyle = o.hi; c.fillRect(x + 2 * s, y + s, w - 4 * s, s); }
+    if (o.era) { const e = eraCss(); c.fillStyle = e.main; c.fillRect(x + 2 * s, y + s, w - 4 * s, s); c.fillStyle = e.trim; c.fillRect(x + 2 * s, y + s, 2 * s, s); c.fillRect(x + w - 4 * s, y + s, 2 * s, s); }
+  }
+  // 시대색 강조선: 수비 측(고구려 주홍·고려 비취·조선 쪽빛)의 주색과 장식색. 어두운 판 위에서 보이도록 주색은 조금 밝힌다.
+  const _era = {};
+  function eraCss() {
+    const k = curEra(); if (_era[k]) return _era[k];
+    const css = (n, m) => 'rgb(' + [n >> 16 & 255, n >> 8 & 255, n & 255].map(v => Math.min(255, Math.round(v * m + 14))).join(',') + ')', e = ERA[k];
+    return _era[k] = { main: css(e.main, 1.35), trim: css(e.trim, 1) };
   }
   function text(str, x, y, col, o) { return PX.text(U.ctx, str, x, y, U.s, col || COLR.tx, o); }
-  const tw = str => PX.measure(str) * U.s;
+  const tw = str => PX.measure(str, U.s) * U.s;
 
   function initUI() {
     const cv = document.getElementById('hud'); U.ctx = cv.getContext('2d'); U.ctx.imageSmoothingEnabled = false;
@@ -4496,7 +4620,7 @@ const UI = (() => {
       m.frustumCulled = false; m.visible = false; m.renderOrder = 6; m.seg = seg; R.scene.add(m); return m;
     };
     U.rangeMesh = mk(96, new THREE.Color(1.5, 1.15, .6)); U.padMesh = mk(40, new THREE.Color(2.2, 1.7, .9));
-    U.touch = !!(window.matchMedia && matchMedia('(pointer: coarse)').matches);
+    U.coarse = U.touch = !!(window.matchMedia && matchMedia('(pointer: coarse)').matches);
     const D = () => R.dpr || 1, pos = e => [e.clientX * D(), e.clientY * D()];
     window.addEventListener('pointerdown', e => {
       const [x, y] = pos(e); U.touch = e.pointerType !== 'mouse'; U.mx = x; U.my = y; U.inside = true; U.gp.active = false; U.moved = 0;
@@ -4662,15 +4786,16 @@ const UI = (() => {
   function update(dt) {
     U.idle += dt; U.moved += dt; U.hurt = Math.max(0, U.hurt - dt * 1.6); U.goldBump = Math.max(0, U.goldBump - dt * 5); U.deny = Math.max(0, U.deny - dt * 3); U.titleT += dt; U.slainBump = Math.max(0, U.slainBump - dt * 4);
     if (G.slain !== U.lastSlain) { U.lastSlain = G.slain; U.slainBump = 1; }
-    { const dpr = R.dpr || 1, iw = n => PX.iconSize(n)[0], m3 = PX.measure('000'); let sc = Math.max(2, Math.round(clamp(Math.min(R.cssH / 430, R.cssW / 225), 1.6, 4) * dpr));
-      let st = 4; for (const [ic, v] of [['flame', G.lives], ['coin', Math.floor(U.goldShown)], ['skull', G.slain]]) st += iw(ic) + 8 + Math.max(PX.measure('' + v), m3);
-      const cm = Math.max(iw('helm') + 3 + PX.measure('AI commander'), PX.measure(U.touch ? 'Tap a pad to play' : 'Click a pad to take over')) + 12, minS = Math.max(2, Math.ceil(1.3 * dpr));
-      while (sc > minS && (st + cm + 13) * sc + R.safe[0] + R.safe[2] > R.dw) sc--;
-      U.s = sc; }
+    // HUD 배율. 한글은 16px 격자를 배율의 절반으로 찍으므로(PX.hgScale) 배율은 항상 짝수(2k)로 잡아 픽셀이 뭉개지지 않게 한다.
+    // 손가락으로 쓰는 화면은 글자가 작아지지 않도록 올림 쪽으로 기울이고, 가장 넓은 고정 판(건설 메뉴 네 칸)이 들어갈 때까지만 줄인다.
+    { const dpr = R.dpr || 1, f = clamp(Math.min(R.cssH / 430, R.cssW / 225), 1.6, 4) * dpr, need = 4 * 31 + 3 * 3 + 12 + 8;
+      let k = Math.max(1, Math.round(f / 2 + (U.coarse ? .2 : 0)));
+      while (k > 1 && need * 2 * k + R.safe[0] + R.safe[2] > R.dw) k--;
+      U.s = 2 * k; }
     U.panning = !!(U.gest && U.gest.mode === 'pan');
     if (AU.ready && !U.ptrs.size) U.sndArmed = true;
     if (U.keys.size) { let kx = 0, ky = 0; for (const k of U.keys) { kx += PAN[k][0]; ky += PAN[k][1]; } if (kx || ky) { CAM.za = null; camPan(kx * R.dh * .9 * dt, ky * R.dh * .9 * dt); } }
-    if (U.tip) { U.tip.t += dt; if (U.tip.t > 5.2) U.tip = null; } else if (U.tips.length && U.titleT > 7.5) U.tip = { type: U.tips.shift(), t: 0 };
+    if (U.tip) { U.tip.t += dt; if (U.tip.t > 5.2) U.tip = null; } else if (U.tips.length && U.titleT > 9.5) U.tip = { type: U.tips.shift(), t: 0 };
     if (window.visualViewport && Math.abs(window.visualViewport.scale - 1) > .02) fixPageZoom();
     pollGamepad(dt);
     if (U.menu) { U.menu.t += dt; if ((U.menu.tower && !U.menu.tower.alive) || G.phase !== 'play') U.menu = null; else if (U.menu.pad.tower !== U.menu.tower) U.menu.tower = U.menu.pad.tower; }
@@ -4688,6 +4813,27 @@ const UI = (() => {
     R.canvas.style.cursor = U.panning ? 'grabbing' : (U.hotBtn || U.hover || U.hudHot) ? 'pointer' : 'default';
   }
 
+  // 어절 단위 줄바꿈. 한 어절이 줄 폭보다 길면 글자 단위로 끊는다. 여러 줄이면 줄 길이가 고르게 되도록 폭을 좁혀 본다.
+  const _wrapMemo = new Map();
+  function wrapRaw(str, maxW) {
+    const out = []; let cur = '';
+    for (const wd of String(str).split(' ')) {
+      const t = cur ? cur + ' ' + wd : wd;
+      if (tw(t) <= maxW) { cur = t; continue; }
+      if (cur) { out.push(cur); cur = ''; }
+      for (const ch of wd) { if (cur && tw(cur + ch) > maxW) { out.push(cur); cur = ch; } else cur += ch; }
+    }
+    if (cur) out.push(cur);
+    return out;
+  }
+  function wrap(str, maxW) {
+    const key = U.s + '|' + Math.round(maxW) + '|' + str, hit = _wrapMemo.get(key); if (hit) return hit;
+    let best = wrapRaw(str, maxW);
+    if (best.length > 1) for (let w = maxW - 4 * U.s; w > maxW * .45; w -= 4 * U.s) { const l = wrapRaw(str, w); if (l.length > best.length) break; best = l; }
+    if (_wrapMemo.size > 80) _wrapMemo.clear();
+    _wrapMemo.set(key, best); return best;
+  }
+
   function draw() {
     const c = U.ctx, s = U.s, W = R.dw, H = R.dh, pad = 5 * s, LH = PX.LINE * s;
     c.clearRect(0, 0, W, H); U.btns.length = 0; let hot = null;
@@ -4703,38 +4849,48 @@ const UI = (() => {
     }
     const [iL, iT, iR, iB] = R.safe, Wr = W - iR, Hb = H - iB, tch = U.touch, mouse = U.inside && !tch && !U.panning;
     const over = (x, y, w, h) => mouse && U.mx >= x && U.mx <= x + w && U.my >= y && U.my <= y + h;
-    const stats = [['flame', '' + G.lives, U.hurt > 0 ? COLR.red : COLR.tx], ['coin', '' + Math.floor(U.goldShown), U.deny > 0 ? COLR.red : (U.goldBump > 0 ? '#ffe2a0' : COLR.tx)], ['skull', '' + G.slain, U.slainBump > .5 ? '#ffffff' : COLR.tx]];
-    let wS = pad; for (const st of stats) wS += PX.iconSize(st[0])[0] * s + 2 * s + Math.max(tw(st[1]), tw('000')) + 6 * s; wS += pad - 6 * s;
+
+    // ── 위쪽: 봉화·군자금·격퇴 / 공세 / 지휘 ──
+    const stats = [['flame', '' + G.lives, U.hurt > 0 ? COLR.red : COLR.tx, '00'], ['coin', '' + Math.floor(U.goldShown), U.deny > 0 ? COLR.red : (U.goldBump > 0 ? '#ffe2a0' : COLR.tx), '000'], ['slain', '' + G.slain, U.slainBump > .5 ? '#ffffff' : COLR.tx, '000']];
+    let wS = pad; for (const st of stats) wS += PX.iconSize(st[0])[0] * s + 2 * s + Math.max(tw(st[1]), tw(st[3])) + 6 * s; wS += pad - 6 * s;
     const hS = 10 * s + pad * 2 - 2 * s, x0 = 5 * s + iL, y0 = 5 * s + iT + U.insetTop;
     plate(x0, y0, wS, hS, U.hurt > 0 ? { bd: COLR.red } : {});
     let x = x0 + pad; const goldPos = { x: 0, y: 0 };
     for (const st of stats) {
       const [iw, ih] = PX.iconSize(st[0]); const iy = y0 + Math.round((hS - ih * s) / 2);
       PX.icon(c, st[0], x, iy, s, st[0] === 'flame' ? .55 + .45 * (G.lives / G.maxLives) : 1); if (st[0] === 'coin') { goldPos.x = x + iw * s / 2; goldPos.y = iy + ih * s / 2; }
-      x += iw * s + 2 * s; text(st[1], x, y0 + Math.round((hS - LH) / 2) + s, st[2]); x += Math.max(tw(st[1]), tw('000')) + 6 * s;
+      x += iw * s + 2 * s; text(st[1], x, y0 + Math.round((hS - LH) / 2) + s, st[2]); x += Math.max(tw(st[1]), tw(st[3])) + 6 * s;
     }
-    const wn = 'Wave ' + Math.max(1, waveNumber()), callable = G.phase === 'play' && !G.spawning && !G.bossWave && G.nextIn > .4;
+    const wn = '제' + Math.max(1, waveNumber()) + '파', callable = G.phase === 'play' && !G.spawning && !G.bossWave && G.nextIn > .4;
     let sub, frac = -1;
-    if (G.phase === 'play') { if (!G.spawning && !G.bossWave && G.nextIn > 0) { sub = callable && (tch || over(U.waveRect ? U.waveRect.x : -1, U.waveRect ? U.waveRect.y : -1, U.waveRect ? U.waveRect.w : 0, U.waveRect ? U.waveRect.h : 0)) ? (tch ? 'Tap to call · +' : 'Call now · +') + Math.round(G.nextIn * 3) : 'Next wave in ' + Math.ceil(G.nextIn); frac = 1 - G.nextIn / 6.5; } else { const n = G.mons.length + G.queue.length; sub = n + ' on the road'; } }
-    else sub = G.phase === 'defeat' ? 'The fire has died' : G.phase === 'clear' ? 'Boss defeated' : 'A new pass awaits';
-    const bw = PX.iconSize('banner')[0] * s, wW = Math.max(bw + 3 * s + tw(wn), tw(sub), tw('Next wave in 0'), tw('Tap to call · +00')) + pad * 2 + 4 * s, hW = LH * 2 + pad * 2 + s;
-    const you = U.playerActive(), ct = you ? 'You command' : 'AI commander', cs = tch ? (you ? 'Tap for the AI' : 'Tap a pad to play') : (you ? 'Click here for the AI' : 'Click a pad to take over');
-    const ic = you ? 'hand' : 'helm', icw = PX.iconSize(ic)[0] * s, cW = Math.max(icw + 3 * s + tw(ct), tw(cs)) + pad * 2 + 2 * s, xc = Wr - cW - 5 * s, g3 = 3 * s;
-    const xw = Math.round(W / 2 - wW / 2);
-    let yc = y0, yw = y0;
+    if (G.phase === 'play') {
+      if (!G.spawning && !G.bossWave && G.nextIn > 0) {
+        const wr = U.waveRect, ask = callable && (tch || (wr && over(wr.x, wr.y, wr.w, wr.h)));
+        sub = ask ? '공세 부르기 · +' + Math.round(G.nextIn * 3) : '다음 공세까지 ' + Math.ceil(G.nextIn); frac = 1 - G.nextIn / 6.5;
+      } else sub = '남은 적 ' + (G.mons.length + G.queue.length);
+    } else sub = G.phase === 'defeat' ? '불씨가 스러졌다' : G.phase === 'clear' ? '적장을 물리쳤다' : '다음 전장으로';
+    const bw = PX.iconSize('banner')[0] * s, wW = Math.max(bw + 3 * s + tw(wn), tw(sub), tw('다음 공세까지 00'), tw('공세 부르기 · +00')) + pad * 2 + 4 * s, hW = LH * 2 + pad * 2 + s;
+    const you = U.playerActive(), CT = ['군사가 지휘 중', '직접 지휘 중'], CS = ['터를 눌러 직접 지휘', tch ? '군사에게 맡기기' : '눌러서 군사에게 맡기기'], ct = CT[+you], cs = CS[+you];
+    const ic = you ? 'hand' : 'helm', icw = PX.iconSize(ic)[0] * s, g3 = 3 * s;
+    const cW = Math.max(PX.iconSize('helm')[0] * s + 3 * s + Math.max(tw(CT[0]), tw(CT[1])), tw(CS[0]), tw(CS[1])) + pad * 2 + 2 * s, xc = Wr - cW - 5 * s;
+    // 폭이 모자라면 지휘 판은 둘째 줄 오른쪽으로, 공세 판은 그 왼쪽(또는 셋째 줄 가운데)으로 내려간다.
+    let xw = Math.round((iL + Wr) / 2 - wW / 2), yc = y0, yw = y0;
     if (xc < x0 + wS + g3) yc = y0 + hS + g3;
-    if (xw < x0 + wS + g3 || (yc === y0 && xw + wW > xc - g3) || yc !== y0) yw = Math.max(y0 + hS, yc + (yc === y0 || xw + wW > xc - g3 ? hW : 0)) + g3;
+    if (yc !== y0) { if (x0 + wW + g3 <= xc) { xw = x0; yw = yc; } else yw = yc + hW + g3; }
+    else if (xw < x0 + wS + g3 || xw + wW > xc - g3) yw = y0 + hW + g3;
     const topH = Math.max(y0 + hS, yc + hW, yw + hW) - y0; R.hudTop = y0 + topH;
     U.hud.length = 0; U.hudHot = false;
     const hotW = callable && over(xw, yw, wW, hW); U.waveRect = callable ? { id: 'wave', x: xw, y: yw, w: wW, h: hW, hot: hotW, fn: callWave, hud: true } : null; if (callable) U.hud.push(U.waveRect); if (hotW) U.hudHot = true;
     plate(xw, yw, wW, hW, hotW ? { bd: COLR.bdHi, bg: COLR.bg2 } : callable && tch ? { bd: '#8a6a3a' } : {});
-    const tx0 = Math.round(W / 2 - (bw + 3 * s + tw(wn)) / 2);
+    const wcx = xw + wW / 2, tx0 = Math.round(wcx - (bw + 3 * s + tw(wn)) / 2);
     PX.icon(c, 'banner', tx0, yw + pad - s, s); text(wn, tx0 + bw + 3 * s, yw + pad, COLR.amber);
-    text(sub, W / 2, yw + pad + LH + s, callable && (tch || hotW) ? COLR.tx : COLR.dim, { align: 'c' });
+    text(sub, wcx, yw + pad + LH + s, callable && (tch || hotW) ? COLR.tx : COLR.dim, { align: 'c' });
     if (frac >= 0) { c.fillStyle = '#2a2620'; c.fillRect(xw + 3 * s, yw + hW - 3 * s, wW - 6 * s, s); c.fillStyle = COLR.amber; c.fillRect(xw + 3 * s, yw + hW - 3 * s, Math.round((wW - 6 * s) * sat(frac)), s); }
     const hotC = over(xc, yc, cW, hW); U.cmdRect = { id: 'cmd', x: xc, y: yc, w: cW, h: hW, hot: hotC, fn: toggleCommand, hud: true }; U.hud.push(U.cmdRect); if (hotC) U.hudHot = true;
     plate(xc, yc, cW, hW, hotC ? { bd: COLR.bdHi, bg: COLR.bg2 } : you ? { bd: COLR.bdHi } : {});
     PX.icon(c, ic, xc + pad, yc + pad - s, s); text(ct, xc + pad + icw + 3 * s, yc + pad, you ? COLR.amber : COLR.tx); text(cs, xc + pad, yc + pad + LH + s, COLR.dim);
+
+    // ── 아래쪽 단추 ──
     const dpr = R.dpr || 1, hB = LH + pad * 2 - s, zb = tch ? Math.max(22 * s, Math.round(40 * dpr)) : hB, yB = Hb - zb - 5 * s; let tipB = null;
     const sq = (id, x, w, fn, tip, icon, on) => {
       const r = { id, x, y: yB, w, h: zb, fn, hud: true }, hot = over(x, yB, w, zb), down = U.press === id, dy = down ? s : 0; U.hud.push(r); if (hot) { U.hudHot = true; tipB = { x: x + w / 2, tip }; }
@@ -4746,37 +4902,38 @@ const UI = (() => {
     const corners = (x, y) => { const u = Math.round(zb / 9), q = Math.round(zb / 5), f = isFull(); c.fillStyle = COLR.tx; for (const [ax, ay] of [[0, 0], [1, 0], [0, 1], [1, 1]]) { const cx = x + (ax ? zb - q - u : q), cy = y + (ay ? zb - q - u : q), ix = f ? (ax ? -1 : 1) : (ax ? 1 : -1), iy = f ? (ay ? -1 : 1) : (ay ? 1 : -1); c.fillRect(cx, cy, u, u); c.fillRect(cx - ix * u, cy, u, u); c.fillRect(cx, cy - iy * u, u, u); } };
     const play = G.phase === 'play' || G.phase === 'defeat', nR = (fullscreenOK() && tch ? 3 : 2), rightW = nR * zb + (nR - 1) * g3;
     let xl = 5 * s + iL;
-    sq('pause', xl, zb, togglePause, G.paused ? 'Resume (P)' : 'Pause (P)', bars, G.paused); xl += zb + g3;
-    sq('speed', xl, zb, cycleSpeed, 'Speed (Tab)', label(G.speed + 'x', G.speed > 1 ? COLR.amber : COLR.tx), G.speed > 1); xl += zb + g3;
-    { const on = AU.ready && !AU.muted, icn = on ? 'sound' : 'mute', k = Math.max(s, Math.floor(zb / 14)), [iw2, ih2] = PX.iconSize(icn), lbl = tch ? 'Tap for sound' : 'Click for sound', wl = iw2 * s + 3 * s + tw(lbl) + pad * 2;
+    sq('pause', xl, zb, togglePause, G.paused ? '계속 (P)' : '일시 정지 (P)', bars, G.paused); xl += zb + g3;
+    sq('speed', xl, zb, cycleSpeed, '빠르기 (Tab)', label(G.speed + 'x', G.speed > 1 ? COLR.amber : COLR.tx), G.speed > 1); xl += zb + g3;
+    { const on = AU.ready && !AU.muted, icn = on ? 'sound' : 'mute', k = Math.max(s, Math.floor(zb / 14)), [iw2, ih2] = PX.iconSize(icn), lbl = '눌러서 소리 켜기', wl = iw2 * s + 3 * s + tw(lbl) + pad * 2;
       const wide = !AU.ready && xl + wl + g3 + rightW + 5 * s + iR <= W;
-      U.soundRect = sq('sound', xl, wide ? wl : zb, soundTap, AU.ready ? (AU.muted ? 'Sound is off (M)' : 'Sound is on (M)') : 'Sound', (x, y) => { if (wide) { PX.icon(c, icn, x + pad, y + Math.round((zb - ih2 * s) / 2), s, .85); text(lbl, x + pad + iw2 * s + 3 * s, y + Math.round((zb - LH) / 2) + s, COLR.tx); } else PX.icon(c, icn, x + Math.round((zb - iw2 * k) / 2), y + Math.round((zb - ih2 * k) / 2), k, AU.ready ? 1 : .8); }, !AU.ready);
+      U.soundRect = sq('sound', xl, wide ? wl : zb, soundTap, AU.ready ? (AU.muted ? '소리 꺼짐 (M)' : '소리 켜짐 (M)') : '소리', (x, y) => { if (wide) { PX.icon(c, icn, x + pad, y + Math.round((zb - ih2 * s) / 2), s, .85); text(lbl, x + pad + iw2 * s + 3 * s, y + Math.round((zb - LH) / 2) + s, COLR.tx); } else PX.icon(c, icn, x + Math.round((zb - iw2 * k) / 2), y + Math.round((zb - ih2 * k) / 2), k, AU.ready ? 1 : .8); }, !AU.ready);
       xl += (wide ? wl : zb) + g3; }
     let xr = Wr - 5 * s - zb; const cur = camZoomNow();
-    if (nR === 3) { sq('full', xr, zb, toggleFull, 'Full screen', corners, false); xr -= zb + g3; }
-    sq('zin', xr, zb, () => camZoomBy(1.5), 'Zoom in (+)', glyph('+', cur < 2.99 ? COLR.tx : '#5a5448'), false); xr -= zb + g3;
-    sq('zout', xr, zb, () => camZoomBy(1 / 1.5), 'Zoom out (-)', glyph('-', cur > camZoomMin() + .01 ? COLR.tx : '#5a5448'), false);
+    if (nR === 3) { sq('full', xr, zb, toggleFull, '전체 화면', corners, false); xr -= zb + g3; }
+    sq('zin', xr, zb, () => camZoomBy(1.5), '확대 (+)', glyph('+', cur < 2.99 ? COLR.tx : '#5a5448'), false); xr -= zb + g3;
+    sq('zout', xr, zb, () => camZoomBy(1 / 1.5), '축소 (-)', glyph('-', cur > camZoomMin() + .01 ? COLR.tx : '#5a5448'), false);
     let yUp = yB - g3;
     if (CAM.man && play) {
-      const lbl = 'Follow the fight', w = tw(lbl) + pad * 2, fits = xr - g3 - w >= xl, xf2 = fits ? xr - g3 - w : Wr - w - 5 * s, yf = fits ? yB + Math.round((zb - hB) / 2) : yB - g3 - hB, hotF = over(xf2, yf, w, hB);
-      plate(xf2, yf, w, hB, hotF ? { bd: COLR.bdHi, bg: COLR.bg2 } : { bd: '#8a6a3a' }); text(lbl, xf2 + pad, yf + pad - s, COLR.tx);
+      const lbl = '전투 따라가기', w = tw(lbl) + pad * 2, fits = xr - g3 - w >= xl, xf2 = fits ? xr - g3 - w : Wr - w - 5 * s, yf = fits ? yB + Math.round((zb - hB) / 2) : yB - g3 - hB, hotF = over(xf2, yf, w, hB);
+      plate(xf2, yf, w, hB, hotF ? { bd: COLR.bdHi, bg: COLR.bg2 } : { bd: '#8a6a3a' }); text(lbl, xf2 + pad, yf + pad, COLR.tx);
       U.followRect = { id: 'follow', x: xf2, y: yf, w, h: hB, hot: hotF, fn: () => { camReset(); sfx('uiClick', CAM.x, CAM.z, .6); }, hud: true }; U.hud.push(U.followRect); if (hotF) U.hudHot = true; if (!fits) yUp = yf - g3;
     } else U.followRect = null;
-    if (tipB && !tch) { const w = tw(tipB.tip) + pad * 2, x = clamp(Math.round(tipB.x - w / 2), 4 * s + iL, Wr - w - 4 * s); plate(x, yB - g3 - hB, w, hB, { bd: COLR.bdHi }); text(tipB.tip, x + pad, yB - g3 - hB + pad - s, COLR.tx); yUp = Math.min(yUp, yB - g3 - hB - g3); }
-    const wrap = (str, maxW) => { const out = []; let cur2 = ''; for (const wd of str.split(' ')) { const t = cur2 ? cur2 + ' ' + wd : wd; if (cur2 && tw(t) > maxW) { out.push(cur2); cur2 = wd; } else cur2 = t; } if (cur2) out.push(cur2); return out; };
+    if (tipB && !tch) { const w = tw(tipB.tip) + pad * 2, x = clamp(Math.round(tipB.x - w / 2), 4 * s + iL, Wr - w - 4 * s); plate(x, yB - g3 - hB, w, hB, { bd: COLR.bdHi }); text(tipB.tip, x + pad, yB - g3 - hB + pad, COLR.tx); yUp = Math.min(yUp, yB - g3 - hB - g3); }
+
+    // ── 아래 가운데: 일시 정지, 새 적 알림, 조작 안내 ──
     const boxW = Wr - iL - 10 * s;
-    if (G.paused) { const k = s + 1, t1 = 'Paused', w = PX.measure(t1) * k + pad * 4, h = PX.LINE * k + pad * 2; plate(Math.round(W / 2 - w / 2), yUp - h, w, h, { bd: COLR.bdHi }); PX.text(c, t1, W / 2, yUp - h + pad, k, COLR.amber, { align: 'c' }); yUp -= h + g3; }
+    if (G.paused) { const k = s + 2, t1 = '일시 정지', w = PX.measure(t1, k) * k + pad * 4, h = PX.LINE * k + pad * 2; plate(Math.round(W / 2 - w / 2), yUp - h, w, h, { bd: COLR.bdHi }); PX.text(c, t1, W / 2, yUp - h + pad + Math.round(k / 2), k, COLR.amber, { align: 'c' }); yUp -= h + g3; }
     if (U.tip && !U.menu) {
-      const d = MON[U.tip.type], a = sat(Math.min(U.tip.t * 4, (5.2 - U.tip.t) * 2)), head = (d.boss ? 'Boss: ' : 'New: ') + monName(U.tip.type), lines = wrap(monTip(U.tip.type), Math.min(boxW - pad * 2, 46 * 6 * s));
+      const d = MON[U.tip.type], a = sat(Math.min(U.tip.t * 4, (5.2 - U.tip.t) * 2)), head = (d.boss ? '적장: ' : '새 적: ') + monName(U.tip.type), lines = wrap(monTip(U.tip.type), Math.min(boxW - pad * 2, 160 * s));
       let w = tw(head); for (const l of lines) w = Math.max(w, tw(l)); w += pad * 2; const h = LH * (lines.length + 1) + pad * 2 - s, x = Math.round((iL + Wr - w) / 2), y = yUp - h;
-      c.globalAlpha = a; plate(x, y, w, h, { bd: d.boss ? COLR.ember : '#8a6a3a' }); text(head, x + w / 2, y + pad - s, COLR.amber, { align: 'c' }); lines.forEach((l, k) => text(l, x + w / 2, y + pad - s + (k + 1) * LH, COLR.tx, { align: 'c' })); c.globalAlpha = 1; yUp = y - g3;
+      c.globalAlpha = a; plate(x, y, w, h, { bd: d.boss ? COLR.ember : '#8a6a3a' }); text(head, x + w / 2, y + pad, COLR.amber, { align: 'c' }); lines.forEach((l, k) => text(l, x + w / 2, y + pad + s + (k + 1) * LH, COLR.tx, { align: 'c' })); c.globalAlpha = 1; yUp = y - g3;
     } else {
-      const first = U.titleT < 16, a = tch ? sat(Math.min(U.titleT - 7.2, first ? 1 : 3 - U.moved, U.manual && !first ? 0 : 1, 62 - U.titleT)) : sat(Math.min(U.titleT - 7.2, 3 - Math.min(U.moved, U.idle > 20 ? U.moved : 0) + (U.titleT < 18 ? 8 : 0)));
+      const first = U.titleT < 18, a = tch ? sat(Math.min(U.titleT - 9.2, first ? 1 : 3 - U.moved, U.manual && !first ? 0 : 1, 64 - U.titleT)) : sat(Math.min(U.titleT - 9.2, 3 - Math.min(U.moved, U.idle > 20 ? U.moved : 0) + (U.titleT < 20 ? 8 : 0)));
       if (a > .02 && !U.menu && !G.paused) {
-        const parts = tch ? ['Tap a pad to build', 'Drag to look around', 'Pinch or double-tap to zoom'] : ['Click a pad to build', '1-4 pick a tower', 'Space calls the next wave', 'Wheel zooms, drag moves the view'];
+        const parts = tch ? ['터를 눌러 짓기', '끌어서 둘러보기', '벌리거나 두 번 눌러 확대'] : ['터를 눌러 짓기', '1~4 지을 것 고르기', '스페이스로 다음 공세 부르기', '휠로 확대, 끌어서 이동'];
         let lines = [parts.join(' · ')]; if (tw(lines[0]) + pad * 2 > boxW) { lines = parts.length > 3 ? [parts.slice(0, 2).join(' · '), parts.slice(2).join(' · ')] : parts; if (lines.some(l => tw(l) + pad * 2 > boxW)) lines = parts; }
         let w = 0; for (const l of lines) w = Math.max(w, tw(l)); w += pad * 2; const h = LH * lines.length + pad * 2 - s, hx = Math.round((iL + Wr - w) / 2), hy = yUp - h;
-        if (w <= boxW) { c.globalAlpha = a; plate(hx, hy, w, h); lines.forEach((l, k) => text(l, hx + w / 2, hy + pad - s + k * LH, COLR.dim, { align: 'c' })); c.globalAlpha = 1; }
+        if (w <= boxW) { c.globalAlpha = a; plate(hx, hy, w, h); lines.forEach((l, k) => text(l, hx + w / 2, hy + pad + k * LH, COLR.dim, { align: 'c' })); c.globalAlpha = 1; }
       }
     }
     for (let i = U.coins.length - 1; i >= 0; i--) {
@@ -4785,13 +4942,25 @@ const UI = (() => {
       PX.icon(c, 'coin', Math.round(px - 4 * s * .75), Math.round(py - 4 * s * .75), Math.max(2, s - 1), 1);
       if (u >= 1) { U.goldShown = Math.min(G.gold, U.goldShown + q.value); U.goldBump = 1; sfx('coin', CAM.x, CAM.z, .35, rnd()); U.coins.splice(i, 1); }
     }
+
+    // ── 배너: 공세·승패. 전장이 솟아오를 때는 연도·전투 이름 아래 사기 한 줄(m.sub)과 시대색 선 ──
     if (U.msg) {
       const m = U.msg; m.t += R.frameDt; const a = sat(Math.min(m.t * 3, (m.dur - m.t) * 2));
-      if (m.t >= m.dur) U.msg = null; else { let sc = s + (m.big ? 2 : 1); while (sc > 2 && PX.measure(m.text) * sc + pad * 4 > Wr - iL - 6 * s) sc--; const w = PX.measure(m.text) * sc + pad * 4, h = PX.LINE * sc + pad * 2; c.globalAlpha = a; const yb = Math.max(Math.round(H * .2), y0 + topH + 4 * s); plate(Math.round(W / 2 - w / 2), yb, w, h, { bd: m.big ? COLR.ember : COLR.bdHi }); PX.text(c, m.text, W / 2, yb + pad, sc, m.big ? '#ffd9a8' : COLR.tx, { align: 'c' }); c.globalAlpha = 1; }
+      if (m.t >= m.dur) U.msg = null; else {
+        const maxW = Wr - iL - 6 * s; let sc = s + (m.big ? 4 : 2); while (sc > s && PX.measure(m.text, sc) * sc + pad * 4 > maxW) sc -= 2;
+        const subs = m.sub ? wrap(m.sub, Math.min(maxW - pad * 4, 136 * s)) : [];
+        let w = PX.measure(m.text, sc) * sc; for (const l of subs) w = Math.max(w, tw(l)); w += pad * 4;
+        const h = PX.LINE * sc + pad * 2 + (subs.length ? subs.length * LH + s : 0), xb = Math.round(W / 2 - w / 2), yb = Math.max(Math.round(H * .2), y0 + topH + 4 * s);
+        c.globalAlpha = a; plate(xb, yb, w, h, { bd: m.big ? COLR.ember : COLR.bdHi, era: m.era });
+        PX.text(c, m.text, W / 2, yb + pad + sc, sc, m.big ? '#ffd9a8' : m.era ? COLR.amber : COLR.tx, { align: 'c' });
+        subs.forEach((l, k) => text(l, W / 2, yb + pad + PX.LINE * sc + s + k * LH, COLR.tx, { align: 'c' })); c.globalAlpha = 1;
+      }
     }
+
+    // ── 터 메뉴: 짓기 / 증축·철거 ──
     U.menuRect = null;
     if (U.menu && G.phase === 'play') {
-      const m = U.menu, p = proj(m.pad.x, m.pad.y + (m.tower ? Math.min(3.6, m.tower.mounts.top) : 1.2), m.pad.z), a = sat(m.t * 8), mp = 6 * s;
+      const m = U.menu, p = proj(m.pad.x, m.pad.y + (m.tower ? Math.min(3.6, m.tower.mounts.top) : 1.2), m.pad.z), a = sat(m.t * 8), mp = 6 * s, maxT = Wr - iL - 8 * s - mp * 2;
       const button = (bx, by, bw2, bh2, id, enabled, fn, kind, on) => {
         const ov = over(bx, by, bw2, bh2) && !U.gp.active, focused = U.gp.active && U.btns.length === m.focus;
         const b = { id, fn, kind, x: bx, y: by, w: bw2, h: bh2 }; U.btns.push(b); if (ov) hot = b; const down = U.press === id, lit = ov || focused || on || down;
@@ -4803,51 +4972,59 @@ const UI = (() => {
       if (!m.tower) {
         const bwid = 31 * s, bh = 35 * s, gapb = 3 * s, rowW = 4 * bwid + 3 * gapb;
         let lit = null; const fk = U.gp.active ? TOWER_KINDS[m.focus % 4] : null;
-        const lines = k => k ? [towerName(k)].concat(towerDesc(k)) : tch ? ['Choose a tower', 'Tap one to see what it does,', 'then tap it again to build.'] : ['Choose a tower', 'Hover or press 1 to 4', 'to see what each does.'];
-        let textW = tw('Tap again to build'); for (const k of [null].concat(TOWER_KINDS)) for (const l of lines(k)) textW = Math.max(textW, tw(l));
-        const wP = Math.max(rowW, textW) + mp * 2, hP = mp * 2 + LH + 3 * s + bh + 4 * s + LH * 3 + 2 * s + (tch ? LH + s : 0), [px, py] = place(wP, hP);
+        // 설명 줄: 이름 + 쓰임새(판 폭을 넘으면 줄바꿈). 줄 수는 가장 긴 설명에 맞춰 판 높이를 고정한다.
+        const lines = k => { const body = k ? [].concat(towerDesc(k) || []) : tch ? ['누르면 쓰임새가 보이고', '한 번 더 누르면 짓는다'] : ['가리키거나 1~4를 눌러', '쓰임새를 살펴본다']; let out = [k ? towerName(k) : '무엇을 지을까']; for (const l of body) out = out.concat(wrapRaw(l, maxT)); return out; };
+        let textW = Math.max(tw('한 번 더 눌러 짓기'), tw('군자금이 모자란다')), nL = 3; for (const k of [null].concat(TOWER_KINDS)) { const ls = lines(k); nL = Math.max(nL, ls.length); for (const l of ls) textW = Math.max(textW, tw(l)); }
+        const wP = Math.max(rowW, textW) + mp * 2, hP = mp * 2 + LH + 3 * s + bh + 4 * s + LH * nL + (tch ? LH + s : 0), [px, py] = place(wP, hP);
         U.menuRect = { x: px, y: py, w: wP, h: hP };
-        plate(px, py, wP, hP); text('Build here', px + mp, py + mp - s, COLR.amber);
+        plate(px, py, wP, hP, { era: true }); text('여기에 짓기', px + mp, py + mp, COLR.amber);
         const bx0 = px + Math.round((wP - rowW) / 2), by = py + mp + LH + 3 * s;
         TOWER_KINDS.forEach((kind, i) => {
           const d = TOWER[kind], can = G.gold >= d.cost[0], bx = bx0 + i * (bwid + gapb);
           const r = button(bx, by, bwid, bh, 'b' + kind, can, () => { if (U.touch && m.sel !== kind) { m.sel = kind; sfx('uiHover', m.pad.x, m.pad.z, .8); } else doBuild(m.pad, kind); }, kind, m.sel === kind);
-          const [iw, ih] = PX.iconSize(d.icon); PX.icon(c, d.icon, bx + Math.round((bwid - iw * s) / 2), by + 6 * s + r.dy, s, can ? 1 : .45);
+          const icn = kind === 'bombard' && curEra() !== 'joseon' ? 'pocha' : d.icon, [iw, ih] = PX.iconSize(icn); PX.icon(c, icn, bx + Math.round((bwid - iw * s) / 2), by + 6 * s + r.dy, s, can ? 1 : .45);  // 화약 이전(고구려·고려)의 포차는 투석기 그림
           if (!tch) text('' + (i + 1), bx + 3 * s, by + 2 * s + r.dy, COLR.dim);
           const cw2 = 8 * s + 2 * s + tw('' + d.cost[0]), cx0 = bx + Math.round((bwid - cw2) / 2);
           PX.icon(c, 'coin', cx0, by + bh - LH - 3 * s + r.dy, s, can ? 1 : .5); text('' + d.cost[0], cx0 + 10 * s, by + bh - LH - 3 * s + r.dy, can ? COLR.amber : COLR.red);
           if (r.lit) lit = kind;
         });
-        const ls = lines(lit || fk), ty = by + bh + 4 * s;
-        text(ls[0], px + mp, ty, lit || fk ? COLR.tx : COLR.dim); text(ls[1], px + mp, ty + LH + s, COLR.dim); if (ls[2]) text(ls[2], px + mp, ty + LH * 2 + s, COLR.dim);
-        if (tch && m.sel) { const can = G.gold >= TOWER[m.sel].cost[0]; text(can ? 'Tap again to build' : 'Not enough gold yet', px + mp, ty + LH * 3 + 2 * s, can ? COLR.amber : COLR.red); }
+        const ls = lines(lit || fk), ty = by + bh + 5 * s;
+        ls.forEach((l, k) => text(l, px + mp, ty + k * LH + (k ? s : 0), k === 0 && (lit || fk) ? COLR.tx : COLR.dim));
+        if (tch && m.sel) { const can = G.gold >= TOWER[m.sel].cost[0]; text(can ? '한 번 더 눌러 짓기' : '군자금이 모자란다', px + mp, ty + LH * nL + 2 * s, can ? COLR.amber : COLR.red); }
       } else {
         const t = m.tower, d = t.def, maxed = t.lvl >= 2, upc = maxed ? 0 : d.cost[t.lvl + 1], can = !maxed && G.gold >= upc && t.state === 'active', refund = Math.round(t.spent * .6), L1 = t.lvl + 1;
-        const ul = maxed ? 'Max level' : 'Upgrade ' + upc, sl = m.sellArm ? 'Confirm +' + refund : 'Sell +' + refund, iw9 = 9 * s, bw3 = Math.max(tw(ul), tw(sl), tw('Confirm +' + refund)) + iw9 + 11 * s, bh = (tch ? 24 : 15) * s, by0 = Math.round((bh - LH) / 2);
-        const st = t.kind === 'guard' ? d.n[t.lvl] + ' footmen · ' + d.hp[t.lvl] + ' health' : 'Range ' + d.range[t.lvl].toFixed(1) + ' · Damage ' + d.dmg[t.lvl];
-        const nx = maxed ? t.kills + ' kills' : (t.kind === 'guard' ? 'Next: ' + d.n[L1] + ' footmen · ' + d.hp[L1] + ' health' : 'Next: range ' + d.range[L1].toFixed(1) + ' · damage ' + d.dmg[L1]);
-        const wP = Math.max(bw3 * 2 + 3 * s, tw(towerName(t.kind)) + 26 * s, tw(st), tw(nx)) + mp * 2, hP = mp * 2 + LH * 3 + 6 * s + bh, [px, py] = place(wP, hP);
+        const ul = maxed ? '최고 단계' : '증축 ' + upc, sl = (m.sellArm ? '철거 확인 +' : '철거 +') + refund, iw9 = 9 * s, bw3 = Math.max(tw(ul), tw(sl), tw('철거 확인 +' + refund)) + iw9 + 11 * s, bh = (tch ? 24 : 15) * s, by0 = Math.round((bh - LH) / 2) + s;
+        const st = t.kind === 'guard' ? '병사 ' + d.n[t.lvl] + ' · 체력 ' + d.hp[t.lvl] : '사거리 ' + d.range[t.lvl].toFixed(1) + ' · 피해 ' + d.dmg[t.lvl];
+        const nx = maxed ? '격퇴 ' + t.kills : (t.kind === 'guard' ? '다음: 병사 ' + d.n[L1] + ' · 체력 ' + d.hp[L1] : '다음: 사거리 ' + d.range[L1].toFixed(1) + ' · 피해 ' + d.dmg[L1]);
+        const wP = Math.max(bw3 * 2 + 3 * s, tw(towerName(t.kind)) + 26 * s, tw(st), tw(nx)) + mp * 2, hP = mp * 2 + LH * 3 + 7 * s + bh, [px, py] = place(wP, hP);
         U.menuRect = { x: px, y: py, w: wP, h: hP };
-        plate(px, py, wP, hP); text(towerName(t.kind), px + mp, py + mp - s, COLR.amber);
-        for (let i = 0; i < 3; i++) PX.icon(c, i <= t.lvl ? 'star' : 'starEmpty', px + wP - mp - (3 - i) * 6 * s, py + mp, s);
-        text(st, px + mp, py + mp + LH + s, COLR.tx); text(nx, px + mp, py + mp + LH * 2 + 2 * s, maxed ? COLR.dim : COLR.ok);
-        const by = py + mp + LH * 3 + 6 * s, bwf = Math.floor((wP - mp * 2 - 3 * s) / 2);
+        plate(px, py, wP, hP, { era: true }); text(towerName(t.kind), px + mp, py + mp, COLR.amber);
+        for (let i = 0; i < 3; i++) PX.icon(c, i <= t.lvl ? 'star' : 'starEmpty', px + wP - mp - (3 - i) * 6 * s, py + mp + s, s);
+        text(st, px + mp, py + mp + LH + 2 * s, COLR.tx); text(nx, px + mp, py + mp + LH * 2 + 3 * s, maxed ? COLR.dim : COLR.ok);
+        const by = py + mp + LH * 3 + 7 * s, bwf = Math.floor((wP - mp * 2 - 3 * s) / 2);
         let r = button(px + mp, by, bwf, bh, 'up', can, () => doUpgrade(t), null, false);
-        PX.icon(c, 'upgrade', px + mp + 4 * s, by + by0 + r.dy, s, can ? 1 : .4); text(ul, px + mp + 4 * s + iw9 + 3 * s, by + by0 + r.dy, can ? COLR.tx : (maxed ? COLR.dim : COLR.red));
+        PX.icon(c, 'upgrade', px + mp + 4 * s, by + by0 - s + r.dy, s, can ? 1 : .4); text(ul, px + mp + 4 * s + iw9 + 3 * s, by + by0 + r.dy, can ? COLR.tx : (maxed ? COLR.dim : COLR.red));
         r = button(px + mp + bwf + 3 * s, by, bwf, bh, 'sell', true, () => { if (!m.sellArm) { m.sellArm = true; sfx('uiHover', t.x, t.z, .8); } else { buzz(16); doSell(t); } }, null, m.sellArm);
-        PX.icon(c, 'sell', px + mp + bwf + 7 * s, by + by0 + r.dy, s); text(sl, px + mp + bwf + 7 * s + iw9 + 3 * s, by + by0 + r.dy, m.sellArm ? COLR.ember : COLR.tx);
+        PX.icon(c, 'sell', px + mp + bwf + 7 * s, by + by0 - s + r.dy, s); text(sl, px + mp + bwf + 7 * s + iw9 + 3 * s, by + by0 + r.dy, m.sellArm ? COLR.ember : COLR.tx);
       }
       c.globalAlpha = 1;
     }
     if (hot !== U.hotBtn && hot) sfx('uiHover', CAM.x, CAM.z, .5);
     U.hotBtn = hot;
-    if (U.armed && mouse && G.phase === 'play') { const l = towerName(U.armed) + ': click a pad', w = tw(l) + pad * 2; const xx = clamp(U.mx + 10 * s, 2 * s, W - w - 2 * s), yy = clamp(U.my + 10 * s, 2 * s, H - LH - pad * 2); plate(xx, yy, w, LH + pad * 2 - s, { bd: COLR.bdHi }); text(l, xx + pad, yy + pad - s, COLR.tx); }
-    if (U.titleT < 7 && !U.menu) {
-      const a = sat(Math.min((U.titleT - .4) * 1.5, (6.6 - U.titleT) * 1.2));
+    if (U.armed && mouse && G.phase === 'play') { const l = towerName(U.armed) + ': 터를 눌러 짓기', w = tw(l) + pad * 2; const xx = clamp(U.mx + 10 * s, 2 * s, W - w - 2 * s), yy = clamp(U.my + 10 * s, 2 * s, H - LH - pad * 2); plate(xx, yy, w, LH + pad * 2 - s, { bd: COLR.bdHi }); text(l, xx + pad, yy + pad, COLR.tx); }
+
+    // ── 시작 화면: 조선워치 / 612년 · 살수대첩 / 사기 한 줄 / 안내 ──
+    if (U.titleT < 9 && !U.menu) {
+      const a = sat(Math.min((U.titleT - .4) * 1.5, (8.6 - U.titleT) * 1.2));
       if (a > 0) {
-        const sc = s * 2, t1 = 'Cinderwatch', full = G.B.bio.name + ' · The commander plays until you take over.', t2 = tw(full) + pad * 4 > Wr - iL - 6 * s ? [G.B.bio.name, 'The commander plays', 'until you take over.'] : [full]; if (G.best > 5) t2.push('Best run: wave ' + G.best);
-        let w = PX.measure(t1) * sc; for (const l of t2) w = Math.max(w, tw(l)); w += pad * 4; const h = PX.LINE * sc + LH * t2.length + pad * 2 + 2 * s, yy = Hb - h - 12 * s - zb;
-        c.globalAlpha = a; plate(Math.round(W / 2 - w / 2), yy, w, h); PX.text(c, t1, W / 2, yy + pad, sc, '#ffd9a8', { align: 'c' }); t2.forEach((l, k) => text(l, W / 2, yy + pad + PX.LINE * sc + s + k * LH, k === 0 && t2.length > 1 ? COLR.tx : COLR.dim, { align: 'c' })); c.globalAlpha = 1;
+        const bio = G.B.bio, sc = s * 2, t1 = '조선워치', maxW = Wr - iL - 6 * s - pad * 4, head = bio.year ? bio.year + '년 · ' + (bio.title || bio.name) : bio.name;
+        const rows = [[head, COLR.amber]]; for (const l of wrap(bio.lore || '', Math.min(maxW, 136 * s))) rows.push([l, COLR.tx]);
+        for (const l of wrap('군사가 지휘 중 · 터를 누르면 직접 지휘', maxW)) rows.push([l, COLR.dim]);
+        if (G.best > 5) rows.push(['최고 기록: 제' + G.best + '파', COLR.dim]);
+        let w = PX.measure(t1, sc) * sc; for (const r of rows) w = Math.max(w, tw(r[0])); w += pad * 4;
+        const h = PX.LINE * sc + LH * rows.length + pad * 2 + 6 * s, xx = Math.round((iL + Wr) / 2 - w / 2), yy = Math.max(y0 + topH + g3, Hb - h - 12 * s - zb), cx = xx + w / 2;
+        c.globalAlpha = a; plate(xx, yy, w, h, { era: true }); PX.text(c, t1, cx, yy + pad + 2 * s, sc, '#ffd9a8', { align: 'c' });
+        rows.forEach((r, k) => text(r[0], cx, yy + pad + PX.LINE * sc + 4 * s + k * LH + (k ? s : 0), r[1], { align: 'c' })); c.globalAlpha = 1;
       }
     }
     if (HASH.fps) { text(R.fpsText || '', 6 * s + iL, Hb - 30 * s, COLR.ok, { outline: COLR.dark }); }

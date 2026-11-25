@@ -5,3 +5,4 @@ tools/shots/
 clips/
 _workspace_prev/
 node_modules/
+.claude/worktrees/

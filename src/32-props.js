@@ -54,15 +54,6 @@ const PROP = {
     S.cyl(.3, .45, 0, .2, 0, COL.bark, { n: 7, l: L_WOOD, rt: .8 }); S.cyl(.235, .04, 0, .44, 0, COL.woodL, { n: 7, l: L_WOOD });
     for (let k = 0; k < 3; k++) { const a = rng() * TAU; S.seg([Math.cos(a) * .2, .12, Math.sin(a) * .2], [Math.cos(a) * .6, -.05, Math.sin(a) * .6], .09, .04, COL.bark, { l: L_WOOD, n: 5 }); }
   },
-  grave(S, rng) {
-    const T = new Soup(), w = rng.range(.44, .62), h = rng.range(.62, 1.0), c = mixC(COL.stoneD, COL.stoneL, rng()), kind = rng.int(0, 3);
-    if (kind === 0) { T.box(w, h * .8, .15, 0, h * .4, 0, c, { l: L_ROCK }); T.cyl(w / 2, .15, 0, h * .8, 0, c, { n: 8, l: L_ROCK, r: [HPI, 0, 0] }); }
-    else if (kind === 1) { T.box(.15, h * 1.15, .14, 0, h * .57, 0, c, { l: L_ROCK }); T.box(w * 1.1, .15, .14, 0, h * .8, 0, c, { l: L_ROCK }); }
-    else if (kind === 2) { T.box(w, h * .9, .16, 0, h * .45, 0, c, { l: L_ROCK }); T.box(w * .7, .14, .16, 0, h * .95, 0, c, { l: L_ROCK }); T.box(w * 1.2, .12, .3, 0, .06, 0, mulC(c, .8), { l: L_ROCK }); }
-    else { T.box(w * .9, h * .55, .15, 0, h * .27, 0, c, { l: L_ROCK }); T.box(w * .5, h * .2, .15, -w * .18, h * .62, 0, c, { l: L_ROCK, r: [0, 0, .3] }); }
-    S.merge(T, { r: [rng.range(-.2, .2), rng.range(-.3, .3), rng.range(-.16, .16)], ao: [0, .4, .55] });
-    S.ico(.5, 0, .0, .62, mulC(COL.earthD, 1.1), { sc: [.75, .22, 1.25], l: L_DIRT, d: 1 });
-  },
   cart(S, rng, broken) {
     const w = COL.wood, wd = COL.woodD, o = () => ({ l: L_WOOD });
     S.box(1.6, .08, .9, 0, .56, 0, w, o());
@@ -80,40 +71,16 @@ const PROP = {
     S.ico(.26, .35, .74, .1, COL.clothT, { sc: [1.2, .7, 1], l: L_CLOTH, d: 1 }); S.ico(.24, -.05, .72, -.18, mulC(COL.clothT, .8), { sc: [1, .7, 1.2], l: L_CLOTH, d: 1 });
     PROP.barrel(S, -.5, .6, .12, .8, rng);
   },
-  bones(S, rng, n = 5) {
-    for (let k = 0; k < n; k++) { const a = rng() * TAU, l = rng.range(.2, .45), x = rng.range(-.4, .4), z = rng.range(-.4, .4); S.seg([x, .04, z], [x + Math.cos(a) * l, .05 + rng() * .08, z + Math.sin(a) * l], .03, .03, mulC(COL.bone, .7 + .3 * rng()), { l: L_BONE, n: 5 }); }
-    if (rng() < .7) PROP.skull(S, rng.range(-.2, .2), .13, rng.range(-.2, .2), .15, rng() * TAU);
-  },
   skull(S, x, y, z, r, ry) {
     const T = new Soup();
     T.sph(r, 0, 0, 0, COL.bone, { sc: [1, .95, 1.1], l: L_BONE, w: 7, h: 5 }); T.box(r * 1.1, r * .55, r * .8, 0, -r * .65, r * .32, COL.boneD, { l: L_BONE });
     for (const s of [-1, 1]) T.box(r * .42, r * .38, r * .2, s * r * .42, -r * .05, r * 1.0, COL.black, { jit: 0 });
     S.merge(T, { p: [x, y, z], ry, ao: null });
   },
-  ribcage(S, rng) {
-    const b = COL.bone;
-    S.seg([-1.6, .5, 0], [1.6, .7, 0], .1, .08, b, { l: L_BONE });
-    for (let k = 0; k < 6; k++) {
-      const x = -1.3 + k * .5, s = 1 - Math.abs(k - 2.5) * .12;
-      for (const side of [-1, 1]) {
-        if (rng() < .15) continue;
-        let p = [x, .55, 0]; const pts = [[x, .95 * s, side * .55 * s], [x + .05, 1.25 * s, side * .95 * s], [x + .1, .85 * s, side * 1.15 * s], [x + .12, .1, side * 1.05 * s]];
-        for (const q of pts) { S.seg(p, q, .06, .05, mulC(b, .8 + .2 * rng()), { l: L_BONE, n: 5 }); p = q; }
-      }
-    }
-    S.ico(.5, 2.15, .55, 0, b, { sc: [1.35, .8, .85], l: L_BONE, d: 1 }); S.ico(.3, 2.85, .4, 0, COL.boneD, { sc: [1.3, .6, .7], l: L_BONE, d: 1 });
-    for (const side of [-1, 1]) { S.seg([2.0, .8, side * .3], [1.7, 1.4, side * .75], .1, .02, b, { l: L_BONE, n: 5 }); S.box(.2, .16, .08, 2.3, .62, side * .4, COL.black, { jit: 0 }); }
-  },
-  web(S, a, b, c) {
-    const col = mulC(COL.stoneL, 1.5), th = .011;
-    const lerp3 = (p, q, t) => [lerp(p[0], q[0], t), lerp(p[1], q[1], t), lerp(p[2], q[2], t)];
-    for (let k = 0; k <= 4; k++) S.seg(a, lerp3(b, c, k / 4), th, th, col, { n: 3, emis: .015, jit: 0, sway: .25 });
-    for (let r = 1; r <= 3; r++) for (let k = 0; k < 4; k++) S.seg(lerp3(a, lerp3(b, c, k / 4), r / 3.3), lerp3(a, lerp3(b, c, (k + 1) / 4), r / 3.3 - .04), th, th, col, { n: 3, emis: .015, jit: 0, sway: .25 });
-  },
-  banner(S, rng, col, h = 2.8) {
+  banner(S, rng, col, h = 2.8, col2) {
     S.seg([0, 0, 0], [0, h, 0], .055, .04, COL.woodD, { l: L_WOOD }); S.seg([-.08, h - .2, 0], [.82, h - .2, 0], .03, .03, COL.woodD, { l: L_WOOD, n: 5 });
     S.cone(.07, .2, 0, h + .1, 0, COL.iron, { n: 4, l: L_METAL });
-    clothPanel(S, { x0: .04, x1: .78, yTop: h - .23, len: 1.45, z: 0, col, col2: mulC(COL.gold, .6), rng });
+    clothPanel(S, { x0: .04, x1: .78, yTop: h - .23, len: 1.45, z: 0, col, col2: col2 || mulC(COL.gold, .6), rng });
   },
   fence(S, rng, len) {
     const nP = Math.max(2, Math.round(len) + 1);
@@ -137,7 +104,7 @@ const PROP = {
     S.cyl(.6, .06, 0, .3, 0, COL.black, { n: 10, jit: 0 });
     for (const s of [-1, 1]) S.box(.1, 1.7, .1, s * .72, .85, 0, COL.woodD, { l: L_WOOD });
     S.seg([-.8, 1.45, 0], [.8, 1.45, 0], .05, .05, COL.wood, { l: L_WOOD });
-    for (const s of [-1, 1]) S.box(1.75, .05, .62, 0, 1.86, s * .26, COL.slate, { l: L_SLATE, r: [s * .62, 0, 0] });
+    for (const s of [-1, 1]) S.box(1.75, .08, .66, 0, 1.86, s * .27, mulC(COL.thatch, .95), { l: L_THATCH, r: [s * .62, 0, 0] });
     S.seg([.15, 1.45, 0], [.15, .75, 0], .012, .012, COL.rope, { n: 3 }); S.cyl(.12, .2, .15, .68, 0, COL.wood, { n: 7, l: L_WOOD, rt: 1.2 });
   },
   wallRun(S, rng, len, hMax) {
@@ -147,46 +114,12 @@ const PROP = {
       const edge = Math.min(1, (len / 2 - Math.abs(x + w / 2)) / 1.4 + .25), hh = h * edge, c = mixC(COL.stoneD, COL.stone, rng());
       S.box(w, hh, .62, x + w / 2, hh / 2, 0, c, { l: L_MASON });
       for (let j = 0; j < 3; j++) if (rng() < .6) S.box(w * rng.range(.25, .45), rng.range(.2, .5), .62, x + w * (.2 + j * .3), hh + .15, 0, mixC(COL.stoneD, COL.stoneL, rng()), { l: L_MASON });
-      if (hh > 2.2 && rng() < .5) S.box(.3, .8, .7, x + w / 2, hh * .62, 0, COL.black, { jit: 0 });
       if (rng() < .5) S.rock(rng.range(.2, .4), x + rng.range(0, w), .1, rng.sign() * rng.range(.5, .9), mixC(COL.stoneD, COL.stone, rng()));
       x += w; k++;
     }
     S.box(len * .9, .22, .86, 0, .08, 0, COL.stoneD, { l: L_MASON });
   },
-  towerRuin(S, rng) {
-    const R = 1.35, n = 10, hs = [];
-    for (let k = 0; k < n; k++) hs.push(clamp(4.4 - k * .42 + rng.range(-.4, .4), .7, 4.6));
-    S.cyl(R + .35, .4, 0, .2, 0, COL.stoneD, { n: 10, l: L_MASON });
-    for (let k = 0; k < n; k++) {
-      if (k === n - 1) continue;
-      const a = k / n * TAU, c = mixC(COL.stoneD, COL.stone, rng());
-      S.box(.92, hs[k], .42, Math.cos(a) * R, hs[k] / 2 + .3, Math.sin(a) * R, c, { l: L_MASON, r: [0, -a + HPI, 0] });
-      if (rng() < .7) S.box(.4, rng.range(.2, .5), .42, Math.cos(a + .1) * R, hs[k] + .5, Math.sin(a + .1) * R, mixC(COL.stoneD, COL.stoneL, rng()), { l: L_MASON, r: [0, -a + HPI, 0] });
-      if (hs[k] > 2.6 && (k & 1)) S.box(.2, .6, .5, Math.cos(a) * R, hs[k] * .65, Math.sin(a) * R, COL.black, { jit: 0, r: [0, -a + HPI, 0] });
-    }
-    for (let k = 0; k < 3; k++) { const a = rng() * TAU; S.seg([Math.cos(a) * R, 2.1, Math.sin(a) * R], [Math.cos(a + 2.4) * R * .6, 2.0 - rng() * .8, Math.sin(a + 2.4) * R * .6], .07, .06, COL.woodD, { l: L_WOOD, n: 4 }); }
-    for (let k = 0; k < 7; k++) { const a = rng() * TAU, d = rng.range(1.9, 3.0); S.box(rng.range(.3, .6), rng.range(.2, .4), rng.range(.3, .5), Math.cos(a) * d, .12, Math.sin(a) * d, mixC(COL.stoneD, COL.stone, rng()), { l: L_MASON, r: [rng() * .5, rng() * 3, rng() * .5] }); }
-  },
-  signpost(S, rng) {
-    S.box(.1, 1.7, .1, 0, .85, 0, COL.woodD, { l: L_WOOD, r: [0, 0, .06] });
-    S.box(.8, .2, .05, .28, 1.45, .06, COL.woodL, { l: L_WOOD, r: [0, .2, -.08] }); S.box(.7, .18, .05, -.22, 1.15, .06, COL.wood, { l: L_WOOD, r: [0, -.25, .1] });
-  },
-  gibbet(S, rng) {
-    S.box(.16, 3.0, .16, 0, 1.5, 0, COL.woodD, { l: L_WOOD }); S.box(1.2, .13, .13, .5, 2.9, 0, COL.woodD, { l: L_WOOD }); S.seg([0, 2.2, 0], [.6, 2.85, 0], .05, .05, COL.wood, { l: L_WOOD, n: 4 });
-    S.seg([.95, 2.85, 0], [.95, 2.3, 0], .015, .015, COL.iron, { n: 3 });
-    for (let k = 0; k < 6; k++) { const a = k / 6 * TAU; S.seg([.95 + Math.cos(a) * .2, 2.3, Math.sin(a) * .2], [.95 + Math.cos(a) * .2, 1.5, Math.sin(a) * .2], .014, .014, COL.iron, { n: 3, l: L_METAL, sway: .12 }); }
-    for (const y of [2.3, 1.9, 1.5]) S.add(gTorus(8, .08, 3), { s: .2, p: [.95, y, 0], r: [HPI, 0, 0], c: COL.iron, l: L_METAL, sway: .12 });
-    PROP.skull(S, .95, 1.72, 0, .11, 1);
-  },
   cairn(S, rng) { let y = 0, r = rng.range(.3, .42); for (let k = 0; k < 4; k++) { S.rock(r, rng.range(-.05, .05), y + r * .45, rng.range(-.05, .05), mixC(COL.stoneD, COL.stoneL, rng()), { sq: .6 }); y += r * .72; r *= .74; } },
-  statue(S, rng) {
-    const c = COL.stone, m = () => ({ l: L_ROCK });
-    S.box(1.1, .6, 1.1, 0, .3, 0, COL.stoneD, { l: L_MASON }); S.box(.9, .15, .9, 0, .67, 0, COL.stoneL, { l: L_MASON });
-    for (const s of [-1, 1]) S.box(.2, .75, .22, s * .16, 1.1, 0, c, m());
-    S.box(.62, .7, .34, 0, 1.8, 0, c, m()); S.box(.2, .7, .2, -.42, 1.75, .05, c, { l: L_ROCK, r: [.2, 0, .15] });
-    S.box(.2, .35, .2, .42, 1.95, 0, c, m()); S.box(.1, 1.3, .08, -.5, 1.25, .2, COL.stoneL, m());
-    S.rock(.2, .7, .1, .5, c); S.rock(.16, .5, .08, .75, c);
-  },
   tuft(S, rng) {
     const c = mulC(mixC(COL.tuftA, COL.tuftB, rng() * .6), .8 + .5 * rng());
     for (let k = 0; k < rng.int(3, 5); k++) {
@@ -196,6 +129,252 @@ const PROP = {
     }
   },
 };
+
+// ───────── 조선워치: 전장 공용 헬퍼 (bf_) ─────────
+// 시대(수비 측)·군대(침공군) 색은 src/05-lore.js 의 ERA / ARMY 표에서만 가져온다.
+const bf_OBANG = [C(0x2a5caa), C(0xc23a2a), C(0xe0b030), C(0xe8e4da), C(0x22222a)];
+// 솔잎 뭉치의 미세 발광값. 0보다 크면 지형 덮개(행주산성의 모래)가 나무 위에 쌓이지 않는다. scatterProps 가 전장마다 정한다.
+let bf_leafEmis = 0;
+function bf_style(bio) {
+  const k = bio.era, e = ERA[k] || ERA.joseon, o = { key: k, main: C(e.main), sub: C(e.sub), trim: C(e.trim) };
+  if (k === 'goguryeo') Object.assign(o, { roof: 'gable', tile: C(0x3a3840), post: o.main, band: mixC(o.sub, o.trim, .1), ridge: o.trim, flag: mulC(o.main, 1.15), flag2: o.trim });
+  else if (k === 'goryeo') Object.assign(o, { roof: 'hip', tile: mulC(o.main, .95), post: C(0x7a3326), band: o.sub, ridge: o.trim, flag: mulC(o.main, 1.1), flag2: o.sub });
+  else Object.assign(o, { roof: 'hip', tile: C(0x3a3e48), post: o.sub, band: C(0x2f6f55), ridge: o.trim, flag: mulC(o.main, 1.35), flag2: o.sub });
+  return o;
+}
+function bf_army(bio) {
+  const k = bio.army, a = ARMY[k] || ARMY.wa, o = { key: k, main: C(a.main), sub: C(a.sub), trim: C(a.trim) };
+  if (k === 'sui') Object.assign(o, { flag: o.sub, flag2: o.main, cloth: mulC(o.main, 1.1), stripe: o.sub, mark: o.trim });
+  else if (k === 'tang') Object.assign(o, { flag: mulC(o.main, 1.2), flag2: o.sub, cloth: mulC(o.main, 1.1), stripe: o.sub, mark: o.trim });
+  else if (k === 'mongol') Object.assign(o, { flag: mulC(o.main, 1.15), flag2: o.sub, cloth: o.sub, stripe: o.main, mark: o.trim });
+  else Object.assign(o, { flag: mulC(o.sub, 1.1), flag2: o.trim, cloth: o.trim, stripe: mixC(o.main, o.trim, .1), mark: mixC(o.main, o.trim, .06) });
+  return o;
+}
+function bf_q(S, a, b, c, d, out, col, layer, rough, o) {
+  _sa.set(b[0] - a[0], b[1] - a[1], b[2] - a[2]); _sb.set(c[0] - a[0], c[1] - a[1], c[2] - a[2]); _sn.crossVectors(_sa, _sb);
+  if (_sn.x * out[0] + _sn.y * out[1] + _sn.z * out[2] >= 0) S.quad(a, b, c, d, col, layer, rough, o); else S.quad(a, d, c, b, col, layer, rough, o);
+}
+// 한옥 지붕: 처마가 휘어 오르는 우진각(hip) / 맞배(gable). o = { w, d, h, x, y, z, ry, kind, tile, ridge, eave, lift, rng }
+function bf_roof(S, o) {
+  const a = o.w / 2, b = o.d / 2, h = o.h, gable = o.kind === 'gable', r = gable ? a : Math.max(.12, a - b * .82), lift = o.lift === undefined ? .3 : o.lift;
+  const rng = o.rng, T = new Soup(), UP = [0, 1, 0], ns = o.ns || 6, nt = 3, tile = o.tile, ridge = o.ridge || mulC(tile, 1.5), eave = o.eave || mulC(tile, .55);
+  const yy = (s, t) => h * Math.pow(t, 1.55) + lift * Math.pow(Math.abs(s), 2.4) * (1 - t) * (1 - t);
+  const front = (s, t, sg) => [s * lerp(a, r, t), yy(s, t), sg * b * (1 - t)];
+  const side = (s, t, sg) => [sg * lerp(a, r, t), yy(s, t), s * b * (1 - t)];
+  const shade = j => mulC(tile, (.74 + .2 * j) * (.92 + .16 * rng())), em = o.emis === undefined ? .025 : o.emis, eo = j => ({ emis: o.snow && j === 0 ? 0 : em });
+  for (const sg of [-1, 1]) {
+    for (let i = 0; i < ns; i++) {
+      const s0 = -1 + 2 * i / ns, s1 = -1 + 2 * (i + 1) / ns;
+      for (let j = 0; j < nt; j++) bf_q(T, front(s0, j / nt, sg), front(s1, j / nt, sg), front(s1, (j + 1) / nt, sg), front(s0, (j + 1) / nt, sg), UP, shade(j), L_SLATE, .78, eo(j));
+      const p0 = front(s0, 0, sg), p1 = front(s1, 0, sg);
+      bf_q(T, p0, p1, [p1[0], p1[1] - .13, p1[2] - sg * .05], [p0[0], p0[1] - .13, p0[2] - sg * .05], [0, 0, sg], eave, L_WOOD, .9);
+    }
+    if (!gable) for (let i = 0; i < 4; i++) {
+      const s0 = -1 + i / 2, s1 = -1 + (i + 1) / 2;
+      for (let j = 0; j < nt; j++) bf_q(T, side(s0, j / nt, sg), side(s1, j / nt, sg), side(s1, (j + 1) / nt, sg), side(s0, (j + 1) / nt, sg), UP, shade(j), L_SLATE, .78, eo(j));
+      const p0 = side(s0, 0, sg), p1 = side(s1, 0, sg);
+      bf_q(T, p0, p1, [p1[0] - sg * .05, p1[1] - .13, p1[2]], [p0[0] - sg * .05, p0[1] - .13, p0[2]], [sg, 0, 0], eave, L_WOOD, .9);
+    } else {
+      // 맞배: 박공(옆면 삼각벽)과 박공널
+      const gx = sg * (a - .34), wallC = o.gableCol || mulC(eave, 1.6);
+      bf_q(T, [gx, 0, -b * .8], [gx, 0, b * .8], [gx, h * .86, 0], [gx, h * .86, 0], [sg, 0, 0], wallC, L_WOOD, .95);
+      for (const zs of [-1, 1]) for (let j = 0; j < nt; j++) { const p0 = front(sg, j / nt, zs), p1 = front(sg, (j + 1) / nt, zs); bf_q(T, p0, p1, [p1[0], p1[1] - .16, p1[2]], [p0[0], p0[1] - .16, p0[2]], [sg, 0, 0], eave, L_WOOD, .9); }
+    }
+  }
+  // 용마루와 망와(치미)
+  T.box(r * 2 + .12, .15, .17, 0, h + .03, 0, ridge, { l: L_PLAIN, rough: .8, jit: 0 });
+  for (const sg of [-1, 1]) {
+    T.box(.16, .34, .19, sg * (r + .04), h + .15, 0, ridge, { l: L_PLAIN, rough: .7, jit: 0, r: [0, 0, -sg * .28] });
+    if (!gable) for (const zs of [-1, 1]) { let p = side(zs, 1, sg); p = [p[0], p[1] + .04, p[2]]; for (let j = nt - 1; j >= 0; j--) { const q = side(zs, j / nt, sg); q[1] += .05; T.seg(p, q, .055, .055, ridge, { n: 4, jit: 0, rough: .8 }); p = q; } }
+  }
+  S.merge(T, { p: [o.x || 0, o.y || 0, o.z || 0], ry: o.ry || 0, ao: null });
+}
+// 여장(女墻): 성벽 위의 낮은 담. x0→x1 로 늘어선 타(垛)와 타구.
+function bf_yeojang(S, x0, x1, y, z, col, cap, rng) {
+  const n = Math.max(1, Math.round((x1 - x0) / .82)), p = (x1 - x0) / n;
+  for (let k = 0; k < n; k++) {
+    const x = x0 + (k + .5) * p, c = mulC(col, .88 + .24 * rng());
+    S.box(p - .2, .46, .32, x, y + .23, z, c, { l: L_MASON }); S.box(p - .14, .08, .4, x, y + .5, z, cap, { l: L_MASON });
+  }
+  S.box(x1 - x0, .14, .3, (x0 + x1) / 2, y + .07, z, mulC(col, .8), { l: L_MASON });
+}
+
+Object.assign(PROP, {
+  // 장승: 길가의 나무 수호신. 얼굴은 +z 를 본다.
+  jangseung(S, rng, female) {
+    const w = mulC(COL.wood, .8 + .3 * rng()), hh = rng.range(1.7, 2.15), T = new Soup();
+    T.cyl(.16, hh, 0, hh / 2 - .1, 0, w, { n: 7, l: L_WOOD, rt: 1.15 });
+    T.cyl(.21, .52, 0, hh - .3, 0, mulC(w, 1.15), { n: 7, l: L_WOOD, rt: 1.05 });
+    if (female) { T.cyl(.13, .14, 0, hh + .02, 0, COL.woodD, { n: 6, l: L_WOOD }); T.box(.5, .05, .08, 0, hh + .06, 0, COL.woodD, { l: L_WOOD }); }
+    else { T.box(.66, .07, .2, 0, hh - .02, 0, COL.woodD, { l: L_WOOD }); T.box(.24, .2, .2, 0, hh + .1, 0, COL.woodD, { l: L_WOOD }); }
+    for (const s of [-1, 1]) { T.box(.1, .09, .05, s * .09, hh - .2, .2, C(0xe6dcc0), { jit: 0 }); T.box(.05, .05, .06, s * .09, hh - .2, .21, COL.black, { jit: 0 }); }
+    T.box(.07, .17, .09, 0, hh - .32, .21, mulC(w, .75), { l: L_WOOD });
+    T.box(.22, .07, .05, 0, hh - .48, .2, C(0xe6dcc0), { jit: 0 });
+    T.box(.13, hh * .42, .03, 0, hh * .4, .19, C(0xd8cfb4), { jit: 0 });
+    for (let k = 0; k < 4; k++) T.box(.08, .05, .035, 0, hh * (.25 + k * .09), .195, COL.black, { jit: 0 });
+    S.merge(T, { r: [rng.range(-.07, .07), 0, rng.range(-.09, .09)], ao: [0, .5, .6] });
+  },
+  // 솟대: 긴 장대 끝의 나무 새와 오방색 천.
+  sotdae(S, rng, h) {
+    h = h || rng.range(2.6, 3.5); const w = mulC(COL.woodD, .95 + .3 * rng()), lx = rng.range(-.05, .05) * h;
+    S.seg([0, -.1, 0], [lx, h, 0], .055, .035, w, { l: L_WOOD, n: 5 });
+    const bird = (x, y, z, ry, s) => {
+      const T = new Soup(), c = mulC(COL.woodL, .85 + .25 * rng());
+      T.ico(.15 * s, 0, 0, 0, c, { sc: [2.0, .75, .8], d: 1, l: L_WOOD });
+      T.seg([.2 * s, .03 * s, 0], [.36 * s, .22 * s, 0], .05 * s, .04 * s, c, { l: L_WOOD, n: 4 }); T.ico(.065 * s, .39 * s, .25 * s, 0, c, { d: 0 });
+      T.seg([.43 * s, .25 * s, 0], [.58 * s, .22 * s, 0], .022 * s, .008 * s, COL.woodD, { n: 3 });
+      T.seg([-.24 * s, .01 * s, 0], [-.52 * s, .12 * s, 0], .06 * s, .02 * s, mulC(c, .8), { n: 3, l: L_WOOD });
+      S.merge(T, { p: [x, y, z], ry, ao: null });
+    };
+    bird(lx, h + .1, 0, rng() * TAU, 1.2);
+    if (rng() < .55) { const y = h * .78, a = rng() * TAU, dx = Math.cos(a) * .42, dz = Math.sin(a) * .42; S.seg([lx * .78 - dx, y, -dz], [lx * .78 + dx, y + .05, dz], .03, .025, w, { l: L_WOOD, n: 4 }); bird(lx * .78 + dx, y + .14, dz, rng() * TAU, .85); }
+    const y0 = h * .52;
+    for (let k = 0; k < 5; k++) { const a = k / 5 * TAU + rng(), x = lx * .5 + Math.cos(a) * .07, z = Math.sin(a) * .07, wx = -Math.sin(a) * .05, wz = Math.cos(a) * .05, len = rng.range(.45, .8); ribbon(S, [x - wx, y0, z - wz], [x + wx, y0, z + wz], [x + wx, y0 - len, z + wz], [x - wx, y0 - len, z - wz], bf_OBANG[k], [.1, .1, .9, .9]); }
+  },
+  // 돌탑: 소원을 빌며 쌓아 올린 원뿔 돌무더기.
+  doltap(S, rng, hh) {
+    hh = hh || rng.range(1.0, 1.7); const R = hh * .46; let y = 0;
+    for (let L = 0; y < hh; L++) {
+      const r = Math.max(.06, R * (1 - y / hh * .9)), n = r < .14 ? 1 : Math.round(r * 13);
+      for (let k = 0; k < n; k++) { const a = k / n * TAU + L * .7, q = rng.range(.12, .19), d = n > 1 ? r - q * .5 : 0; S.rock(q, Math.cos(a) * d, y + q * .45, Math.sin(a) * d, mixC(COL.stoneD, COL.stoneL, rng()), { d: 0, sq: .72 }); }
+      if (r > .3) S.cyl(r * .72, .2, 0, y + .1, 0, mulC(COL.stoneD, .8), { n: 7, l: L_ROCK });
+      y += .19;
+    }
+    S.rock(.12, 0, y + .04, 0, COL.stoneL, { d: 0, sq: 1.3 });
+  },
+  // 초가: 흙벽과 둥근 볏짚 지붕. o.burnt 면 불탄 집터.
+  choga(S, rng, o = {}) {
+    const burnt = o.burnt, wall = burnt ? C(0x2c2623) : mulC(C(0xbfae88), .85 + .2 * rng()), wd = burnt ? mulC(COL.bark, .55) : COL.woodD, th = mulC(COL.thatch, .95 + .25 * rng());
+    const W = o.w || 2.5, D = 1.6, H = burnt ? .62 : 1.0, y0 = .14;
+    S.box(W + .5, .16, D + .7, 0, .06, .1, mixC(COL.stoneD, COL.stone, .5), { l: L_MASON });
+    S.box(W, H, D, 0, y0 + H / 2, 0, wall, { l: L_PLAIN, rough: .96 });
+    for (const x of [-W / 2, -W / 6, W / 6, W / 2]) for (const z of [-D / 2, D / 2]) S.box(.1, (burnt ? rng.range(.7, 1.5) : H + .04), .1, x, y0 + (burnt ? .5 : H / 2), z, wd, { l: L_WOOD, r: burnt ? [rng.range(-.2, .2), 0, rng.range(-.2, .2)] : undefined });
+    S.box(.44, H * .72, .05, -W / 3, y0 + H * .36, D / 2 + .01, COL.black, { jit: 0 }); S.box(.3, .28, .05, W / 3, y0 + H * .6, D / 2 + .01, COL.black, { jit: 0 });
+    S.box(W * .5, .1, .44, 0, .3, D / 2 + .26, burnt ? wd : COL.wood, { l: L_WOOD });
+    if (!burnt) {
+      S.box(W + .06, .09, D + .06, 0, y0 + H, 0, wd, { l: L_WOOD });
+      S.cyl(W * .74, .16, 0, y0 + H + .08, 0, mulC(th, .7), { n: 10, rz: D * .96, l: L_THATCH, jit: .03 });
+      S.add(gDome(10, 3), { s: [W * .7, .82, D * .9], p: [0, y0 + H + .1, 0], c: th, l: L_THATCH, jit: .05, uvs: .5, cf: v => .7 + .3 * sat(v.y / .82) });
+      for (const x of [-W * .3, 0, W * .3]) S.seg([x, y0 + H + .2, -D * .82], [x, y0 + H + .2, D * .82], .022, .022, COL.rope, { n: 3, jit: 0 });
+    } else {
+      for (let k = 0; k < 5; k++) { const x = -W / 2 + k * W / 4 + rng.range(-.1, .1); S.seg([x, y0 + H, -D / 2], [x + rng.range(-.3, .3), y0 + H + rng.range(.2, .8), rng.range(-.2, .3)], .05, .04, wd, { l: L_WOOD, n: 4, emis: k & 1 ? .03 : 0 }); }
+      S.ico(.6, rng.range(-.3, .3), y0 + .2, 0, C(0x231d1a), { sc: [1.5, .45, 1], d: 1, l: L_THATCH });
+      for (let k = 0; k < 4; k++) S.ico(.07, rng.range(-W * .4, W * .4), y0 + rng.range(.35, .7), rng.range(-.5, .5), [.8, .22, .03], { d: 0, emis: .22, jit: 0 });
+    }
+  },
+  // 볏섬(가마니) 더미.
+  bales(S, rng) {
+    const c = mulC(COL.thatch, 1.0 + .2 * rng());
+    for (const [x, y, z] of [[0, .2, 0], [.03, .2, .44], [0, .56, .22]]) { S.cyl(.2, .62, x, y, z, mulC(c, .9 + .2 * rng()), { n: 7, l: L_THATCH, r: [0, 0, HPI] }); for (const dx of [-.18, .18]) S.cyl(.208, .04, x + dx, y, z, COL.rope, { n: 7, r: [0, 0, HPI], jit: 0 }); }
+  },
+  // 녹각(거마): 길을 막는 깎은 말뚝 울타리.
+  nokgak(S, rng, len = 2.4) {
+    S.seg([-len / 2, .42, 0], [len / 2, .42, 0], .06, .06, COL.woodD, { l: L_WOOD, n: 5 });
+    for (let x = -len / 2 + .15; x < len / 2; x += .3) for (const s of [-1, 1]) { const j = rng.range(-.06, .06); S.seg([x + j, -.05, -s * .42], [x + j, .9, s * .46], .045, .012, mulC(COL.wood, .65 + .35 * rng()), { l: L_WOOD, n: 4 }); }
+  },
+  // 싸움의 흔적: 땅에 박힌 화살, 부러진 창, 버려진 방패.
+  warDebris(S, rng, ar) {
+    for (let k = 0, n = rng.int(2, 5); k < n; k++) {
+      const x = rng.range(-.45, .45), z = rng.range(-.45, .45), a = rng() * TAU, t = rng.range(.15, .55), l = rng.range(.42, .62), dx = Math.cos(a) * Math.sin(t), dz = Math.sin(a) * Math.sin(t), dy = Math.cos(t);
+      S.seg([x, -.03, z], [x + dx * l, dy * l, z + dz * l], .013, .013, COL.woodL, { n: 3, jit: 0 });
+      S.seg([x + dx * l * .78, dy * l * .78, z + dz * l * .78], [x + dx * l, dy * l, z + dz * l], .04, .03, mulC(ar.flag2, .9), { n: 3, jit: 0 });
+    }
+    if (rng() < .55) { const a = rng() * TAU, l = rng.range(.9, 1.4), x = rng.range(-.3, .3), z = rng.range(-.3, .3), e = [x + Math.cos(a) * l, .05, z + Math.sin(a) * l]; S.seg([x, .04, z], e, .026, .026, COL.woodD, { l: L_WOOD, n: 4 }); S.seg(e, [e[0] + Math.cos(a) * .24, .05, e[2] + Math.sin(a) * .24], .04, .004, COL.steel, { l: L_METAL, n: 4, rough: .4 }); }
+    if (rng() < .4) { const T = new Soup(); T.cyl(.27, .05, 0, 0, 0, mulC(ar.cloth, .75), { n: 9, l: L_WOOD }); T.cyl(.09, .05, 0, .035, 0, ar.stripe, { n: 6, l: L_METAL, rough: .5 }); S.merge(T, { p: [rng.range(-.3, .3), .09, rng.range(-.3, .3)], r: [rng.range(-.35, .35), rng() * TAU, rng.range(-.2, .2)], ao: null }); }
+  },
+  // 군막: 수·당은 네모 군막, 몽골은 게르, 왜는 진막(장막)과 노보리.
+  tent(S, rng, ar) {
+    if (ar.key === 'mongol') {
+      S.cyl(.95, .78, 0, .37, 0, mulC(ar.cloth, .9), { n: 10, l: L_CLOTH }); S.cyl(.97, .11, 0, .66, 0, ar.stripe, { n: 10, l: L_CLOTH });
+      S.cone(1.06, .58, 0, 1.04, 0, mulC(ar.cloth, .78), { n: 10, l: L_CLOTH }); S.cyl(.22, .1, 0, 1.3, 0, ar.mark, { n: 8, l: L_WOOD });
+      S.box(.42, .6, .08, 0, .3, .94, ar.mark, { l: L_WOOD });
+      for (let k = 0; k < 5; k++) { const a = k / 5 * TAU + .3; S.seg([Math.cos(a) * .98, .72, Math.sin(a) * .98], [Math.cos(a) * 1.5, -.02, Math.sin(a) * 1.5], .012, .012, COL.rope, { n: 3, jit: 0 }); }
+    } else if (ar.key === 'wa') {
+      const cur = (x, z, ry, w) => { const T = new Soup(); clothPanel(T, { x0: -w / 2, x1: w / 2, yTop: 1.2, len: 1.08, z: 0, col: ar.cloth, col2: ar.mark, rng, sway: .12, rag: 0, nx: 6, ny: 5 }); T.box(w, .1, .03, 0, 1.16, 0, ar.stripe, { jit: 0 }); T.seg([-w / 2, 1.24, 0], [w / 2, 1.24, 0], .02, .02, COL.woodD, { n: 3 }); S.merge(T, { p: [x, 0, z], ry, ao: null }); };
+      cur(0, -.8, 0, 2.2); cur(-1.1, 0, HPI, 1.6); cur(1.1, 0, HPI, 1.6);
+      for (const [x, z] of [[-1.1, -.8], [1.1, -.8], [-1.1, .8], [1.1, .8]]) S.seg([x, -.05, z], [x, 1.42, z], .04, .03, COL.woodD, { l: L_WOOD, n: 4 });
+      S.box(.6, .22, .36, 0, .11, -.2, COL.woodD, { l: L_WOOD });
+    } else {
+      S.box(1.5, .86, 1.5, 0, .42, 0, mulC(ar.cloth, .92), { l: L_CLOTH }); S.box(1.55, .12, 1.55, 0, .82, 0, ar.stripe, { l: L_CLOTH });
+      S.cone(1.26, .82, 0, 1.28, 0, mulC(ar.cloth, .75), { n: 4, l: L_CLOTH, r: [0, PI / 4, 0] }); S.sph(.09, 0, 1.74, 0, ar.stripe, { w: 6, h: 4 });
+      S.box(.42, .62, .05, 0, .3, .76, COL.black, { jit: 0 });
+      for (const [x, z] of [[-1, -1], [1, -1], [-1, 1], [1, 1]]) S.seg([x * .76, .84, z * .76], [x * 1.25, -.02, z * 1.25], .012, .012, COL.rope, { n: 3, jit: 0 });
+    }
+  },
+  // 좁고 긴 세로 깃발(노보리·기치). 깃대 아래가 원점.
+  nobori(S, rng, col, col2, h = 3.0) {
+    S.seg([0, -.1, 0], [0, h, 0], .04, .03, COL.woodD, { l: L_WOOD, n: 4 }); S.seg([-.03, h - .08, 0], [.46, h - .08, 0], .022, .022, COL.woodD, { n: 3 });
+    clothPanel(S, { x0: .04, x1: .44, yTop: h - .1, len: h * .62, z: 0, col, col2, rng, sway: .5, rag: .15, nx: 3, ny: 8 });
+  },
+  // 술데(몽골의 말총 깃대). 침공군의 술데는 검은 말총이다.
+  sulde(S, rng, col, h = 3.0) {
+    S.seg([0, -.1, 0], [0, h, 0], .045, .03, COL.woodD, { l: L_WOOD, n: 4 }); S.cone(.05, .3, 0, h + .14, 0, COL.steel, { n: 4, l: L_METAL, rough: .4 });
+    S.cyl(.17, .06, 0, h - .04, 0, COL.iron, { n: 8, l: L_METAL });
+    for (let k = 0; k < 10; k++) { const a = k / 10 * TAU, x = Math.cos(a) * .15, z = Math.sin(a) * .15, wx = -Math.sin(a) * .06, wz = Math.cos(a) * .06, len = rng.range(.6, .85); ribbon(S, [x - wx, h - .06, z - wz], [x + wx, h - .06, z + wz], [x * 1.5 + wx * .5, h - .06 - len, z * 1.5 + wz * .5], [x * 1.5 - wx * .5, h - .06 - len, z * 1.5 - wz * .5], mulC(col, .8 + .3 * rng()), [.1, .1, .8, .8]); }
+  },
+  // 군기: 군대에 따라 깃발 모양이 다르다.
+  armyFlag(S, rng, ar, h) {
+    if (ar.key === 'mongol' && rng() < .6) PROP.sulde(S, rng, C(0x211e1d), h || 3.0);   // 전시의 술데는 검은 말총
+    else if (ar.key === 'wa') PROP.nobori(S, rng, rng() < .5 ? ar.flag : ar.flag2, rng() < .5 ? ar.main : ar.mark, h || 3.1);
+    else PROP.banner(S, rng, ar.flag, h || 2.8, ar.flag2);
+  },
+  // 비석: 거북 받침(귀부) 위의 빗돌.
+  biseok(S, rng) {
+    S.ico(.5, 0, .16, 0, COL.stoneD, { sc: [1.0, .42, 1.35], d: 1, l: L_ROCK }); S.ico(.17, 0, .26, .7, COL.stoneD, { d: 1, l: L_ROCK });
+    S.box(.5, 1.25, .16, 0, .95, 0, COL.stone, { l: L_ROCK, jit: .02 }); S.box(.7, .26, .28, 0, 1.68, 0, COL.stoneL, { l: L_ROCK });
+    S.box(.32, .8, .02, 0, .98, .09, mulC(COL.stoneD, .6), { jit: 0 });
+  },
+  // 삼층석탑.
+  seoktap(S, rng) {
+    const c = () => mixC(COL.stone, COL.stoneL, rng() * .7);
+    S.box(1.7, .22, 1.7, 0, .11, 0, COL.stoneD, { l: L_MASON }); S.box(1.3, .4, 1.3, 0, .42, 0, c(), { l: L_ROCK }); S.box(1.5, .1, 1.5, 0, .67, 0, c(), { l: L_ROCK });
+    let y = .72, w = .82;
+    for (let k = 0; k < 3; k++) {
+      const bh = k ? .3 : .62; S.box(w, bh, w, 0, y + bh / 2, 0, c(), { l: L_ROCK }); y += bh;
+      S.box(w * 1.28, .08, w * 1.28, 0, y + .04, 0, c(), { l: L_ROCK });
+      S.add(gCyl(4, .5), { s: [w * 1.3, .2, w * 1.3], p: [0, y + .18, 0], r: [0, PI / 4, 0], c: c(), l: L_ROCK });
+      y += .28; w *= .8;
+    }
+    S.cyl(.1, .14, 0, y + .07, 0, c(), { n: 6, l: L_ROCK }); S.sph(.11, 0, y + .22, 0, c(), { w: 6, h: 4, l: L_ROCK }); S.cone(.05, .3, 0, y + .45, 0, COL.stoneL, { n: 4 });
+  },
+  // 고구려 돌무지무덤(적석총).
+  jeokseok(S, rng) {
+    const N = 5;
+    for (let k = 0; k < N; k++) { const w = 3.5 - k * .52; S.box(w, .4, w, 0, k * .36 + .18, 0, mixC(COL.stoneD, COL.stone, .25 + .55 * rng()), { l: L_MASON, jit: .03 }); }
+    S.box(1.0, .36, 1.0, 0, N * .36 + .16, 0, COL.stoneL, { l: L_MASON });
+    for (const [x, z, r] of [[-1.1, 1.85, .25], [.2, 1.85, .25], [1.3, 1.85, .25], [1.85, .9, -.25], [1.85, -.4, -.25]]) S.box(r > 0 ? .5 : .22, 1.0, r > 0 ? .22 : .5, x, .42, z, COL.stone, { l: L_ROCK, r: r > 0 ? [-.3, 0, 0] : [0, 0, .3] });
+  },
+  // 서낭당: 당산나무와 돌무더기, 금줄과 오방색 천.
+  seonang(S, rng, bare) {
+    const T = new Soup(); if (bare) PROP.tree(T, rng, 4.4); else PROP.broadleaf(T, rng, 4.6); S.merge(T, { ao: null });
+    S.ico(1.0, 0, .08, 0, COL.stoneD, { sc: [1.25, .5, 1.25], d: 1, l: L_ROCK });
+    for (let k = 0; k < 18; k++) { const a = rng() * TAU, d = rng.range(.45, 1.3), r = rng.range(.14, .28); S.rock(r, Math.cos(a) * d, r * .4 + Math.max(0, 1.3 - d) * .38, Math.sin(a) * d, mixC(COL.stoneD, COL.stoneL, rng()), { d: 0, sq: .8 }); }
+    const y0 = 1.5;
+    for (let k = 0; k < 12; k++) { const a = k / 12 * TAU, x = Math.cos(a) * .3, z = Math.sin(a) * .3, wx = -Math.sin(a) * .07, wz = Math.cos(a) * .07, len = rng.range(.35, .75); ribbon(S, [x - wx, y0, z - wz], [x + wx, y0, z + wz], [x * 1.2 + wx, y0 - len, z * 1.2 + wz], [x * 1.2 - wx, y0 - len, z * 1.2 - wz], bf_OBANG[k % 5], [.1, .1, .9, .9]); }
+    S.cyl(.31, .05, 0, y0, 0, COL.rope, { n: 8, jit: 0 });
+  },
+  // 나룻배.
+  boat(S, rng) {
+    const w = mulC(COL.wood, .8 + .3 * rng()), T = new Soup();
+    T.box(1.9, .07, .5, 0, .06, 0, mulC(w, .8), { l: L_WOOD });
+    for (const s of [-1, 1]) T.box(2.1, .3, .06, 0, .2, s * .3, w, { l: L_WOOD, r: [s * .32, 0, 0] });
+    for (const s of [-1, 1]) T.box(.07, .32, .66, s * 1.0, .22, 0, mulC(w, .9), { l: L_WOOD, r: [0, 0, -s * .45] });
+    T.box(.1, .05, .6, .3, .26, 0, COL.woodD, { l: L_WOOD });
+    T.seg([-.7, .34, .1], [.9, .28, .5], .025, .02, COL.woodL, { l: L_WOOD, n: 4 });
+    S.merge(T, { r: [rng.range(-.05, .05), 0, rng.range(-.12, .12)], ao: [0, .3, .7] });
+  },
+  // 토산: 공성군이 성벽보다 높이 쌓아 올린 흙산(안시성).
+  tosan(S, rng, ar) {
+    const RX = 3.1, RZ = 2.5, HY = 1.7;
+    S.ico(1, 0, .05, 0, mulC(COL.earth, 1.1), { sc: [RX, HY, RZ], d: 2, l: L_DIRT, jit: .04, cf: v => .7 + .3 * sat(v.y / HY) });
+    for (const y of [.35, .85, 1.3]) {
+      const k = Math.sqrt(Math.max(0, 1 - (y / HY) * (y / HY))); let prev = null;
+      for (let j = 0; j <= 12; j++) { const a = j / 12 * TAU, p = [Math.cos(a) * RX * k, y, Math.sin(a) * RZ * k]; S.box(.1, .5, .1, p[0], p[1] + .1, p[2], COL.woodD, { l: L_WOOD }); if (prev) S.seg([prev[0], prev[1] + .22, prev[2]], [p[0], p[1] + .22, p[2]], .045, .045, mulC(COL.wood, .7 + .3 * rng()), { l: L_WOOD, n: 4 }); prev = p; }
+    }
+    for (const s of [-1, 1]) { const T = new Soup(); PROP.armyFlag(T, rng, ar, 2.6); S.merge(T, { p: [s * .7, HY - .1, rng.range(-.3, .3)], ry: rng() * TAU, ao: null }); }
+  },
+});
+
 
 function buildBridge(B) {
   const i = B.ci0, x = B.px[i], z = B.pz[i], ang = Math.atan2(B.tz[i], B.tx[i]), rng = B.rng, T = new Soup();
@@ -237,81 +416,171 @@ function buildPads(B) {
   }
 }
 
+
+// 산성의 정문과 봉수대. 시대(bio.era)에 따라 문루 지붕·기둥·깃발이 달라진다.
+// - 고구려: 붉은 기둥의 맞배지붕, 금빛 치미 / 고려: 비취 기와 우진각 / 조선: 검은 기와 우진각과 단청 띠
+// - 행주산성(dunes)은 사료대로 양옆 성벽이 토성 + 목책이다.
 function buildKeep(B) {
-  const rng = B.rng, kx = B.kx, ky = B.keepY, oz = -12.35;
+  const rng = B.rng, kx = B.kx, ky = B.keepY, oz = -12.35, bio = B.bio, E = bf_style(bio);
   const TG = new Soup(), TT = new Soup();
   const st = COL.stone, sdk = COL.stoneD, sl = COL.stoneL;
   const mc = () => mixC(sdk, sl, rng() * .8 + .1);
   const mas = (S, w, h, d, x, y, z, c, o = {}) => S.box(w, h, d, x, y, z, c || mc(), Object.assign({ l: L_MASON }, o));
-  mas(TG, 10.6, .5, 6.0, 0, -.2, -2.9, sdk);
-  for (let k = 0; k < 9; k++) mas(TG, 1.1, .16, .55, -4.4 + k * 1.1, .1, .25, mc());
-  const tower = (x, z, w, h, broken) => {
-    mas(TG, w + .34, .6, w + .34, x, .3, z, sdk); mas(TG, w, h, w, x, h / 2, z, st, { jit: .03 });
-    for (let c = 0; c < 4; c++) mas(TG, w + .04, .22, w + .04, x, .9 + c * (h - 1.2) / 3.2, z, mc());
-    mas(TG, w + .36, .3, w + .36, x, h + .12, z, sl);
-    for (const [dx, dz] of [[-1, -1], [0, -1], [1, -1], [-1, 0], [1, 0], [-1, 1], [0, 1], [1, 1]]) { if (broken && rng() < .55) continue; mas(TG, .42, broken ? rng.range(.2, .5) : .48, .42, x + dx * (w / 2 - .05), h + .5, z + dz * (w / 2 - .05)); }
-    TG.box(.14, .8, .1, x, h * .62, z + w / 2 + .01, COL.black, { jit: 0 }); TG.box(.1, .8, .14, x + w / 2 + .01, h * .5, z, COL.black, { jit: 0 });
-    if (broken) for (let k = 0; k < 3; k++) TG.rock(rng.range(.22, .4), x + rng.range(-1.2, 1.4), .15, z + rng.range(.9, 1.6), mc());
+  const WH = 3.0, WZ = -.95, WT = 1.3, plaster = mulC(C(0xd8ccb0), .9), snow = bio.key === 'frost';
+  const flag = (S, x, y, z, h, ry) => { const T = new Soup(); PROP.banner(T, rng, E.flag, h, E.flag2); S.merge(T, { p: [x, y, z], ry: ry || 0, ao: null }); };
+
+  // 기단, 문 앞 디딤돌
+  mas(TG, 11.4, .5, 6.0, -.3, -.2, -2.9, sdk);
+  for (let k = 0; k < 5; k++) mas(TG, 1.1, .16, .55, -2.2 + k * 1.1, .1, .25, mc());
+
+  // 체성(석축 성벽)과 여장
+  const wallBlock = (x, w, top, g) => {
+    mas(TG, w, top - g + .8, WT, x, (top + g - .8) / 2, WZ, rng() < .5 ? st : mc());
+    mas(TG, w + .02, .7, WT + .22, x, g + .2, WZ, sdk);
+    mas(TG, w + .02, .16, WT + .1, x, top + .08, WZ, sl);
   };
-  tower(2.3, -.75, 1.95, 3.9, true);
-  mas(TG, 2.7, 1.25, 1.3, 0, 3.2, -.75, st);
-  for (let k = 0; k <= 8; k++) { const th = PI * k / 8; mas(TG, .4, .3, 1.4, Math.cos(th) * 1.12, 1.5 + Math.sin(th) * 1.12, -.75, sl, { r: [0, 0, th - HPI] }); }
-  for (const s of [-1, 1]) { mas(TG, .5, .9, 1.3, s * 1.12, 2.3, -.75, st); mas(TG, .3, 1.5, 1.34, s * 1.2, .75, -.75, sl); }
-  TG.box(2.2, 2.7, .2, 0, 1.35, -1.3, COL.black, { jit: 0 }); TG.box(2.2, .2, 1.2, 0, 2.75, -.8, COL.black, { jit: 0 });
-  for (const bx of [-.8, -.4, 0, .4, .8]) { TG.box(.07, .95, .07, bx, 2.15, -.3, COL.iron, { l: L_METAL }); TG.cone(.06, .16, bx, 1.6, -.3, COL.iron, { n: 4, l: L_METAL, r: [PI, 0, 0] }); }
-  for (const by of [1.95, 2.4]) TG.box(2.0, .07, .07, 0, by, -.3, COL.iron, { l: L_METAL });
-  for (const bx of [-1.02, -.34, .34, 1.02]) mas(TG, .42, .44, .42, bx, 4.05, -.3);
-  mas(TG, 2.9, .2, 1.5, 0, 3.9, -.75, sl);
-  const run = (x0, dir, hs) => hs.forEach((h, k) => {
-    const x = x0 + dir * (k + .5) * 1.35; mas(TG, 1.35, h, .95, x, h / 2, -.95, k & 1 ? st : mc());
-    if (h > 2.4) { mas(TG, 1.45, .2, 1.1, x, h + .1, -.95, sl); for (const dx of [-.4, .4]) mas(TG, .4, .42, .3, x + dx, h + .4, -.55); }
-    else for (let j = 0; j < 3; j++) if (rng() < .7) mas(TG, rng.range(.3, .55), rng.range(.2, .6), .9, x + rng.range(-.4, .4), h + .15, -.95);
-    if (h < 1.6) for (let j = 0; j < 3; j++) TG.rock(rng.range(.2, .42), x + rng.range(-.7, .7), .12, rng.range(-.2, .9) - .5, mc());
-  });
-  run(-3.3, -1, [3.1, 3.1, 2.3, 1.3, .6]); run(3.3, 1, [3.0, 2.0, 1.1]);
-  for (let k = 0; k < 5; k++) { const h = [3.4, 2.4, 3.6, 1.6, 2.8][k], x = -4.7 + k * 1.3; mas(TG, 1.3, h, .7, x, h / 2, -5.3); if (h > 3) TG.box(.36, 1.0, .74, x, h * .62, -5.3, COL.black, { jit: 0 }); }
-  mas(TG, .7, 2.6, 3.4, -5.0, 1.3, -3.4); mas(TG, .7, 1.2, 1.0, -5.0, .6, -1.5);
-  for (let k = 0; k < 4; k++) TG.seg([-4.6, 2.5 - k * .12, -4.9 + k * .7], [-1.6 + rng() * .8, 1.2 + rng(), -4.6 + k * .7], .08, .07, COL.woodD, { l: L_WOOD, n: 4 });
-  PROP.barrel(TG, -3.6, .05, -2.2, 1.1, rng); PROP.barrel(TG, -3.1, .05, -2.6, 1, rng); PROP.crate(TG, -3.9, .05, -3.2, .55, rng, .4);
-  clothPanel(TG, { x0: 1.85, x1: 2.75, yTop: 3.2, len: 1.6, z: .25, col: COL.clothR, col2: mulC(COL.gold, .6), rng, sway: .5, rag: .7 });
-  for (const s of [-1, 1]) { TG.seg([s * 1.32, 1.9, -.08], [s * 1.32, 2.1, .32], .035, .03, COL.iron, { l: L_METAL, n: 4 }); TG.cyl(.09, .14, s * 1.32, 2.14, .34, COL.iron, { n: 6, l: L_METAL, rt: 1.4 }); B.fires.push({ x: kx + s * 1.32, y: ky + 2.3, z: oz + .34, size: .42, type: 'sconce' }); }
-  TG.cyl(1.5, 2.4, 2.4, 1.2, -4.2, sdk, { n: 8, l: L_MASON, rt: .92 });
-  for (let k = 0; k < 8; k++) { const a = (k + .5) / 8 * TAU, h = rng.range(.2, 1.3); if (rng() < .3) continue; mas(TG, .9, h, .4, 2.4 + Math.cos(a) * 1.2, 2.4 + h / 2, -4.2 + Math.sin(a) * 1.2, null, { r: [0, -a + HPI, 0] }); }
-  const bx = -2.6, bz = -.95, bh = 7.3;
-  TT.cyl(1.9, 1.3, bx, .65, bz, sdk, { n: 8, l: L_MASON, rt: .84 });
-  TT.cyl(1.52, bh, bx, bh / 2, bz, st, { n: 8, l: L_MASON, rt: .9, jit: .03 });
-  for (let c = 0; c < 6; c++) TT.cyl(1.54 - c * .027, .2, bx, 1.7 + c * 1.0, bz, mc(), { n: 8, l: L_MASON });
-  TT.cyl(1.42, .55, bx, bh - .15, bz, sl, { n: 8, l: L_MASON, rt: 1.26 });
-  TT.cyl(1.82, .22, bx, bh + .22, bz, st, { n: 8, l: L_MASON });
-  for (let k = 0; k < 8; k++) { const a = (k + .5) / 8 * TAU; if (k === 1) continue; mas(TT, .6, .5, .32, bx + Math.cos(a) * 1.6, bh + .58, bz + Math.sin(a) * 1.6, null, { r: [0, -a + HPI, 0] }); }
-  for (let k = 0; k < 4; k++) { const a = k / 4 * TAU + .4; TT.box(.12, .9, .12, bx + Math.cos(a) * 1.45, bh * (.4 + (k & 1) * .22), bz + Math.sin(a) * 1.45, COL.black, { jit: 0, r: [0, -a, 0] }); }
-  for (let k = 0; k < 5; k++) { const a = k / 5 * TAU + .2; TT.seg([bx + Math.cos(a) * 1.4, bh - .55, bz + Math.sin(a) * 1.4], [bx + Math.cos(a) * 2.2, bh - .4, bz + Math.sin(a) * 2.2], .07, .06, COL.woodD, { l: L_WOOD, n: 4 }); }
-  TT.cyl(.6, .55, bx, bh + .6, bz, sdk, { n: 8, l: L_MASON });
-  TT.cyl(.72, .4, bx, bh + 1.06, bz, COL.iron, { n: 8, l: L_METAL, rt: 1.4, rough: .7 });
-  for (let k = 0; k < 4; k++) { const a = k / 4 * TAU + .5; TT.seg([bx + Math.cos(a) * .72, bh + .35, bz + Math.sin(a) * .72], [bx + Math.cos(a) * .96, bh + 1.22, bz + Math.sin(a) * .96], .04, .04, COL.iron, { l: L_METAL, n: 4 }); }
-  TT.cyl(.9, .1, bx, bh + 1.24, bz, COL.ember, { n: 8, emis: .5, jit: 0 });
-  for (let k = 0; k < 4; k++) { const a = k * 1.3; TT.seg([bx + Math.cos(a) * .7, bh + 1.28, bz + Math.sin(a) * .7], [bx - Math.cos(a) * .6, bh + 1.48, bz - Math.sin(a) * .6], .1, .09, mulC(COL.bark, .7), { l: L_WOOD, n: 5, emis: .05 }); }
-  clothPanel(TT, { x0: bx - .45, x1: bx + .45, yTop: 5.2, len: 2.3, z: bz + 1.5, col: COL.clothR, col2: mulC(COL.gold, .6), rng, sway: .45 });
+  for (const s of [-1, 1]) {
+    for (let k = 0; k < 3; k++) wallBlock(s * (1.65 + (k + .5) * 1.22), 1.22, WH, 0);
+    bf_yeojang(TG, s > 0 ? 1.8 : -5.31, s > 0 ? 5.31 : -1.8, WH + .16, WZ + WT / 2 - .18, st, sl, rng);
+  }
+  // 능선을 따라 이어지는 양옆 성벽 — 타워 터·개울·길을 만나면 멈춘다
+  const wood = bio.key === 'dunes', Z = oz + WZ; let wx0 = kx - 5.31, wx1 = kx + 5.31;
+  for (const s of [-1, 1]) {
+    let top = WH, endX = 5.31, endG = 0;
+    for (let k = 0; k < 8; k++) {
+      const w = 1.3, lx = s * (5.31 + (k + .5) * w), X = kx + lx;
+      if (Math.abs(X) > BH - 1.2) break;
+      if (B.pads.some(p => Math.hypot(p.x - X, p.z - Z) < 2.8) || B.dStrAt(X, Z) < 2.5 || B.dRoadAt(X, Z) < ROAD_HALF + 1.5) break;
+      const ha = B.heightAt(X - w / 2, Z) - ky, hb = B.heightAt(X + w / 2, Z) - ky, hc = B.heightAt(X, Z - .5) - ky, g = Math.max(ha, hb, hc), g0 = Math.min(ha, hb, B.heightAt(X, Z + .6) - ky);
+      if (wood) {
+        top = Math.max(g + 2.0, top - .35);
+        TG.box(w + .04, g + .55 - (g0 - .9), WT + 1.0, lx, (g + .55 + g0 - .9) / 2, WZ, mulC(COL.earth, .9 + .2 * rng()), { l: L_DIRT, jit: .04 });
+        for (let j = 0; j < 5; j++) { const x = lx - w / 2 + (j + .5) * w / 5, hh = top - g - .4 + rng.range(-.12, .12), c = mulC(COL.wood, .65 + .35 * rng()); TG.cyl(.125, hh, x, g + .45 + hh / 2, WZ + rng.range(-.03, .03), c, { n: 6, l: L_WOOD }); TG.cone(.125, .28, x, g + .45 + hh + .14, WZ, mulC(c, 1.15), { n: 6, l: L_WOOD }); }
+        TG.box(w, .09, .08, lx, g + 1.3, WZ + .15, COL.woodD, { l: L_WOOD });
+      } else {
+        top = Math.max(g + 1.6, top - .3);
+        wallBlock(lx, w, top, g0); bf_yeojang(TG, lx - w / 2, lx + w / 2, top + .16, WZ + WT / 2 - .18, st, sl, rng);
+      }
+      endX = 5.31 + (k + 1) * w; endG = g0;
+      if (s < 0) wx0 = X - w / 2; else wx1 = X + w / 2;
+      if (k === 2 || k === 6) flag(TG, lx, top + (wood ? -.3 : .16), WZ - .25, 2.3, rng.range(-.3, .3));
+    }
+    for (let j = 0; j < 4; j++) TG.rock(rng.range(.25, .5), s * (endX + rng.range(.1, .9)), endG + .15, WZ + rng.range(-.5, .5), mc());
+  }
+  B.keepWall = { x0: wx0, x1: wx1, z: Z };
+
+  // 홍예문(무지개문)
+  const GZ = -.75, GT = 1.5;
+  for (let k = 0; k <= 8; k++) { const th = PI * k / 8; mas(TG, .4, .3, GT + .1, Math.cos(th) * 1.12, 1.5 + Math.sin(th) * 1.12, GZ, sl, { r: [0, 0, th - HPI] }); }
+  for (const s of [-1, 1]) { mas(TG, .5, .95, GT, s * 1.12, 2.32, GZ, st); mas(TG, .3, 1.5, GT + .04, s * 1.2, .75, GZ, sl); mas(TG, .52, 3.3, GT, s * 1.56, 1.65, GZ, st); }
+  mas(TG, 3.6, .72, GT, 0, 2.94, GZ, st); mas(TG, 3.74, .14, GT + .1, 0, 3.37, GZ, sl);
+  TG.box(2.2, 2.7, .2, 0, 1.35, -1.42, COL.black, { jit: 0 }); TG.box(2.2, .2, 1.3, 0, 2.75, -.8, COL.black, { jit: 0 });
+  for (const s of [-1, 1]) {   // 활짝 열린 성문
+    TG.box(.09, 2.15, .92, s * 1.0, 1.08, .44, mulC(COL.wood, .9), { l: L_WOOD, r: [0, s * .16, 0] });
+    for (const y of [.5, 1.1, 1.7]) TG.box(.12, .08, .94, s * 1.0, y, .44, COL.iron, { l: L_METAL, r: [0, s * .16, 0] });
+    TG.seg([s * 1.56, 1.95, .0], [s * 1.56, 2.18, .36], .035, .03, COL.iron, { l: L_METAL, n: 4 }); TG.cyl(.09, .14, s * 1.56, 2.22, .38, COL.iron, { n: 6, l: L_METAL, rt: 1.4 });
+    B.fires.push({ x: kx + s * 1.56, y: ky + 2.38, z: oz + .38, size: .42, type: 'sconce' });
+  }
+
+  // 문루
+  const PY = 3.46;
+  TG.box(4.8, .12, 2.6, 0, PY, -.9, COL.wood, { l: L_WOOD });
+  for (const x of [-2.05, -.7, .7, 2.05]) for (const z of [.2, -2.0]) TG.box(.18, 1.32, .18, x, PY + .7, z, E.post, { l: L_WOOD });
+  for (const z of [.26, -2.06]) { TG.box(4.3, .09, .06, 0, PY + .46, z, mulC(E.post, .75), { l: L_WOOD }); TG.box(4.2, .3, .04, 0, PY + .22, z, COL.woodD, { l: L_WOOD }); }
+  for (const x of [-2.11, 2.11]) { TG.box(.06, .09, 2.3, x, PY + .46, -.9, mulC(E.post, .75), { l: L_WOOD }); TG.box(.04, .3, 2.2, x, PY + .22, -.9, COL.woodD, { l: L_WOOD }); }
+  TG.box(4.4, .24, 2.5, 0, PY + 1.44, -.9, E.band, { l: L_WOOD }); TG.box(4.56, .07, 2.66, 0, PY + 1.6, -.9, E.trim, { l: L_WOOD });
+  TG.box(1.0, .4, .04, 0, PY + 1.18, .3, E.trim, { jit: 0 }); TG.box(.86, .28, .05, 0, PY + 1.18, .31, COL.black, { jit: 0 });
+  bf_roof(TG, { w: 5.9, d: 3.9, h: 1.3, x: 0, y: PY + 1.62, z: -.9, kind: E.roof, tile: E.tile, ridge: E.ridge, rng, lift: E.roof === 'gable' ? .18 : .36, ns: 8, snow, emis: snow ? .018 : .025 });
+
+  // 적대: 문 양옆으로 내민 성벽
+  for (const s of [-1, 1]) {
+    const x = s * 3.6, top = WH + .22;
+    mas(TG, 1.9, top + .8, 1.55, x, (top - .8) / 2, .1, st, { jit: .03 }); mas(TG, 2.0, .7, 1.66, x, .25, .1, sdk); mas(TG, 2.0, .16, 1.66, x, top + .08, .1, sl);
+    bf_yeojang(TG, x - .96, x + .96, top + .16, .74, st, sl, rng);
+    for (const q of [-1, 1]) for (const z of [-.2, .34]) { mas(TG, .3, .46, .44, x + q * .82, top + .39, z, st); }
+    flag(TG, x + s * .5, top + .16, -.05, 2.5, s * .35);
+  }
+
+  // 성 안: 군창과 군량, 뒤쪽 낮은 성벽
+  mas(TG, 3.0, .5, 2.3, 2.9, .25, -3.9, sdk); TG.box(2.3, 1.12, 1.5, 2.9, 1.06, -3.9, plaster, { l: L_PLAIN, rough: .95 });
+  for (const dx of [-1.15, -.38, .38, 1.15]) for (const dz of [-.75, .75]) TG.box(.14, 1.16, .14, 2.9 + dx, 1.08, -3.9 + dz, E.post, { l: L_WOOD });
+  TG.box(.5, .8, .04, 2.9, .92, -3.13, COL.black, { jit: 0 }); TG.box(2.4, .16, 1.6, 2.9, 1.68, -3.9, E.band, { l: L_WOOD });
+  bf_roof(TG, { w: 3.6, d: 2.8, h: .95, x: 2.9, y: 1.74, z: -3.9, kind: E.roof, tile: E.tile, ridge: E.ridge, rng, lift: E.roof === 'gable' ? .12 : .24, snow, emis: snow ? .018 : .025 });
+  for (let k = 0; k < 6; k++) mas(TG, 1.22, 1.5, .6, -1.5 + (k + .5) * 1.22 - .3, .75, -5.5, k & 1 ? st : mc());
+  bf_yeojang(TG, -1.8, 5.5, 1.5, -5.42, st, sl, rng);
+  { const S1 = new Soup(); PROP.bales(S1, rng); TG.merge(S1, { p: [-.9, .05, -3.3], ry: .5, ao: null }); const S2 = new Soup(); PROP.bales(S2, rng); TG.merge(S2, { p: [-1.5, .05, -4.2], ry: -1.1, ao: null }); }
+  for (const [x, z] of [[.3, -4.5], [.75, -4.3], [.5, -4.85], [4.7, -2.4], [4.9, -2.85]]) { const J = new Soup(); PROP.jar(J, rng, C(0x4a3226)); TG.merge(J, { p: [x, .05, z], ao: null }); }
+  PROP.crate(TG, -2.1, .05, -2.5, .55, rng, .4);
+  flag(TG, .9, .05, -3.2, 4.6, .4);
+
+  // 봉수대: 석축 연대 위의 연조(굴뚝 아궁이)
+  const bx = -4.0, bz = -3.5, bh = 6.4, rAt = y => 1.72 * (1 - .27 * y / bh);
+  TT.cyl(2.1, 1.1, bx, .5, bz, sdk, { n: 10, l: L_MASON, rt: .9 });
+  TT.cyl(1.72, bh, bx, bh / 2, bz, st, { n: 10, l: L_MASON, rt: .73, jit: .03 });
+  for (let c = 0; c < 6; c++) { const y = 1.45 + c * .88; TT.cyl(rAt(y) + .03, .17, bx, y, bz, mc(), { n: 10, l: L_MASON }); }
+  TT.cyl(1.24, .42, bx, bh - .12, bz, sl, { n: 10, l: L_MASON, rt: 1.36 });
+  TT.cyl(1.78, .22, bx, bh + .2, bz, st, { n: 10, l: L_MASON });
+  for (let k = 0; k < 10; k++) { const a = (k + .5) / 10 * TAU; if (k === 0) continue; mas(TT, .7, .44, .28, bx + Math.cos(a) * 1.6, bh + .53, bz + Math.sin(a) * 1.6, null, { r: [0, -a + HPI, 0] }); TT.box(.76, .07, .34, bx + Math.cos(a) * 1.6, bh + .78, bz + Math.sin(a) * 1.6, sl, { l: L_MASON, r: [0, -a + HPI, 0] }); }
+  for (let k = 0; k < 3; k++) { const a = k / 3 * TAU + .9, y = bh * (.38 + k * .16); TT.box(.14, .5, .12, bx + Math.cos(a) * (rAt(y) + .01), y, bz + Math.sin(a) * (rAt(y) + .01), COL.black, { jit: 0, r: [0, -a + HPI, 0] }); }
+  TT.cyl(.8, .98, bx, bh + .78, bz, sdk, { n: 8, l: L_MASON, rt: .66 });
+  TT.cyl(.6, .12, bx, bh + 1.3, bz, sl, { n: 8, l: L_MASON });
+  { const a = PI / 4; TT.box(.36, .42, .14, bx + Math.cos(a) * .7, bh + .56, bz + Math.sin(a) * .7, COL.black, { jit: 0, r: [0, -a + HPI, 0] }); TT.box(.3, .1, .16, bx + Math.cos(a) * .71, bh + .44, bz + Math.sin(a) * .71, COL.ember, { jit: 0, emis: .35, r: [0, -a + HPI, 0] }); }
+  TT.cyl(.5, .06, bx, bh + 1.37, bz, COL.ember, { n: 8, emis: .5, jit: 0 });
+  for (let k = 0; k < 4; k++) { const a = k * 1.3; TT.seg([bx + Math.cos(a) * .5, bh + 1.4, bz + Math.sin(a) * .5], [bx - Math.cos(a) * .45, bh + 1.56, bz - Math.sin(a) * .45], .09, .08, mulC(COL.bark, .7), { l: L_WOOD, n: 5, emis: .05 }); }
+  { // 오르내리는 사다리
+    const a0 = [bx + 1.25, .1, bz + 2.05], a1 = [bx + .85, bh + .35, bz + 1.4];
+    for (const q of [-.2, .2]) TT.seg([a0[0] + q, a0[1], a0[2] + q * .3], [a1[0] + q, a1[1], a1[2] + q * .3], .04, .04, COL.woodD, { l: L_WOOD, n: 4 });
+    for (let k = 1; k < 12; k++) { const t = k / 12, p = [lerp(a0[0], a1[0], t), lerp(a0[1], a1[1], t), lerp(a0[2], a1[2], t)]; TT.seg([p[0] - .2, p[1], p[2] - .06], [p[0] + .2, p[1], p[2] + .06], .025, .025, COL.wood, { l: L_WOOD, n: 3 }); }
+  }
+  clothPanel(TT, { x0: bx - .42, x1: bx + .42, yTop: 4.9, len: 2.1, z: bz + rAt(4.2) + .1, col: E.flag, col2: E.flag2, rng, sway: .45 });
+  TT.seg([bx - .5, 4.92, bz + rAt(4.9) + .08], [bx + .5, 4.92, bz + rAt(4.9) + .08], .03, .03, COL.woodD, { l: L_WOOD, n: 4 });
+
   B.structs.push({ soup: new Soup().merge(TG, { p: [kx, ky, oz], ao: [0, .9, .7] }), cx: kx, cy: ky, cz: oz - 2.5, kind: 'keep' });
   B.structs.push({ soup: new Soup().merge(TT, { p: [kx, ky, oz], ao: [0, 1.4, .65] }), cx: kx + bx, cy: ky, cz: oz + bz, kind: 'beaconTower' });
-  B.beacon = { x: kx + bx, y: ky + bh + 1.45, z: oz + bz };
+  B.beacon = { x: kx + bx, y: ky + bh + 1.5, z: oz + bz };
   B.gate = { x: kx, y: ky, z: -11.4 };
 }
 
+// 적 진문(陣門): 벼랑 사이 길목을 막은 통나무 문과 군막 지붕, 침공군(bio.army) 깃발.
+// 안쪽의 어두운 통로는 원작 동굴과 같은 크기 — 적이 여기서 모습을 드러낸다.
 function buildCave(B) {
-  const rng = B.rng, zc = B.zc, T = new Soup(), D = new Soup();
+  const rng = B.rng, zc = B.zc, T = new Soup(), D = new Soup(), A = bf_army(B.bio);
   let i0 = 0; for (let i = 0; i < B.n; i++) if (B.px[i] >= -14.6) { i0 = i; break; }
   const y0 = B.py[i0], ox = -14.5;
   const rk = (r, x, y, z, o = {}) => T.rock(r, x, y, z, mixC(COL.stoneD, COL.stone, rng() * .7), o);
-  for (const s of [-1, 1]) { rk(1.3, .1, .65, s * 2.45); rk(1.1, .2, 1.9, s * 2.3); rk(.95, .2, 2.95, s * 1.95); rk(.62, 1.0, .3, s * 2.15); rk(.45, 1.5, .2, s * 1.95); }
-  rk(1.35, .15, 3.65, 0, { sq: .55 }); rk(1.05, .25, 3.55, -1.05, { sq: .6 }); rk(1.05, .25, 3.55, 1.05, { sq: .6 });
-  for (let k = 0; k < 4; k++) rk(2.3, -1.2 - k * .85, 4.3 + k * .3, rng.range(-.6, .6), { sq: .58 });
-  for (const zz of [-1.25, -.75, -.2, .35, .9, 1.3]) T.cone(.15 + rng() * .06, .45 + rng() * .5, .3 + rng() * .2, 2.85, zz, mulC(COL.stoneL, .9), { n: 5, l: L_ROCK, r: [PI, 0, 0] });
-  if (B.bio.key === 'frost') for (let zz = -1.4; zz <= 1.41; zz += .2) { const h = rng.range(.2, .75); T.cone(.045 + .03 * rng(), h, .62 + rng() * .1, 2.9 - h / 2, zz, COL.ice, { n: 5, r: [PI, 0, 0], rough: .14, emis: .012 }); }
+  const wd = () => mulC(COL.wood, .62 + .36 * rng());
+  for (const s of [-1, 1]) { rk(1.25, -.5, .6, s * 3.15); rk(1.0, -1.4, 1.7, s * 3.2); rk(.62, 1.0, .3, s * 2.75); rk(.45, 1.6, .2, s * 2.4); }
+  // 어두운 통로
   T.box(3.8, .2, 3.7, -1.9, 3.05, 0, COL.black, { jit: 0 }); T.box(.2, 3.4, 3.7, -3.45, 1.5, 0, COL.black, { jit: 0 });
-  for (const s of [-1, 1]) T.box(3.8, 3.2, .2, -1.9, 1.5, s * 1.82, mulC(COL.stoneD, .25), { l: L_ROCK, jit: 0 });
-  for (const s of [-1, 1]) { T.seg([1.7, 0, s * 2.5], [1.78, 1.6, s * 2.55], .055, .035, COL.woodD, { l: L_WOOD }); PROP.skull(T, 1.78, 1.72, s * 2.55, .17, s * .5 + 1.2); }
-  const Bn = new Soup(); PROP.bones(Bn, rng, 6); T.merge(Bn, { p: [2.2, .02, 2.2], ao: null }); const Bn2 = new Soup(); PROP.bones(Bn2, rng, 5); T.merge(Bn2, { p: [2.6, .02, -2.3], ao: null });
+  for (const s of [-1, 1]) T.box(3.8, 3.2, .2, -1.9, 1.5, s * 1.82, mulC(COL.woodD, .2), { l: L_WOOD, jit: 0 });
+  // 통나무 벽
+  for (const s of [-1, 1]) {
+    for (let x = -3.55; x < .2; x += .34) { const hh = 3.25 + rng.range(-.08, .14); T.cyl(.18, hh, x, hh / 2 - .15, s * 2.08, wd(), { n: 6, l: L_WOOD }); }
+    T.box(3.9, .12, .1, -1.75, 2.2, s * 2.28, COL.woodD, { l: L_WOOD }); T.box(3.9, .12, .1, -1.75, 1.0, s * 2.28, COL.woodD, { l: L_WOOD });
+    for (let z = 1.72; z < 2.3; z += .3) { const hh = 3.3 + rng.range(-.05, .1); T.cyl(.16, hh, .22, hh / 2 - .15, s * z, wd(), { n: 6, l: L_WOOD }); }
+    T.cyl(.24, 4.0, .34, 1.9, s * 1.86, mulC(COL.woodD, 1.1), { n: 7, l: L_WOOD }); T.cone(.24, .4, .34, 4.1, s * 1.86, COL.wood, { n: 7, l: L_WOOD });
+    T.seg([.42, 2.35, s * 1.86], [.72, 2.62, s * 1.86], .035, .03, COL.iron, { l: L_METAL, n: 4 }); T.cyl(.09, .14, .74, 2.66, s * 1.86, COL.iron, { n: 6, l: L_METAL, rt: 1.4 });
+    B.fires.push({ x: ox + .74, y: y0 + 2.82, z: zc + s * 1.86, size: .4, type: 'sconce' });
+  }
+  T.seg([.34, 3.2, -2.3], [.34, 3.2, 2.3], .15, .15, COL.woodD, { l: L_WOOD, n: 6 }); T.seg([.34, 3.62, -2.2], [.34, 3.62, 2.2], .1, .1, COL.wood, { l: L_WOOD, n: 6 });
+  for (let z = -1.5; z <= 1.51; z += .5) T.box(.08, .42, .1, .34, 3.41, z, COL.woodD, { l: L_WOOD });
+  // 군막 지붕: 군대 색 줄무늬
+  const RY = 3.3, RH = 1.3, RB = 2.55, X0 = -3.75, X1 = .62, UP = [0, 1, 0];
+  for (const s of [-1, 1]) for (let j = 0; j < 4; j++) {
+    const t0 = j / 4, t1 = (j + 1) / 4, c = mulC(j === 1 ? A.stripe : A.cloth, .82 + .2 * rng()), sag = t => RY + RH * Math.pow(t, 1.25);
+    bf_q(T, [X0, sag(t0), s * RB * (1 - t0)], [X1, sag(t0), s * RB * (1 - t0)], [X1, sag(t1), s * RB * (1 - t1)], [X0, sag(t1), s * RB * (1 - t1)], UP, c, L_CLOTH, .95, { emis: j === 0 ? 0 : .02 });
+  }
+  bf_q(T, [X1, RY, -RB], [X1, RY, RB], [X1, RY + RH, 0], [X1, RY + RH, 0], [1, 0, 0], mulC(A.cloth, .9), L_CLOTH, .95);
+  { // 진문 휘장의 문양: 진주성의 왜군은 구요(아홉 개의 원), 행주의 왜군은 두 줄 띠, 그 밖은 둥근 표지
+    const dot = (y, z, r) => T.cyl(r, .05, X1 + .03, y, z, A.mark, { n: 9, r: [0, 0, HPI], jit: 0, l: L_CLOTH }), cy = RY + .47;
+    if (A.key === 'wa' && B.bio.key === 'ember') { dot(cy, 0, .15); for (let k = 0; k < 8; k++) dot(cy + Math.sin(k / 8 * TAU) * .33, Math.cos(k / 8 * TAU) * .33, .085); }
+    else if (A.key === 'wa') { for (const y of [cy - .12, cy + .14]) T.box(.05, .13, 1.5 - (y - RY) * 1.6, X1 + .03, y, 0, A.mark, { jit: 0, l: L_CLOTH }); }
+    else dot(cy, 0, .4);
+  }
+  T.seg([X0, RY + RH + .03, 0], [X1 + .1, RY + RH + .03, 0], .07, .07, COL.woodD, { l: L_WOOD, n: 5 });
+  { const V = new Soup(); clothPanel(V, { x0: -1.6, x1: 1.6, yTop: 3.08, len: .62, z: 0, col: A.flag, col2: A.flag2, rng, sway: .3, rag: 0, nx: 8, ny: 3 }); T.merge(V, { p: [.52, 0, 0], ry: HPI, ao: null }); }
+  for (const s of [-1, 1]) { const F = new Soup(); PROP.armyFlag(F, rng, A, 4.7); T.merge(F, { p: [.5, .0, s * 2.75], ry: s > 0 ? .2 : -.5, ao: null }); }
+  if (B.bio.key === 'frost') for (let z = -1.6; z <= 1.61; z += .22) { const h = rng.range(.15, .5); T.cone(.04 + .03 * rng(), h, .34, 3.05 - h / 2, z, COL.ice, { n: 5, r: [PI, 0, 0], rough: .14, emis: .012 }); }
   for (const xx of [-.35, -.95, -1.55, -2.2, -2.85]) D.quad([xx, 0, 1.8], [xx, 0, -1.8], [xx, 3.0, -1.8], [xx, 3.0, 1.8], WHITE, L_PLAIN, 1);
   B.structs.push({ soup: new Soup().merge(T, { p: [ox, y0, zc], ao: null }), cx: ox - 1.2, cy: y0, cz: zc, kind: 'cave', extras: [{ soup: new Soup().merge(D, { p: [ox, y0, zc], ao: null }), mat: MAT.dark, order: 2 }] });
   B.cave = { x: ox, y: y0, z: zc, s: Math.max(.6, (i0 - 5) * PATH_STEP) };
@@ -325,7 +594,8 @@ function scatterProps(B) {
     if (B.dStrAt(x, z) < 1.5 + r) return false;
     for (const p of B.pads) if (dist2(x, z, p.x, p.z) < (2.15 + r) * (2.15 + r)) return false;
     if (Math.abs(x - B.kx) < 5.7 + r && z < -11.2 + r) return false;
-    if (x < -12.4 && Math.abs(z - B.zc) < 3.4 + r) return false;
+    if (B.keepWall && x > B.keepWall.x0 - .4 - r && x < B.keepWall.x1 + .4 + r && Math.abs(z - B.keepWall.z) < 1.15 + r) return false;
+    if (x < -12.4 && Math.abs(z - B.zc) < 3.6 + r) return false;
     for (const q of B.ponds) if (dist2(x, z, q.x, q.z) < (q.r * 1.25 + .9 + r) * (q.r * 1.25 + .9 + r)) return false;
     for (const q of placed) if (dist2(x, z, q[0], q[1]) < (q[2] + r) * (q[2] + r)) return false;
     return true;
@@ -352,50 +622,65 @@ function scatterProps(B) {
     }
     return null;
   };
-  const bio = B.bio;
+  const bio = B.bio, E = bf_style(bio), A = bf_army(bio), burnt = bio.key === 'ember', bare = !!bio.bare, onggi = C(0x4a3226);
+  bf_leafEmis = bio.key === 'dunes' ? .025 : 0;
   const at = (x, z, build, r, T0) => { if (Math.abs(x) > BH - .8 || Math.abs(z) > BH - .8) return; const T = T0 || new Soup(); if (!T0) build(T); B.put(T, x, z, { ry: rng() * TAU }); if (r) placed.push([x, z, r]); };
-  drop(T => PROP.towerRuin(T, rng), 2.9, { far: 3.6 });
+
+  // 랜드마크: 고구려 전장엔 돌무지무덤, 고려·조선 전장엔 삼층석탑
+  if (bio.era === 'goguryeo') drop(T => PROP.jeokseok(T, rng), 2.7, { far: 3.4 }); else drop(T => PROP.seoktap(T, rng), 1.4, { far: 2.6 });
   drop(T => PROP.well(T, rng), 1.3, { near: 5.5, far: 2.6 });
-  drop(T => PROP.statue(T, rng), 1.2, { near: 6, far: 2.4 });
-  drop(T => PROP.ribcage(T, rng), 2.4, { far: 2.8 });
-  for (let k = 0; k < 3; k++) { const len = rng.range(4, 7); drop(T => PROP.wallRun(T, rng, len, rng.range(1.8, 3.2)), len * .5, { far: 1.6 }); }
+  drop(T => PROP.biseok(T, rng), 1.0, { near: 6, far: 2.4 });
+  drop(T => PROP.seonang(T, rng, bare), 2.3, { far: 2.8 });
+  for (let k = 0; k < 3; k++) { const len = rng.range(3.5, 6); drop(T => PROP.wallRun(T, rng, len, rng.range(.9, 1.5)), len * .5, { far: 1.6 }); }
+  // 민가: 초가 두 채와 장독대, 울타리 (진주성은 불탄 집터)
   { const g = find(3.2, { far: 3.4 }); if (g) {
-      const ry = rng() * TAU, cs = Math.cos(ry), sn = Math.sin(ry);
-      for (let r = 0; r < 3; r++) for (let c = 0; c < 4; c++) { if (rng() < .2) continue; const lx = (c - 1.5) * 1.15 + rng.range(-.15, .15), lz = (r - 1) * 1.5 + rng.range(-.15, .15), T = new Soup(); PROP.grave(T, rng); B.put(T, g[0] + lx * cs + lz * sn, g[1] - lx * sn + lz * cs, { ry: ry + rng.range(-.2, .2) }); }
-      for (const [lx, lz, a, len] of [[0, -2.5, 0, 4.6], [-2.8, -.2, HPI, 4.2], [2.8, .5, HPI, 3]]) { const T = new Soup(); PROP.fence(T, rng, len); B.put(T, g[0] + lx * cs + lz * sn, g[1] - lx * sn + lz * cs, { ry: ry + a }); }
-      const T = new Soup(); PROP.tree(T, rng, 3.6); B.put(T, g[0] + 2.3 * cs - 2.0 * sn, g[1] - 2.3 * sn - 2.0 * cs, {});
+      const ry = rng() * TAU, cs = Math.cos(ry), sn = Math.sin(ry), L = (lx, lz) => [g[0] + lx * cs + lz * sn, g[1] - lx * sn + lz * cs];
+      { const T = new Soup(); PROP.choga(T, rng, { burnt: burnt && rng() < .7 }); const p = L(-.3, -1.1); B.put(T, p[0], p[1], { ry }); }
+      { const T = new Soup(); PROP.choga(T, rng, { w: 1.9, burnt }); const p = L(1.9, 1.0); B.put(T, p[0], p[1], { ry: ry - HPI }); if (burnt) B.fires.push({ x: p[0], y: H(p[0], p[1]) + .55, z: p[1], size: .55, fx: { smoke: 1.6, embers: 1.2, glow: .7 } }); }
+      for (const [lx, lz] of [[-1.9, .9], [-1.45, 1.05], [-1.75, 1.35], [-1.3, 1.5]]) { if (rng() < .2) continue; const T = new Soup(); PROP.jar(T, rng, onggi); const p = L(lx, lz); B.put(T, p[0], p[1], { ao: null }); }
+      for (const [lx, lz, a, len] of [[0, -2.6, 0, 4.6], [-2.9, -.4, HPI, 4.0]]) { const T = new Soup(); PROP.fence(T, rng, len); const p = L(lx, lz); B.put(T, p[0], p[1], { ry: ry + a }); }
+      { const T = new Soup(); if (burnt) PROP.charred(T, rng, 3.6); else if (bare) PROP.tree(T, rng, 3.6); else PROP.broadleaf(T, rng, 3.6); const p = L(2.4, -2.0); B.put(T, p[0], p[1], {}); }
       placed.push([g[0], g[1], 3.2]);
     } }
   for (let k = 0; k < 2; k++) { const p = beside(10, B.L - 8, 1.25, 1.1); if (p) drop(T => PROP.cart(T, rng, k === 1), 1.1, { at: p, ry: -p[2] + rng.range(-.3, .3), r: k === 1 ? [0, -p[2] + .4, .22] : undefined }); }
   for (let k = 0; k < 4; k++) { const p = beside(8, B.L - 6, .75, .3); if (p) { const len = rng.range(2.6, 4.2); drop(T => PROP.palisade(T, rng, len), 1.0, { at: p, ry: -p[2] }); } }
-  for (let k = 0; k < 4; k++) { const p = beside(8, B.L - 6, 1.0, .4); if (p) { const len = rng.range(2.5, 4.5); drop(T => PROP.fence(T, rng, len), 1.2, { at: p, ry: -p[2] + rng.range(-.15, .15) }); } }
-  for (let k = 0; k < 4; k++) { const p = beside(8, B.L - 5, .8, .25); if (p) drop(T => PROP.banner(T, rng, k & 1 ? COL.clothR : COL.clothB), .3, { at: p, ry: -p[2] + HPI * p[3] }); }
-  { const p = beside(B.L * .3, B.L * .7, .8, .3); if (p) drop(T => PROP.signpost(T, rng), .3, { at: p, ry: -p[2] }); }
-  { const p = beside(12, B.L * .6, 1.3, .6); if (p) drop(T => PROP.gibbet(T, rng), .6, { at: p, ry: -p[2] + HPI }); }
+  for (let k = 0; k < 2; k++) { const p = beside(B.L * .45, B.L - 6, 1.0, .4); if (p) { const len = rng.range(2.5, 4.5); drop(T => PROP.fence(T, rng, len), 1.2, { at: p, ry: -p[2] + rng.range(-.15, .15) }); } }
+  for (let k = 0; k < 3; k++) { const p = beside(6, B.L * .5, .85, .5); if (p) { const len = rng.range(2.0, 3.0); drop(T => PROP.nokgak(T, rng, len), 1.0, { at: p, ry: -p[2] + rng.range(-.2, .2) }); } }
+  // 길가 깃발: 적 진영 쪽은 침공군, 성 쪽은 수비군
+  for (let k = 0; k < 2; k++) { const p = beside(6, B.L * .42, .8, .25); if (p) drop(T => PROP.armyFlag(T, rng, A), .3, { at: p, ry: -p[2] + HPI * p[3] }); }
+  for (let k = 0; k < 3; k++) { const p = beside(B.L * .55, B.L - 4, .8, .25); if (p) drop(T => PROP.banner(T, rng, E.flag, 2.8, E.flag2), .3, { at: p, ry: -p[2] + HPI * p[3] }); }
+  // 장승 한 쌍, 솟대
+  { const p = beside(B.L * .3, B.L * .7, .8, .5); if (p) { const fy = -p[2] + (p[3] > 0 ? PI : 0); drop(T => { PROP.jangseung(T, rng, false); const F = new Soup(); PROP.jangseung(F, rng, true); T.merge(F, { p: [.62, 0, 0], ao: null }); }, .6, { at: p, ry: fy }); } }
+  { const p = beside(12, B.L * .7, 1.3, .6); if (p) drop(T => { PROP.sotdae(T, rng); const F = new Soup(); PROP.sotdae(F, rng, 2.3); T.merge(F, { p: [.55, 0, .3], ao: null }); }, .6, { at: p, ry: -p[2] + HPI }); }
+  // 타워 터 옆 군수품: 볏섬·옹기·궤짝
   for (const pad of B.pads) {
     if (rng() < .35) continue;
     const a = rng() * TAU, x = pad.x + Math.cos(a) * 2.25, z = pad.z + Math.sin(a) * 2.25;
     if (B.dRoadAt(x, z) < ROAD_HALF + .7 || B.dStrAt(x, z) < 1.8) continue;
-    const T = new Soup(); PROP.barrel(T, 0, 0, 0, 1, rng); if (rng() < .6) PROP.barrel(T, .5, 0, .15, .9, rng); if (rng() < .7) PROP.crate(T, -.1, 0, .55, .5, rng, rng()); if (rng() < .4) PROP.crate(T, -.12, .5, .55, .38, rng, rng());
+    const T = new Soup(), kind = rng.int(0, 2);
+    if (kind === 0) { PROP.bales(T, rng); if (rng() < .5) PROP.crate(T, -.1, 0, -.6, .45, rng, rng()); }
+    else if (kind === 1) { for (const [jx, jz] of [[0, 0], [.44, .1], [.18, .46]]) { if (rng() < .25) continue; const J = new Soup(); PROP.jar(J, rng, onggi); T.merge(J, { p: [jx, 0, jz], ao: null }); } }
+    else { PROP.crate(T, 0, 0, 0, .5, rng, rng()); if (rng() < .6) PROP.crate(T, .02, .5, .03, .38, rng, rng()); const J = new Soup(); PROP.jar(J, rng, onggi); T.merge(J, { p: [.55, 0, .2], ao: null }); }
     B.put(T, x, z, { ry: rng() * TAU }); placed.push([x, z, .8]);
   }
-  for (let k = 0; k < 6; k++) { const x = B.lay.cave.x + rng.range(1.8, 7), z = B.zc + rng.sign() * rng.range(1.9, 5); if (free(x, z, .4, .2)) drop(T => PROP.bones(T, rng, rng.int(4, 7)), .5, { at: [x, z], ao: null }); }
-  for (let k = 0; k < 5; k++) drop(T => PROP.bones(T, rng, rng.int(3, 5)), .45, { ao: null });
-  for (let k = 0; k < 3; k++) drop(T => PROP.cairn(T, rng), .5, {});
-  BIOME_DRESS[bio.key]({ B, rng, drop, find, beside, free, at, H, placed, slope });
-  const trees = [];
-  for (const [kind, cnt, h0, h1] of bio.trees) for (let k = 0; k < cnt; k++) { const h = rng.range(h0, h1), p = drop(T => PROP[kind](T, rng, h), kind === 'tree' || kind === 'charred' ? .55 : .8, { far: 1.0, water: kind === 'palm' && k < 6 ? 5.5 : 0 }); if (p && kind === 'tree') trees.push([p, h]); }
-  for (let k = 0; k < bio.webs && k < trees.length; k++) {
-    const [p, h] = trees[k], y = H(p[0], p[1]), a = rng() * TAU, T = new Soup();
-    PROP.web(T, [0, h * .42, 0], [Math.cos(a) * .9, h * .55, Math.sin(a) * .9], [Math.cos(a) * .7, h * .18, Math.sin(a) * .7]);
-    B.put(T, p[0], p[1], { y, ao: null });
+  // 적 진영: 군막, 군기, 버려진 무기
+  { let tents = 0;
+    for (let k = 0; k < 14 && tents < 2; k++) { const x = B.lay.cave.x + rng.range(2.6, 8), z = B.zc + rng.sign() * rng.range(2.9, 6); if (free(x, z, 1.4, .5) && slope(x, z) < .36) { drop(T => PROP.tent(T, rng, A), 1.5, { at: [x, z], ry: rng.range(.2, 1.3) }); tents++; } }
+    for (let k = 0; k < 4; k++) { const x = B.lay.cave.x + rng.range(1.8, 7), z = B.zc + rng.sign() * rng.range(1.9, 5); if (free(x, z, .3, .2)) drop(T => PROP.armyFlag(T, rng, A), .35, { at: [x, z], ry: rng.range(-.4, .9) }); }
+    for (let k = 0; k < 5; k++) { const x = B.lay.cave.x + rng.range(1.8, 8), z = B.zc + rng.sign() * rng.range(1.9, 5.5); if (free(x, z, .4, .2)) drop(T => PROP.warDebris(T, rng, A), .5, { at: [x, z], ao: null }); }
   }
+  for (let k = 0; k < 7; k++) drop(T => PROP.warDebris(T, rng, A), .45, { ao: null, near: 4.5 });
+  for (let k = 0; k < 3; k++) drop(T => PROP.doltap(T, rng), .6, {});
+  for (let k = 0; k < 3; k++) drop(T => PROP.cairn(T, rng), .5, {});
+  BIOME_DRESS[bio.key]({ B, rng, drop, find, beside, free, at, H, placed, slope, E, A });
+  for (const [kind, cnt, h0, h1] of bio.trees) for (let k = 0; k < cnt; k++) { const h = rng.range(h0, h1); drop(T => PROP[kind](T, rng, h), kind === 'tree' || kind === 'charred' ? .55 : .8, { far: 1.0, water: kind.indexOf('willow') === 0 && k < 6 ? 5.5 : 0 }); }
   for (let k = 0; k < bio.stumps; k++) drop(T => PROP.stump(T, rng), .4, {});
   for (let k = 0; k < bio.rocks; k++) { const r = rng() < .2 ? rng.range(.6, 1.25) : rng.range(.16, .5); drop(T => T.rock(r, 0, r * .28, 0, mixC(COL.stoneD, COL.stone, rng())), r * .8, { steep: true, roadMin: .25, ao: [0, r * .6, .6] }); }
   for (let k = 0; k < bio.tufts; k++) {
     const x = rng.range(-BH + .8, BH - .8), z = rng.range(-BH + .8, BH - .8);
     if (B.dRoadAt(x, z) < ROAD_HALF + .35 || waterD(x, z) < 1.1 || slope(x, z) > .5) continue;
-    if (Math.abs(x - B.kx) < 5.4 && z < -11.6) continue;
+    if (Math.abs(x - B.kx) < 5.9 && z < -11.6) continue;
+    if (B.keepWall && x > B.keepWall.x0 && x < B.keepWall.x1 && Math.abs(z - B.keepWall.z) < .95) continue;
     const T = new Soup(); PROP.tuft(T, rng); B.put(T, x, z, { ao: null, s: rng.range(.8, 1.5) });
   }
   for (let k = 0; k < 60; k++) {

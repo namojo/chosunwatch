@@ -26,3 +26,6 @@
   - `army-to-audio.md`: 효과음 키의 쓰임새 변화 → gugak-composer 후속 반영 대상.
 - gugak-composer 병합(6b7b27b): 드론+5음 선율, 장단, 전장별 조, 국악 신호음. 오디오를 깨운 실행에서 예외 0, `__au.dbg().err = 0`.
   - `audio-to-army.md` 반영: 적장 근접 공격의 짐승 포효(`roar`) → `clash`(오케스트레이터 직접 수정, 한 줄). 나머지 사망음은 army-modeler가 이미 사람용 분기로 바꿔 `squelch` 호출 없음.
+- tower-architect 병합(007b35e): 시대별 타워 4종·수비 병사 3벌, 확정 이름표 반영. 전 브랜치 병합 완료.
+- 통합 스모크(`ff=150`, 다섯 전장): 예외 0, 적장전 진입, lives 20, 네 종류 타워 건설. `hangul.py --check` 0(누락 글리프 없음), 492자.
+- 충돌 0건(소유권 표 준수). 

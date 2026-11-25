@@ -29,3 +29,9 @@
 - tower-architect 병합(007b35e): 시대별 타워 4종·수비 병사 3벌, 확정 이름표 반영. 전 브랜치 병합 완료.
 - 통합 스모크(`ff=150`, 다섯 전장): 예외 0, 적장전 진입, lives 20, 네 종류 타워 건설. `hangul.py --check` 0(누락 글리프 없음), 492자.
 - 충돌 0건(소유권 표 준수). 
+
+## Phase 5 — 배포 (사용자 지시로 QA 완료 전에 선배포)
+- QA 1차 시도는 사용량 한도로 중단, 2차 실행 중. 사용자가 "우선 배포"를 지시해 b27b9da 기준으로 배포.
+- `gh-pages`(orphan, 서빙 전용: index.html, .nojekyll, LICENSE, media/, vendor/LICENSE-*.txt) 푸시 → Pages 자동 활성화 확인(`has_pages: true`).
+- https://namojo.github.io/chosunwatch/ 200, 서빙 파일이 커밋된 `index.html`과 바이트 동일, 헤드리스로 라이브 URL 실행 확인(살수, lives 20, 타워 4, 예외 0).
+- QA 보고서가 나오면 S1·S2 수정 후 재배포 예정.

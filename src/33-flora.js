@@ -20,7 +20,7 @@ Object.assign(PROP, {
       });
     }
   },
-  willow(S, rng, h) {
+  willow(S, rng, h, o = {}) {
     const bark = mulC(COL.bark, .85 + .3 * rng());
     let p = [0, -.1, 0], d = [rng.range(-.25, .25), 1, rng.range(-.25, .25)], r = h * .085; const tips = [];
     for (let k = 0; k < 4; k++) {
@@ -30,42 +30,16 @@ Object.assign(PROP, {
     for (let k = 0; k < 4; k++) { const a = rng() * TAU + k * 1.6, len = h * rng.range(.28, .42), q = [p[0] + Math.cos(a) * len * .8, p[1] + len * rng.range(.1, .45), p[2] + Math.sin(a) * len * .8]; S.seg(p, q, r, r * .45, bark, { l: L_WOOD, n: 5, sway: .12 }); tips.push(q); }
     tips.push([p[0], p[1] + h * .08, p[2]]);
     for (const t of tips) for (let j = 0; j < 2; j++) {
-      const rb = h * rng.range(.2, .29), c = mulC(mixC(COL.leaf, COL.leafL, rng()), .75 + .4 * rng()), cx = t[0] + rng.range(-.25, .25), cy = t[1] + rng.range(-.05, .3), cz = t[2] + rng.range(-.25, .25);
-      S.ico(rb, cx, cy, cz, c, { sc: [1.15, .48, 1.15], d: 1, l: L_THATCH, sway: .2, r: [rng.range(-.2, .2), rng() * TAU, rng.range(-.2, .2)], cf: v => .6 + .4 * sat(v.y / (rb * .5) + .5) });
+      const bare = o.bare, twig = C(0x8a7a44), rb = h * rng.range(.2, .29), c = mulC(mixC(COL.leaf, COL.leafL, rng()), .75 + .4 * rng()), cx = t[0] + rng.range(-.25, .25), cy = t[1] + rng.range(-.05, .3), cz = t[2] + rng.range(-.25, .25);
+      if (!bare) S.ico(rb, cx, cy, cz, c, { sc: [1.15, .48, 1.15], d: 1, l: L_THATCH, sway: .2, r: [rng.range(-.2, .2), rng() * TAU, rng.range(-.2, .2)], cf: v => .6 + .4 * sat(v.y / (rb * .5) + .5) });
       for (let s = 0; s < 7; s++) {
-        const a = rng() * TAU, rad = rb * rng.range(.45, 1.05), x = cx + Math.cos(a) * rad, z = cz + Math.sin(a) * rad, len = rng.range(.5, 1.5), y0 = cy - rb * .1, wa = rng() * TAU, wx = Math.cos(wa) * .045, wz = Math.sin(wa) * .045, cc = mulC(mixC(COL.leaf, COL.leafL, rng()), .6 + .3 * rng());
+        const a = rng() * TAU, rad = rb * rng.range(.45, 1.05), x = cx + Math.cos(a) * rad, z = cz + Math.sin(a) * rad, len = rng.range(.5, 1.5), y0 = cy - rb * .1, wa = rng() * TAU, ww = bare ? .022 : .045, wx = Math.cos(wa) * ww, wz = Math.sin(wa) * ww, cc = bare ? mulC(twig, .6 + .5 * rng()) : mulC(mixC(COL.leaf, COL.leafL, rng()), .6 + .3 * rng());
         ribbon(S, [x - wx, y0, z - wz], [x + wx, y0, z + wz], [x + wx * .4, y0 - len, z + wz * .4], [x - wx * .4, y0 - len, z - wz * .4], cc, [.2, .2, .95, .95]);
       }
     }
     for (let k = 0; k < 4; k++) { const a = k * 1.57 + rng(); S.seg([Math.cos(a) * h * .04, h * .17, Math.sin(a) * h * .04], [Math.cos(a) * h * .22, -.1, Math.sin(a) * h * .22], h * .03, h * .018, bark, { l: L_WOOD, n: 5 }); }
   },
   charred(S, rng, h) { PROP.tree(S, rng, h, { bark: mulC(COL.bark, .7 + .3 * rng()), tip: [.6, .16, .03], tipEmis: .09 }); },
-  palm(S, rng, h) {
-    const bark = mulC(C(0x6a5238), .85 + .3 * rng()), a0 = rng() * TAU, bend = rng.range(.1, .3), N = 7;
-    let p = [0, -.1, 0];
-    for (let k = 0; k < N; k++) { const u = (k + 1) / N, off = bend * h * u * u, q = [Math.cos(a0) * off, h * u, Math.sin(a0) * off], r = h * (.052 - .02 * u); S.seg(p, q, r * (k & 1 ? 1.1 : 1), r * .9, mulC(bark, k & 1 ? .82 : 1.05), { l: L_WOOD, n: 6, sway: u > .6 ? .06 : 0 }); p = q; }
-    const top = p, nf = rng.int(8, 10);
-    for (let f = 0; f < nf; f++) {
-      const a = f / nf * TAU + rng.range(-.25, .25), len = h * rng.range(.34, .46), up = rng.range(.2, .62), c = mulC(mixC(COL.leaf, COL.leafL, rng()), .8 + .4 * rng()), M = 5;
-      let prev = null;
-      for (let k = 0; k <= M; k++) {
-        const u = k / M, out = len * u, y = top[1] + len * (up * u - .95 * u * u), cx = top[0] + Math.cos(a) * out, cz = top[2] + Math.sin(a) * out, w = len * .2 * Math.sin(Math.min(1, u * 1.1 + .1) * PI) + .015, sx = -Math.sin(a) * w, sz = Math.cos(a) * w, sw = .2 + .8 * u;
-        const cur = { c: [cx, y, cz], l: [cx + sx, y - w * .6, cz + sz], r: [cx - sx, y - w * .6, cz - sz], sw };
-        if (prev) { ribbon(S, prev.c, cur.c, cur.l, prev.l, c, [prev.sw, sw, sw, prev.sw]); ribbon(S, prev.c, prev.r, cur.r, cur.c, mulC(c, .8), [prev.sw, prev.sw, sw, sw]); }
-        prev = cur;
-      }
-    }
-    for (let k = 0; k < 3; k++) S.ico(h * .03, top[0] + rng.range(-.12, .12), top[1] - .1, top[2] + rng.range(-.12, .12), C(0x3a2a1c), { d: 0 });
-  },
-  cactus(S, rng) {
-    const c = mulC(C(0x4f6a3c), .8 + .3 * rng()), hh = rng.range(1.0, 1.9), r = .17;
-    S.cyl(r, hh, 0, hh / 2 - .05, 0, c, { n: 7 }); S.sph(r, 0, hh - .05, 0, c, { sc: [1, .8, 1], w: 7, h: 4 });
-    for (let k = 0, n = rng.int(0, 3); k < n; k++) {
-      const a = rng() * TAU, y = hh * rng.range(.35, .6), l = rng.range(.26, .4), up = rng.range(.3, .7), x = Math.cos(a) * l, z = Math.sin(a) * l;
-      S.seg([0, y, 0], [x, y + .04, z], r * .62, r * .62, c, { n: 6 }); S.seg([x, y, z], [x, y + up, z], r * .62, r * .58, c, { n: 6 }); S.sph(r * .6, x, y + up, z, c, { w: 6, h: 4 });
-    }
-    if (rng() < .4) S.ico(.06, 0, hh + .1, 0, C(0xe86a8a), { d: 0, emis: .03 });
-  },
   reeds(S, rng) {
     for (let k = 0, n = rng.int(5, 9); k < n; k++) {
       const x = rng.range(-.3, .3), z = rng.range(-.3, .3), hh = rng.range(.6, 1.35), lx = rng.range(-.18, .18), lz = rng.range(-.18, .18), c = mulC(mixC(COL.tuftA, COL.tuftB, rng()), .8 + .4 * rng());
@@ -81,38 +55,14 @@ Object.assign(PROP, {
       if (rng() < .3) S.ico(.05, x + r * .3, .05, z, C(0xe8c8d8), { d: 0, emis: .03, sc: [1, .7, 1] });
     }
   },
-  shroom(S, rng) {
-    const col = rng() < .5 ? C(0x4fe0c0) : C(0x7fd0ff);
-    for (let k = 0, n = rng.int(3, 6); k < n; k++) {
-      const x = rng.range(-.3, .3), z = rng.range(-.3, .3), hh = rng.range(.14, .44), r = hh * rng.range(.45, .7);
-      S.cyl(r * .22, hh, x, hh / 2, z, C(0xb8c8b8), { n: 5, emis: .02 });
-      S.add(gDome(7, 3), { s: [r, r * .7, r], p: [x, hh - r * .1, z], c: mulC(col, .5), emis: .075, jit: .1, smooth: true });
-    }
-  },
   log(S, rng) {
     const len = rng.range(1.5, 2.6), r = rng.range(.14, .2), bark = mulC(COL.bark, .9 + .4 * rng());
     S.seg([-len / 2, r * .8, 0], [len / 2, r * .9, 0], r, r * .85, bark, { l: L_WOOD, n: 7 });
     for (const s of [-1, 1]) S.cyl(r * (s < 0 ? .98 : .83), .02, s * len / 2, r * (s < 0 ? .8 : .9), 0, mulC(COL.woodL, .7), { n: 7, l: L_WOOD, r: [0, 0, HPI] });
     for (let k = 0; k < 2; k++) { const x = rng.range(-len * .3, len * .3), a = rng.range(-1, 1); S.seg([x, r, 0], [x + rng.range(-.15, .15), r + .35 * Math.cos(a), .35 * Math.sin(a)], r * .35, r * .2, bark, { l: L_WOOD, n: 5 }); }
   },
-  basalt(S, rng) {
-    const n = rng.int(5, 10), R = .3, G = [[0, 0], [1, 0], [-1, 0], [.5, .87], [-.5, .87], [.5, -.87], [-.5, -.87], [1.5, .87], [-1.5, -.87], [0, 1.73]];
-    for (let k = 0; k < n; k++) {
-      const q = G[k], hh = rng.range(.35, 2.2) * (k < 3 ? 1.25 : .8), c = mulC(mixC(COL.stoneD, COL.stone, rng() * .7), .8 + .3 * rng());
-      S.cyl(R * 1.04, hh, q[0] * R * 1.75, hh / 2 - .1, q[1] * R * 1.75, c, { n: 6, l: L_ROCK, r: [0, PI / 6, 0], grad: [-hh / 2, hh * .1, .65] });
-      S.cyl(R * .9, .05, q[0] * R * 1.75, hh - .08, q[1] * R * 1.75, mulC(c, 1.3), { n: 6, l: L_ROCK, r: [0, PI / 6, 0] });
-    }
-  },
-  spire(S, rng, hh, cols) {
-    let y = 0, r = hh * rng.range(.2, .28), x = 0, z = 0, k = rng.int(0, 3);
-    while (y < hh && r > .12) { S.rock(r, x, y + r * .4, z, mulC(cols[k % cols.length], .8 + .3 * rng()), { sq: .62, d: 1 }); y += r * .78; r *= rng.range(.8, .93); x += rng.range(-.08, .08); z += rng.range(-.08, .08); k++; }
-  },
-  vent(S, rng) {
-    for (let k = 0; k < 7; k++) { const a = k / 7 * TAU + rng() * .3, r = rng.range(.2, .34); S.rock(r, Math.cos(a) * .52, r * .3, Math.sin(a) * .52, mulC(mixC(COL.stoneD, COL.stone, rng()), .8), { sq: .8 }); }
-    S.cyl(.4, .06, 0, .09, 0, [.8, .22, .03], { n: 8, emis: .3, jit: 0 });
-  },
-  jar(S, rng) {
-    const c = mulC(C(0x9a5a3c), .8 + .35 * rng()), s = rng.range(.8, 1.25);
+  jar(S, rng, col) {
+    const c = mulC(col || C(0x9a5a3c), .8 + .35 * rng()), s = rng.range(.8, 1.25);
     S.cyl(.2 * s, .22 * s, 0, .11 * s, 0, c, { n: 8, rt: .62 }); S.cyl(.2 * s, .2 * s, 0, .32 * s, 0, c, { n: 8, rt: 1.0 }); S.cyl(.2 * s, .14 * s, 0, .49 * s, 0, c, { n: 8, rt: 2.0 });
     S.cyl(.09 * s, .1 * s, 0, .6 * s, 0, mulC(c, .9), { n: 8, rt: 1.25 }); S.cyl(.105 * s, .02 * s, 0, .655 * s, 0, COL.black, { n: 8, jit: 0 });
   },
@@ -120,59 +70,115 @@ Object.assign(PROP, {
     for (let k = 0; k < n; k++) { const x = (k + .5) / n * len - len / 2 + rng.range(-.05, .05), h = rng.range(.15, maxH) * (rng() < .2 ? 1.5 : 1); S.cone(.04 + .035 * rng(), h, x, -h / 2, rng.range(-.04, .04), COL.ice, { n: 5, r: [PI, 0, 0], rough: .14, emis: .012, jit: .1 }); }
   },
   drift(S, rng, r, col) { S.ico(r, 0, r * .04, 0, col, { sc: [1.25, .3, .85], d: 2, smooth: true, rough: .75, jit: .03 }); },
-  crystal(S, rng, col, emis) {
-    for (let k = 0, n = rng.int(3, 6); k < n; k++) { const hh = rng.range(.3, .9) * (k ? .7 : 1.25), a = rng() * TAU, d = k ? rng.range(.12, .32) : 0; S.add(gOct(), { s: [hh * .22, hh, hh * .22], p: [Math.cos(a) * d, hh * .5, Math.sin(a) * d], r: [rng.range(-.4, .4), rng() * TAU, rng.range(-.4, .4)], c: mulC(col, .8 + .4 * rng()), rough: .12, emis }); }
+  // 소나무(적송): 굽은 붉은 줄기 끝에 구름처럼 납작한 솔잎 뭉치.
+  sonamu(S, rng, h) {
+    const bark = mulC(mixC(COL.bark, C(0x7a4630), .55), .8 + .35 * rng()), N = 5, knots = [];
+    let p = [0, -.1, 0], d = [rng.range(-.3, .3), 1, rng.range(-.3, .3)], r = h * .055;
+    for (let k = 0; k < N; k++) {
+      const l = h * .8 / N * rng.range(.85, 1.15), dl = Math.hypot(d[0], d[1], d[2]), q = [p[0] + d[0] / dl * l, p[1] + d[1] / dl * l, p[2] + d[2] / dl * l];
+      S.seg(p, q, r, r * .82, bark, { l: L_WOOD, n: 6, sway: k >= 3 ? .05 : 0 }); p = q; r *= .82; if (k >= 2) knots.push([q, r]);
+      d = [d[0] * .4 + rng.range(-.55, .55), 1, d[2] * .4 + rng.range(-.55, .55)];
+    }
+    const pad = (c, rad) => { const hy = rad * .36; S.ico(rad, c[0], c[1], c[2], mulC(mixC(COL.leaf, COL.leafL, rng() * .7), .8 + .35 * rng()), { sc: [1.25, .36, 1.25], d: 1, l: L_THATCH, sway: .16, emis: bf_leafEmis, r: [rng.range(-.12, .12), rng() * TAU, rng.range(-.12, .12)], cf: v => .6 + .4 * sat(v.y / hy * .5 + .5) }); };
+    pad([p[0], p[1] + h * .03, p[2]], h * rng.range(.24, .3));
+    for (const [q, qr] of knots) for (let j = 0, n = rng() < .6 ? 2 : 1; j < n; j++) {
+      const a = rng() * TAU, len = h * rng.range(.2, .34), e = [q[0] + Math.cos(a) * len, q[1] + len * rng.range(.05, .3), q[2] + Math.sin(a) * len];
+      S.seg(q, e, qr * .6, qr * .3, bark, { l: L_WOOD, n: 4, sway: .1 }); pad([e[0], e[1] + h * .02, e[2]], h * rng.range(.15, .23));
+    }
+  },
+  // 잎 넓은 나무(느티나무·참나무).
+  broadleaf(S, rng, h, o = {}) {
+    const bark = mulC(COL.bark, .85 + .35 * rng()), la = o.leaf || COL.leaf, lb = o.leafL || COL.leafL;
+    const top = [rng.range(-.1, .1) * h, h * .42, rng.range(-.1, .1) * h];
+    S.seg([0, -.1, 0], top, h * .07, h * .05, bark, { l: L_WOOD, n: 6 });
+    const blob = (c, rad) => S.ico(rad, c[0], c[1], c[2], mulC(mixC(la, lb, rng()), .78 + .4 * rng()), { sc: [1.1, .8, 1.1], d: 1, l: L_THATCH, sway: .14, r: [rng() * .4, rng() * TAU, rng() * .4], cf: v => .58 + .42 * sat(v.y / rad * .6 + .5) });
+    blob([top[0], top[1] + h * .3, top[2]], h * .26);
+    for (let k = 0, n = rng.int(3, 5); k < n; k++) { const a = k / n * TAU + rng(), len = h * rng.range(.2, .3), e = [top[0] + Math.cos(a) * len, top[1] + h * rng.range(.08, .25), top[2] + Math.sin(a) * len]; S.seg(top, e, h * .035, h * .018, bark, { l: L_WOOD, n: 4 }); blob(e, h * rng.range(.17, .23)); }
+  },
+  // 잎이 진 버드나무(이른 봄).
+  willowBare(S, rng, h) { PROP.willow(S, rng, h, { bare: true }); },
+  // 억새: 지난해의 마른 줄기와 흰 이삭.
+  eoksae(S, rng) {
+    const base = mulC(mixC(COL.tuftA, COL.tuftB, rng()), .9 + .3 * rng()), plume = mulC(C(0xd9cfae), .8 + .3 * rng());
+    for (let k = 0, n = rng.int(7, 11); k < n; k++) {
+      const a = rng() * TAU, x = Math.cos(a) * rng.range(0, .22), z = Math.sin(a) * rng.range(0, .22), hh = rng.range(.8, 1.5), lx = Math.cos(a) * rng.range(.1, .4), lz = Math.sin(a) * rng.range(.1, .4);
+      const m = [x + lx * .45, hh * .6, z + lz * .45], t = [x + lx, hh, z + lz];
+      S.seg([x, -.06, z], m, .02, .014, base, { n: 3, jit: 0 }); S.seg(m, t, .014, .006, base, { n: 3, sway: .55, jit: 0 });
+      if (rng() < .7) S.seg([lerp(m[0], t[0], .5), lerp(m[1], t[1], .5), lerp(m[2], t[2], .5)], [t[0] + lx * .25, t[1] + .12, t[2] + lz * .25], .05, .012, plume, { n: 4, sway: .7, jit: 0 });
+    }
+  },
+  // 잔불 더미: 타다 남은 들보와 잉걸.
+  emberHeap(S, rng) {
+    const ch = () => mulC(COL.bark, .45 + .3 * rng());
+    S.ico(.6, 0, .02, 0, C(0x1d1917), { sc: [1.3, .28, 1.1], d: 1, l: L_DIRT });
+    for (let k = 0; k < 6; k++) { const a = rng() * TAU, l = rng.range(.6, 1.2), x = rng.range(-.3, .3), z = rng.range(-.3, .3); S.seg([x - Math.cos(a) * l * .5, .06 + rng() * .1, z - Math.sin(a) * l * .5], [x + Math.cos(a) * l * .5, .12 + rng() * .35, z + Math.sin(a) * l * .5], .07, .05, ch(), { l: L_WOOD, n: 5, emis: k & 1 ? .04 : 0 }); }
+    for (let k = 0; k < 7; k++) S.ico(rng.range(.04, .09), rng.range(-.5, .5), .1 + rng() * .12, rng.range(-.5, .5), [.85, .25, .03], { d: 0, emis: rng.range(.15, .3), jit: 0 });
   },
 });
 
+// 전장별 치장. X = { B, rng, drop, find, beside, free, at, H, placed, slope, E(수비 시대 색), A(침공군 색) }
 const BIOME_DRESS = {
-  ashen(X) { for (let k = 0; k < 3; k++) X.drop(T => PROP.log(T, X.rng), .9, { far: 1.2 }); },
+  // 안시성(645): 요동의 산성 고갯길 — 통나무와 바위, 당군이 쌓은 토산
+  ashen(X) {
+    const { rng, drop, A } = X;
+    drop(T => PROP.tosan(T, rng, A), 3.3, { far: 3.6, maxSlope: .5 });
+    for (let k = 0; k < 3; k++) drop(T => PROP.log(T, rng), .9, { far: 1.2 });
+    for (let k = 0; k < 2; k++) drop(T => PROP.nokgak(T, rng, 2.4), 1.0, { far: 1.4 });
+  },
+  // 귀주성(1231): 한겨울 — 눈더미, 얼어붙은 해자 가의 마른 갈대
   frost(X) {
     const { B, rng, drop } = X, snow = B.bio.coverCol;
     for (let k = 0; k < 30; k++) { const r = rng.range(.5, 1.25); drop(T => PROP.drift(T, rng, r, snow), r * .35, { roadMin: .5, ao: null, steep: true }); }
-    for (const q of B.ponds) for (let k = 0; k < 2; k++) { const a = rng() * TAU, d = q.r + rng.range(.9, 1.3); X.at(q.x + Math.cos(a) * d, q.z + Math.sin(a) * d, T => PROP.crystal(T, rng, COL.ice, .03), .5); }
-    for (let k = 0; k < 5; k++) drop(T => PROP.crystal(T, rng, COL.ice, .03), .5, { water: 3.2 });
+    for (const q of B.ponds) for (let k = 0; k < 6; k++) { const a = rng() * TAU, d = q.r + rng.range(.5, 1.2); X.at(q.x + Math.cos(a) * d, q.z + Math.sin(a) * d, T => PROP.reeds(T, rng), 0); }
     for (let k = 0; k < 2; k++) drop(T => PROP.log(T, rng), .9, { far: 1.2 });
-    if (B.ponds[0]) B.env.push({ x: B.ponds[0].x, y: B.ponds[0].y + .9, z: B.ponds[0].z, c: 0x7fc8ff, I: 6, d: 7 });
+    for (let k = 0; k < 2; k++) drop(T => PROP.nokgak(T, rng, 2.4), 1.0, { far: 1.4 });
+    if (B.ponds[0]) B.env.push({ x: B.ponds[0].x, y: B.ponds[0].y + .9, z: B.ponds[0].z, c: 0x7fc8ff, I: 5, d: 7 });
   },
+  // 살수(612): 청천강 강변 습지 — 갈대밭, 연잎, 나룻배, 반딧불
   fen(X) {
-    const { B, rng, drop } = X;
-    for (let k = 0; k < 52; k++) {
-      const u = rng.int(2, B.SP.length - 2), a = B.SP[u - 1], b = B.SP[u + 1], dx = b[0] - a[0], dz = b[1] - a[1], l = Math.hypot(dx, dz) || 1, off = rng.sign() * rng.range(.95, 1.9), x = B.SP[u][0] - dz / l * off, z = B.SP[u][1] + dx / l * off;
+    const { B, rng, drop } = X, reedAt = [];
+    for (let k = 0; k < 64; k++) {
+      const u = rng.int(2, B.SP.length - 2), a = B.SP[u - 1], b = B.SP[u + 1], dx = b[0] - a[0], dz = b[1] - a[1], l = Math.hypot(dx, dz) || 1, off = rng.sign() * rng.range(.95, 2.1), x = B.SP[u][0] - dz / l * off, z = B.SP[u][1] + dx / l * off;
+      if (Math.abs(x) > BH - .8 || Math.abs(z) > BH - .8 || B.dRoadAt(x, z) < ROAD_HALF + .9) continue;
+      X.at(x, z, T => PROP.reeds(T, rng), 0); reedAt.push([x, z]);
+    }
+    for (const q of B.ponds) {
+      for (let k = 0; k < 11; k++) { const a = rng() * TAU, d = q.r * rng.range(.75, 1.25); X.at(q.x + Math.cos(a) * d, q.z + Math.sin(a) * d, T => PROP.reeds(T, rng), 0); }
+      for (let k = 0; k < 4; k++) { const a = rng() * TAU, d = q.r * rng.range(0, .55), T = new Soup(); PROP.lily(T, rng); B.put(T, q.x + Math.cos(a) * d, q.z + Math.sin(a) * d, { y: q.y + .012, ao: null }); }
+    }
+    for (let k = 0; k < 14; k++) drop(T => PROP.reeds(T, rng), .3, { ao: null, water: 3.2 });
+    if (B.ponds[0]) { const q = B.ponds[0], a = rng() * TAU, T = new Soup(); PROP.boat(T, rng); B.put(T, q.x + Math.cos(a) * q.r * .45, q.z + Math.sin(a) * q.r * .45, { y: q.y - .03, ry: rng() * TAU, ao: null }); }
+    // 반딧불이 모이는 갈대숲의 은은한 빛
+    for (let k = 0; k < Math.min(2, reedAt.length); k++) { const p = reedAt[Math.floor(reedAt.length * (k + .5) / 2)]; B.env.push({ x: p[0], y: X.H(p[0], p[1]) + .8, z: p[1], c: 0xa8e05a, I: 4, d: 6 }); }
+    for (let k = 0; k < 4; k++) drop(T => PROP.log(T, rng), .9, { far: 1.2 });
+  },
+  // 진주성(1592): 불타는 성 밖 — 불탄 집터와 잔불, 불빛이 비치는 남강
+  ember(X) {
+    const { B, rng, drop } = X, hot = [];
+    for (let k = 0; k < 3; k++) { const p = drop(T => PROP.choga(T, rng, { burnt: true, w: rng.range(1.9, 2.5) }), 1.8, { far: 1.6 }); if (p) hot.push(p); }
+    for (let k = 0; k < 4; k++) { const len = rng.range(2.2, 3.4); drop(T => PROP.palisade(T, rng, len), 1.0, { far: 1.3, r: [rng.range(-.25, .25), rng() * TAU, rng.range(-.2, .2)] }); }
+    for (let k = 0; k < 5; k++) { const p = drop(T => PROP.emberHeap(T, rng), .8, { far: 2.0 }); if (p) { B.fires.push({ x: p[0], y: X.H(p[0], p[1]) + .14, z: p[1], size: .5, fx: { layers: k < 3 ? 2 : 0, smoke: 1.3, embers: 1.1, glow: .55 } }); if (k < 3) hot.push(p); } }
+    for (let k = 0; k < 3; k++) drop(T => PROP.nokgak(T, rng, 2.4), 1.0, { far: 1.4 });
+    // 불빛: 다리 밑 강물, 그리고 불타는 집터 두 곳
+    B.env.push({ x: B.bridge.x, y: B.wlc + .7, z: B.bridge.z, c: 0xff6a24, I: 34, d: 9, flick: 1 });
+    for (const p of hot.slice(0, 2)) B.env.push({ x: p[0], y: X.H(p[0], p[1]) + 1.0, z: p[1], c: 0xff6a24, I: 40, d: 9, flick: 1 });
+    if (hot.length < 2 && B.ponds[0]) { const q = B.ponds[0]; B.env.push({ x: q.x, y: q.y + .8, z: q.z, c: 0xff6a24, I: 30, d: 9, flick: 1 }); }
+  },
+  // 행주산성(1593): 이른 봄 저녁의 한강 가 — 마른 갈대·억새, 잎 진 버드나무, 나룻배, 목책
+  dunes(X) {
+    const { B, rng, drop, beside } = X;
+    for (let k = 0; k < 30; k++) drop(T => PROP.eoksae(T, rng), .35, { far: .7, ao: null });
+    for (let k = 0; k < 44; k++) {
+      const u = rng.int(2, B.SP.length - 2), a = B.SP[u - 1], b = B.SP[u + 1], dx = b[0] - a[0], dz = b[1] - a[1], l = Math.hypot(dx, dz) || 1, off = rng.sign() * rng.range(.95, 2.0), x = B.SP[u][0] - dz / l * off, z = B.SP[u][1] + dx / l * off;
       if (Math.abs(x) > BH - .8 || Math.abs(z) > BH - .8 || B.dRoadAt(x, z) < ROAD_HALF + .9) continue;
       X.at(x, z, T => PROP.reeds(T, rng), 0);
     }
     for (const q of B.ponds) {
-      for (let k = 0; k < 9; k++) { const a = rng() * TAU, d = q.r * rng.range(.75, 1.2); X.at(q.x + Math.cos(a) * d, q.z + Math.sin(a) * d, T => PROP.reeds(T, rng), 0); }
-      for (let k = 0; k < 4; k++) { const a = rng() * TAU, d = q.r * rng.range(0, .55), T = new Soup(); PROP.lily(T, rng); B.put(T, q.x + Math.cos(a) * d, q.z + Math.sin(a) * d, { y: q.y + .012, ao: null }); }
+      for (let k = 0; k < 2; k++) { const a = rng() * TAU, d = q.r + rng.range(1.1, 1.9), h = rng.range(3, 4.2); X.at(q.x + Math.cos(a) * d, q.z + Math.sin(a) * d, T => PROP.willowBare(T, rng, h), .6); }
+      for (let k = 0; k < 10; k++) { const a = rng() * TAU, d = q.r * rng.range(.8, 1.25); X.at(q.x + Math.cos(a) * d, q.z + Math.sin(a) * d, T => PROP.reeds(T, rng), 0); }
     }
-    const sh = [];
-    for (let k = 0; k < 16; k++) { const p = drop(T => PROP.shroom(T, rng), .35, { ao: null }); if (p) sh.push(p); }
-    for (let k = 0; k < Math.min(2, sh.length); k++) B.env.push({ x: sh[k][0], y: X.H(sh[k][0], sh[k][1]) + .7, z: sh[k][1], c: 0x45e0b8, I: 5, d: 6 });
-    for (let k = 0; k < 5; k++) drop(T => PROP.log(T, rng), .9, { far: 1.2 });
-  },
-  ember(X) {
-    const { B, rng, drop } = X, cols = [COL.stoneD, COL.stone, C(0x5a2a22), COL.stoneD];
-    for (let k = 0; k < 9; k++) drop(T => PROP.basalt(T, rng), 1.0, { far: 1.4 });
-    for (let k = 0; k < 6; k++) { const hh = rng.range(2.0, 4.2); drop(T => PROP.spire(T, rng, hh, cols), hh * .28, { far: 1.6, steep: true }); }
-    for (let k = 0; k < 4; k++) { const p = drop(T => PROP.vent(T, rng), .8, { far: 2.2 }); if (p) B.fires.push({ x: p[0], y: X.H(p[0], p[1]) + .12, z: p[1], size: .5, fx: { layers: 0, smoke: 1.3, embers: 1.1, glow: .55 } }); }
-    B.env.push({ x: B.bridge.x, y: B.wlc + .55, z: B.bridge.z, c: 0xff5a1e, I: 44, d: 9, flick: 1 });
-    if (B.ponds[0]) { const q = B.ponds[0]; B.env.push({ x: q.x, y: q.y + .7, z: q.z, c: 0xff5a1e, I: 40, d: 9, flick: 1 }); }
-    if (B.fallAt) B.env.push({ x: B.fallAt.x - B.fallAt.ox * 1.2, y: B.fallAt.y + .6, z: B.fallAt.z - B.fallAt.oz * 1.2, c: 0xff5a1e, I: 36, d: 8, flick: 1 });
-  },
-  dunes(X) {
-    const { B, rng, drop } = X, cols = B.bio.strata.map(h => C(h));
-    for (let k = 0; k < 11; k++) drop(T => PROP.cactus(T, rng), .4, { far: .9 });
-    for (let k = 0; k < 6; k++) { const hh = rng.range(2.2, 4.6); drop(T => PROP.spire(T, rng, hh, cols), hh * .28, { far: 1.6, steep: true }); }
-    for (const q of B.ponds) {
-      for (let k = 0; k < 4; k++) { const a = rng() * TAU, d = q.r + rng.range(1.1, 1.9), h = rng.range(3, 4.4); X.at(q.x + Math.cos(a) * d, q.z + Math.sin(a) * d, T => PROP.palm(T, rng, h), .5); }
-      for (let k = 0; k < 7; k++) { const a = rng() * TAU, d = q.r * rng.range(.8, 1.2); X.at(q.x + Math.cos(a) * d, q.z + Math.sin(a) * d, T => PROP.reeds(T, rng), 0); }
-    }
-    for (const pad of B.pads) {
-      if (rng() < .5) continue;
-      const a = rng() * TAU, x = pad.x + Math.cos(a) * 2.3, z = pad.z + Math.sin(a) * 2.3; if (!X.free(x, z, .5, .3)) continue;
-      const T = new Soup(); PROP.jar(T, rng); if (rng() < .7) { const J = new Soup(); PROP.jar(J, rng); T.merge(J, { p: [.42, 0, .1] }); } if (rng() < .4) { const J = new Soup(); PROP.jar(J, rng); T.merge(J, { p: [.15, 0, .45], r: [1.3, rng() * 3, 0] }); }
-      X.at(x, z, () => T, .7, T);
-    }
+    if (B.ponds[0]) { const q = B.ponds[0], a = rng() * TAU, T = new Soup(); PROP.boat(T, rng); B.put(T, q.x + Math.cos(a) * q.r * .5, q.z + Math.sin(a) * q.r * .5, { y: q.y - .03, ry: rng() * TAU, ao: null }); }
+    // 행주산성은 목책으로 지킨 성이다
+    for (let k = 0; k < 4; k++) { const p = beside(B.L * .35, B.L - 5, .75, .3); if (p) { const len = rng.range(2.8, 4.4); drop(T => PROP.palisade(T, rng, len), 1.0, { at: p, ry: -p[2] }); } }
   },
 };

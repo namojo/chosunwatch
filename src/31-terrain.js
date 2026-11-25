@@ -148,7 +148,7 @@ function buildBoard(seed, index) {
       return [mulC(c, .82 + .32 * n2), L_ROCK, .96];
     }
     let ds = dfAt(dStr, x, z); for (const q of ponds) ds = Math.min(ds, Math.max(0, pondD(q, x, z) - q.r) + .55);
-    const glow = bio.bankGlow ? smooth(3.0, 1.1, ds) : 0;
+    const glow = bio.bankGlow ? smooth(3.0, 1.1, ds) * bio.bankGlow : 0;   // 강가에 어른거리는 불빛
     if (ds < 1.25) return [mixC(mulC(mixC(COL.mud, COL.earthD, n1), .6 + .25 * n2), [.42, .09, .02], glow * .16), L_DIRT, glow ? .9 : .5, glow * .012];
     let c = mixC(COL.earth, COL.grass, smooth(.4, .62, n1));
     c = mixC(c, COL.earthD, smooth(2.4, .5, dfAt(dRoad, x, z) - ROAD_HALF) * .55);
@@ -268,18 +268,16 @@ function buildBoard(seed, index) {
       for (const [dx, dz] of [[0, 0], [0, 1], [1, 1], [0, 0], [1, 1], [1, 0]]) waterV(S, x + dx, q.y, z + dz, (x + dx) * .8, (z + dz) * .8, .02, .14);
     }
   }
-  if (bio.key === 'ember') {
-    for (let q = 0; q < 46; q++) {
-      let x = rng.range(-BH + 1.5, BH - 1.5), z = rng.range(-BH + 1.5, BH - 1.5), a = rng.range(0, TAU);
-      if (dfAt(dRoad, x, z) < ROAD_HALF + .6 || dfAt(dStr, x, z) < 1.4 || dfAt(dStr, x, z) > 9 || Math.abs(hAt(x + .6, z) - hAt(x - .6, z)) > .3) continue;
-      for (let sgm = 0, m = rng.int(4, 8); sgm < m; sgm++) {
-        a += rng.range(-.8, .8); const l = rng.range(.25, .6), x2 = x + Math.cos(a) * l, z2 = z + Math.sin(a) * l, wd = rng.range(.02, .05), wx = -Math.sin(a) * wd, wz = Math.cos(a) * wd;
-        if (Math.abs(x2) > BH - .6 || Math.abs(z2) > BH - .6) break;
-        const y1 = heightAt(x, z) + .03, y2 = heightAt(x2, z2) + .03, S = chunkAt(x, z).soup, o = { emis: rng.range(.12, .3) }, col = [.75, .2, .03];
-        S.quad([x - wx, y1, z - wz], [x + wx, y1, z + wz], [x2 + wx, y2, z2 + wz], [x2 - wx, y2, z2 - wz], col, L_PLAIN, 1, o);
-        S.quad([x - wx, y1, z - wz], [x2 - wx, y2, z2 - wz], [x2 + wx, y2, z2 + wz], [x + wx, y1, z + wz], col, L_PLAIN, 1, o);
-        x = x2; z = z2;
-      }
+  // 타다 남은 잉걸: 그을린 땅 여기저기에 흩어진 불씨 (원작의 용암 균열을 대신한다)
+  for (let q = 0; q < (bio.embers || 0); q++) {
+    const cx = rng.range(-BH + 1.5, BH - 1.5), cz = rng.range(-BH + 1.5, BH - 1.5);
+    if (dfAt(dRoad, cx, cz) < ROAD_HALF + .7 || dfAt(dStr, cx, cz) < 1.6 || Math.abs(hAt(cx + .6, cz) - hAt(cx - .6, cz)) > .3) continue;
+    for (let m = 0, nm = rng.int(4, 9); m < nm; m++) {
+      const x = cx + rng.range(-.7, .7), z = cz + rng.range(-.7, .7), w = rng.range(.03, .075), a = rng.range(0, TAU), ux = Math.cos(a) * w, uz = Math.sin(a) * w;
+      if (Math.abs(x) > BH - .6 || Math.abs(z) > BH - .6) continue;
+      const y = heightAt(x, z) + .03, S = chunkAt(x, z).soup, o = { emis: rng.range(.1, .28) }, col = [.78, .22, .03];
+      S.quad([x - ux, y, z - uz], [x + uz, y, z - ux], [x + ux, y, z + uz], [x - uz, y, z + ux], col, L_PLAIN, 1, o);
+      S.quad([x - ux, y, z - uz], [x - uz, y, z + ux], [x + ux, y, z + uz], [x + uz, y, z - ux], col, L_PLAIN, 1, o);
     }
   }
   let fallAt = null;

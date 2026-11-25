@@ -21,3 +21,6 @@
 ## Phase 3 — 병합 (진행)
 - hud-calligrapher 병합(b150a52): 한글 픽셀 폰트 파이프라인, HUD 번역. 스모크 통과.
 - battlefield-artisan 병합(893292d): 다섯 전장·성곽·봉수대·진문. `29-biome.js` lore 3문장 교체(검수 E05 등). 다섯 전장 스모크 통과(예외 0).
+- army-modeler 병합(dcb0f01): 21종 병종·적장 6명 재모델링, 확정 이름표 반영. 다섯 전장 스모크 통과(예외 0), 근접 스크린샷 확인.
+  - `bio.tints`/`wispHex`는 더 이상 읽지 않음(죽은 데이터, 유지).
+  - `army-to-audio.md`: 효과음 키의 쓰임새 변화 → gugak-composer 후속 반영 대상.

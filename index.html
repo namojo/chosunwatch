@@ -2839,118 +2839,98 @@ function xf(out, parent, px, py, pz, rx, ry, rz, sx = 1, sy = 1, sz = 1) {
 }
 
 const KIT = {};
-function humanKit(style, cap) {
-  const k = {}, limb = cap * 2;
-  if (style === 'skel' || style === 'giant') {
-    const G = style === 'giant', bone = G ? mulC(COL.bone, .82) : COL.bone, bd = G ? mulC(COL.boneD, .8) : COL.boneD, o = () => ({ l: L_BONE, jit: .05 });
-    k.pelvis = new PartBatch(S => { S.box(.27, .1, .15, 0, 0, 0, bd, o()); S.box(.08, .13, .08, 0, .09, -.01, bone, o()); if (G) { for (const s of [-1, 1]) S.box(.1, .16, .17, s * .14, -.02, 0, bone, o()); clothPanel(S, { x0: -.13, x1: .13, yTop: -.03, len: .3, z: .09, col: mulC(COL.clothD, 1.4), rng: makeRng(5), sway: 0, nx: 3, ny: 4 }); } }, cap, { rad: .1 });
-    k.torso = new PartBatch(S => {
-      S.box(.07, .43, .07, 0, .21, -.03, bd, o());
-      const ribs = G ? [.1, .16, .22, .28, .34] : [.15, .24, .33];
-      for (const y of ribs) { S.box(.31 - (.34 - y) * .25, G ? .04 : .055, .21, 0, y, .01, bone, o()); }
-      S.box(.39, .07, .12, 0, .43, 0, bone, o()); S.box(.06, .25, .03, 0, .25, .11, bone, o());
-      if (G) { for (const s of [-1, 1]) { S.cone(.05, .16, s * .2, .52, 0, bone, { n: 4, l: L_BONE }); S.cone(.04, .12, s * .13, .5, -.04, bd, { n: 4, l: L_BONE }); } for (let v = 0; v < 4; v++) S.box(.05, .03, .06, 0, .1 + v * .09, -.08, bone, o()); }
-    }, cap, { rad: .16 });
-    k.head = new PartBatch(S => {
-      S.sph(.15, 0, .17, 0, bone, { sc: [1, .95, 1.08], l: L_BONE, w: 7, h: 5, smooth: false }); S.box(.17, .08, .14, 0, .04, .035, bd, o());
-      for (const s of [-1, 1]) S.box(.066, .062, .05, s * .058, .185, .132, COL.black, { jit: 0 });
-      S.box(.03, .04, .04, 0, .12, .152, COL.black, { jit: 0 });
-      if (G) { for (const s of [-1, 1]) { S.seg([s * .12, .24, 0], [s * .27, .36, .03], .05, .035, bd, { l: L_BONE, n: 5 }); S.seg([s * .27, .36, .03], [s * .3, .52, .1], .035, .008, bone, { l: L_BONE, n: 5 }); } for (let t = -2; t <= 2; t++) S.box(.022, .04, .02, t * .032, .005, .1, bone, { jit: 0 }); }
-    }, cap, { rad: .15 });
-    k.uArm = new PartBatch(S => { S.box(.062, .25, .062, 0, -.125, 0, bone, o()); S.box(.085, .06, .085, 0, -.26, 0, bd, o()); }, limb, { rad: .06, shadow: false });
-    k.lArm = new PartBatch(S => { S.box(.052, .25, .052, 0, -.125, 0, bone, o()); S.box(.08, .08, .08, 0, -.28, 0, bd, o()); }, limb, { rad: .06, shadow: false });
-    k.uLeg = new PartBatch(S => { S.box(.076, .27, .076, 0, -.135, 0, bone, o()); S.box(.09, .06, .09, 0, -.28, 0, bd, o()); }, limb, { rad: .07, shadow: false });
-    k.lLeg = new PartBatch(S => { S.box(.062, .28, .062, 0, -.14, 0, bone, o()); S.box(.09, .05, .19, 0, -.295, .05, bd, o()); }, limb, { rad: .07, shadow: false });
-  } else {
-    const sk = COL.ogre, sdk = COL.ogreD, o = () => ({ jit: .06, d: 1 });
-    k.pelvis = new PartBatch(S => { S.ico(.2, 0, 0, 0, sdk, { sc: [1.15, .6, .95], d: 1 }); clothPanel(S, { x0: -.15, x1: .15, yTop: .02, len: .3, z: .17, col: COL.leather, rng: makeRng(3), sway: 0, nx: 3, ny: 4 }); clothPanel(S, { x0: -.14, x1: .14, yTop: .02, len: .24, z: -.17, col: mulC(COL.leather, .7), rng: makeRng(4), sway: 0, nx: 3, ny: 3 }); S.box(.44, .05, .36, 0, .03, 0, mulC(COL.leather, .6), {}); }, cap, { rad: .2 });
-    k.torso = new PartBatch(S => {
-      S.ico(.27, 0, .17, .04, sk, { sc: [1.1, .9, 1.05], d: 1 }); S.ico(.25, 0, .37, -.01, sk, { sc: [1.2, .75, .85], d: 1 });
-      for (const s of [-1, 1]) S.ico(.11, s * .27, .45, 0, sdk, { d: 1 });
-      S.sph(.1, -.27, .5, 0, COL.iron, { l: L_METAL, w: 6, h: 4, smooth: false }); for (let a = 0; a < 3; a++) S.cone(.03, .1, -.27 + Math.cos(a * 2.1) * .08, .6, Math.sin(a * 2.1) * .08, COL.ironL, { n: 4, l: L_METAL });
-      S.box(.07, .5, .03, .08, .25, .29, mulC(COL.leather, .7), { r: [0, 0, .5] });
-    }, cap, { rad: .28 });
-    k.head = new PartBatch(S => {
-      S.ico(.13, 0, .1, .02, sk, { sc: [1.05, .95, 1.0], d: 1 }); S.box(.19, .07, .13, 0, .03, .08, sdk, { jit: 0 }); S.box(.22, .04, .08, 0, .15, .09, sdk, { jit: 0 });
-      for (const s of [-1, 1]) { S.cone(.022, .09, s * .07, .08, .15, COL.bone, { n: 4, l: L_BONE }); S.box(.045, .03, .03, s * .055, .125, .125, COL.black, { jit: 0 }); S.box(.04, .09, .03, s * .15, .12, 0, sdk, { r: [0, 0, s * -.4] }); }
-    }, cap, { rad: .13 });
-    k.uArm = new PartBatch(S => { S.ico(.1, 0, -.12, 0, sk, { sc: [1, 1.5, 1], d: 1 }); }, limb, { rad: .1, shadow: false });
-    k.lArm = new PartBatch(S => { S.ico(.09, 0, -.12, 0, sk, { sc: [1, 1.5, 1], d: 1 }); S.ico(.085, 0, -.27, 0, sdk, { d: 1 }); S.box(.2, .06, .2, 0, -.18, 0, COL.leather, {}); }, limb, { rad: .1, shadow: false });
-    k.uLeg = new PartBatch(S => { S.ico(.11, 0, -.1, 0, sk, { sc: [1, 1.35, 1.05], d: 1 }); }, limb, { rad: .1, shadow: false });
-    k.lLeg = new PartBatch(S => { S.ico(.095, 0, -.1, 0, sk, { sc: [1, 1.3, 1], d: 1 }); S.box(.17, .07, .26, 0, -.21, .05, sdk, {}); }, limb, { rad: .1, shadow: false });
-  }
+// ── 조선워치: 사람형 공용 키트 ────────────────────────────────────────────────
+// 밝은 중립색 천으로 모델링하고 인스턴스 tint로 군대색을 입힌다.
+//   e.tint  → 골반·몸통·위팔·허벅지(군복)   e.tintH → 머리(없으면 tint)   e.tintL → 아래팔·정강이(없으면 tint)
+function ar_manKit(cap) {
+  const k = {}, limb = cap * 2, W = [.84, .84, .84], Wd = [.6, .6, .6], skin = COL.skin, hair = C(0x15110e), lea = mulC(COL.leather, 1.05);
+  k.pelvis = new PartBatch(S => {
+    S.box(.28, .13, .19, 0, 0, 0, Wd, { l: L_CLOTH }); S.box(.31, .05, .21, 0, .06, 0, [.3, .26, .22], {});
+    S.box(.3, .17, .2, 0, -.1, 0, W, { l: L_CLOTH, jit: .04 });
+  }, cap, { rad: .12 });
+  k.torso = new PartBatch(S => {
+    S.box(.34, .4, .22, 0, .21, 0, W, { l: L_CLOTH, jit: 0 }); S.box(.1, .3, .235, 0, .24, 0, Wd, { l: L_CLOTH, jit: 0 });
+    S.box(.42, .09, .24, 0, .4, 0, W, { l: L_CLOTH, jit: .03 });
+  }, cap, { rad: .17 });
+  k.head = new PartBatch(S => {
+    S.box(.12, .08, .12, 0, .0, 0, mulC(skin, .85), { jit: 0 });
+    S.box(.19, .2, .19, 0, .13, 0, skin, { jit: .04 });
+    S.box(.2, .08, .2, 0, .215, -.005, hair, { jit: 0 }); S.box(.2, .15, .07, 0, .13, -.075, hair, { jit: 0 }); S.box(.075, .07, .075, 0, .285, -.02, hair, { jit: 0 });
+    for (const s of [-1, 1]) S.box(.03, .028, .02, s * .05, .15, .098, COL.black, { jit: 0 });
+  }, cap, { rad: .14 });
+  k.uArm = new PartBatch(S => { S.box(.1, .26, .1, 0, -.13, 0, W, { l: L_CLOTH }); S.box(.125, .09, .125, 0, -.035, 0, Wd, { l: L_CLOTH }); }, limb, { rad: .07, shadow: false });
+  k.lArm = new PartBatch(S => { S.box(.085, .21, .085, 0, -.105, 0, lea, {}); S.box(.09, .085, .09, 0, -.255, 0, skin, {}); }, limb, { rad: .07, shadow: false });
+  k.uLeg = new PartBatch(S => { S.box(.118, .29, .118, 0, -.14, 0, Wd, { l: L_CLOTH }); }, limb, { rad: .08, shadow: false });
+  k.lLeg = new PartBatch(S => { S.box(.1, .27, .1, 0, -.135, 0, [.5, .45, .37], { l: L_CLOTH }); S.box(.11, .065, .2, 0, -.29, .045, mulC(lea, .6), {}); }, limb, { rad: .08, shadow: false });
   return k;
 }
 
 function initKits() {
-  const iron = COL.iron, rust = mixC(COL.ironL, C(0x7a4a2a), .45);
-  KIT.skel = humanKit('skel', 96);
-  KIT.giant = humanKit('giant', 2);
-  KIT.ogre = humanKit('ogre', 30);
-  for (const k of ['uArm', 'lArm', 'uLeg', 'lLeg']) KIT.giant[k].mesh.castShadow = true;
+  const iron = COL.iron, steel = mulC(COL.steel, 1.1);
+  KIT.man = ar_manKit(170);
   const E = KIT.item = {};
   initAllyKits();
-  E.sword = new PartBatch(S => { S.box(.035, .13, .035, 0, 0, 0, COL.woodD, {}); S.box(.17, .03, .05, 0, .075, 0, iron, { l: L_METAL }); S.box(.055, .5, .018, 0, .34, 0, rust, { l: L_METAL, rough: .5 }); S.cone(.03, .08, 0, .63, 0, rust, { n: 4, l: L_METAL, rough: .5, rz: .012 }); }, 100, { rad: .05, shadow: false });
+  // 환도/왜도 겸용 외날 칼
+  E.sword = new PartBatch(S => {
+    S.box(.035, .14, .035, 0, 0, 0, COL.woodD, {}); S.box(.1, .025, .06, 0, .08, 0, COL.brass, { l: L_METAL, rough: .4 });
+    S.box(.018, .3, .05, 0, .24, 0, steel, { l: L_METAL, rough: .3 }); S.box(.018, .24, .046, 0, .5, -.012, steel, { l: L_METAL, rough: .3, r: [-.1, 0, 0] }); S.cone(.026, .07, 0, .65, -.026, steel, { n: 4, l: L_METAL, rough: .3, rz: .01 });
+  }, 150, { rad: .05, shadow: false });
   E.torch = new PartBatch(S => { S.box(.04, .42, .04, 0, .1, 0, COL.woodD, { l: L_WOOD }); S.cyl(.06, .1, 0, .34, 0, mulC(COL.black, 3), { n: 6 }); S.cyl(.05, .03, 0, .4, 0, COL.ember, { n: 6, emis: .5, jit: 0 }); }, 80, { rad: .05, shadow: false });
-  E.shieldR = new PartBatch(S => { S.cyl(.27, .05, 0, 0, 0, COL.woodD, { n: 8, r: [HPI, 0, 0], l: L_WOOD }); S.add(gTorus(8, .13, 4), { s: .25, p: [0, 0, .01], c: iron, l: L_METAL }); S.sph(.075, 0, 0, .04, COL.ironL, { l: L_METAL, w: 6, h: 4, smooth: false }); for (let a = 0; a < 4; a++) S.box(.03, .42, .012, 0, 0, .03, iron, { l: L_METAL, r: [0, 0, a * PI / 4] }); }, 60, { rad: .2, shadow: false });
-  E.helm = new PartBatch(S => { S.add(gDome(8, 3), { s: [.18, .175, .195], p: [0, .16, 0], c: iron, l: L_METAL, rough: .5 }); S.box(.035, .13, .03, 0, .15, .185, COL.ironL, { l: L_METAL }); for (const s of [-1, 1]) S.box(.03, .14, .13, s * .165, .1, .03, iron, { l: L_METAL }); S.cone(.03, .16, 0, .4, 0, COL.ironL, { n: 4, l: L_METAL }); }, 60, { rad: .16, shadow: false });
-  E.plate = new PartBatch(S => { S.box(.35, .31, .25, 0, .27, 0, iron, { l: L_METAL, rough: .5 }); S.box(.2, .2, .26, 0, .29, .005, COL.ironL, { l: L_METAL, rough: .45 }); for (const s of [-1, 1]) S.sph(.1, s * .21, .44, 0, COL.ironL, { l: L_METAL, w: 6, h: 4, smooth: false, sc: [1, .8, 1.1] }); }, 60, { rad: .2, shadow: false });
-  E.club = new PartBatch(S => { S.seg([0, -.12, 0], [0, .62, 0], .045, .11, COL.wood, { l: L_WOOD, n: 6 }); S.cyl(.12, .1, 0, .6, 0, iron, { n: 6, l: L_METAL }); for (let a = 0; a < 6; a++) S.cone(.03, .12, Math.cos(a * 1.05) * .13, .45 + (a % 2) * .14, Math.sin(a * 1.05) * .13, COL.ironL, { n: 4, l: L_METAL, r: [Math.sin(a * 1.05) * 1.57, 0, -Math.cos(a * 1.05) * 1.57] }); }, 10, { rad: .1 });
-  E.greatsword = new PartBatch(S => {
-    const steel = mulC(mixC(COL.steel, C(0x7a4a2a), .22), 1.15), dark = mulC(iron, .85), fl = mulC(steel, .6);
-    S.box(.05, .24, .05, 0, -.02, 0, COL.leather, {}); S.ico(.055, 0, -.17, 0, COL.bone, { l: L_BONE, d: 1 });
-    S.box(.36, .05, .08, 0, .12, 0, dark, { l: L_METAL }); for (const sg of [-1, 1]) S.box(.05, .1, .08, sg * .17, .08, 0, dark, { l: L_METAL });
-    S.box(.12, .82, .026, 0, .555, 0, steel, { l: L_METAL, rough: .45 }); S.box(.035, .7, .034, 0, .52, 0, fl, { l: L_METAL, rough: .5 });
-    for (const z of [.013, -.013]) { const a = [-.06, .965, z], b = [.06, .965, z], c = [0, 1.14, 0]; if (z > 0) S.tri(a, b, c, steel, L_METAL, .45); else S.tri(a, c, b, steel, L_METAL, .45); }
-    for (const [y, sg] of [[.42, 1], [.7, -1], [.86, 1]]) S.box(.03, .05, .034, sg * .058, y, 0, COL.black, { jit: 0 });
-  }, 2, { rad: .1 });
-  const fur = COL.rat, furD = COL.ratD;
-  KIT.rat = {
-    body: new PartBatch(S => {
-      S.ico(.2, 0, .02, 0, fur, { sc: [.75, .7, 1.45], d: 1 }); S.ico(.12, 0, .0, .3, furD, { sc: [.8, .75, 1.3], d: 1 }); S.cone(.045, .13, 0, -.03, .47, C(0x8a6a62), { n: 5, r: [HPI, 0, 0] });
-      for (const s of [-1, 1]) { S.box(.07, .08, .02, s * .075, .11, .24, C(0x7a5a55), { r: [0, s * .4, 0] }); S.box(.025, .025, .02, s * .05, .03, .4, COL.black, { jit: 0 }); }
-    }, 90, { rad: .15 }),
-    leg: new PartBatch(S => { S.box(.05, .14, .05, 0, -.07, 0, furD, {}); S.box(.05, .03, .1, 0, -.14, .03, C(0x8a6a62), {}); }, 360, { rad: .05, shadow: false }),
-    tail: new PartBatch(S => { S.seg([0, 0, 0], [0, 0, -.24], .028, .014, C(0x8a6a62), { n: 4 }); }, 180, { rad: .04, shadow: false }),
-  };
-  KIT.slime = { body: new PartBatch(S => {
-    S.add(gDome(10, 5), { s: [.5, .46, .5], p: [0, 0, 0], c: COL.slime, smooth: true, rough: .32, jit: 0, emis: .006, c2: [COL.slimeD[0], COL.slimeD[1], COL.slimeD[2], v => smooth(.3, .0, v.y)] });
-    S.cyl(.5, .05, 0, .0, 0, COL.slimeD, { n: 10, rough: .32, rt: .96 });
-    S.ico(.17, .04, .16, -.02, mulC(COL.slimeD, .6), { d: 1, rough: .4, sc: [1, .8, 1] });
-    for (const s of [-1, 1]) S.box(.07, .09, .03, s * .13, .2, .42, COL.black, { jit: 0, r: [-.35, 0, 0] });
-  }, 80, { rad: .3 }) };
-  KIT.bat = {
-    body: new PartBatch(S => { S.ico(.11, 0, 0, 0, COL.bat, { sc: [.9, .9, 1.4], d: 1 }); for (const s of [-1, 1]) { S.cone(.03, .1, s * .05, .1, .1, COL.bat, { n: 4 }); S.box(.02, .02, .02, s * .04, .03, .15, COL.black, { jit: 0 }); } }, 50, { rad: .1 }),
-    wing: new PartBatch(S => {
-      const c = mulC(COL.bat, 1.25), c2 = mulC(COL.bat, .8), pts = [[0, 0, .1], [.2, .03, .14], [.46, .02, .06], [.4, 0, -.06], [.27, 0, -.02], [.2, 0, -.14], [.1, 0, -.06], [0, 0, -.12]];
-      for (let i = 1; i < pts.length - 1; i++) { S.tri(pts[0], pts[i + 1], pts[i], i & 1 ? c : c2, L_PLAIN, .9); S.tri(pts[0], pts[i], pts[i + 1], i & 1 ? c : c2, L_PLAIN, .9); }
-      S.seg([0, 0, .1], [.46, .02, .06], .014, .008, c2, { n: 3 });
-    }, 100, { rad: .1 }),
-  };
+  // 원방패(밝은 나무 — tint로 군대색)
+  E.shieldR = new PartBatch(S => {
+    S.cyl(.27, .05, 0, 0, 0, [.72, .66, .58], { n: 8, r: [HPI, 0, 0], l: L_WOOD }); S.add(gTorus(8, .13, 4), { s: .25, p: [0, 0, .01], c: iron, l: L_METAL });
+    S.sph(.075, 0, 0, .04, COL.ironL, { l: L_METAL, w: 6, h: 4, smooth: false }); for (let a = 0; a < 2; a++) S.box(.03, .42, .012, 0, 0, .03, iron, { l: L_METAL, r: [0, 0, a * HPI] });
+  }, 60, { rad: .2, shadow: false });
+  E.helm = new PartBatch(S => { S.add(gDome(8, 3), { s: [.18, .175, .195], p: [0, .16, 0], c: iron, l: L_METAL, rough: .5 }); S.box(.035, .13, .03, 0, .15, .185, COL.ironL, { l: L_METAL }); for (const s of [-1, 1]) S.box(.03, .14, .13, s * .165, .1, .03, iron, { l: L_METAL }); S.cone(.03, .16, 0, .4, 0, COL.ironL, { n: 4, l: L_METAL }); }, 24, { rad: .16, shadow: false });
+  E.plate = new PartBatch(S => { S.box(.35, .31, .25, 0, .27, 0, iron, { l: L_METAL, rough: .5 }); S.box(.2, .2, .26, 0, .29, .005, COL.ironL, { l: L_METAL, rough: .45 }); for (const s of [-1, 1]) S.sph(.1, s * .21, .44, 0, COL.ironL, { l: L_METAL, w: 6, h: 4, smooth: false, sc: [1, .8, 1.1] }); }, 24, { rad: .2, shadow: false });
+  // 철퇴
+  E.club = new PartBatch(S => { S.seg([0, -.12, 0], [0, .62, 0], .04, .05, COL.wood, { l: L_WOOD, n: 6 }); S.ico(.12, 0, .66, 0, iron, { d: 1, l: L_METAL, rough: .5 }); for (let a = 0; a < 6; a++) S.cone(.03, .1, Math.cos(a * 1.05) * .13, .66 + ((a % 2) - .5) * .1, Math.sin(a * 1.05) * .13, COL.ironL, { n: 4, l: L_METAL, r: [Math.sin(a * 1.05) * 1.57, 0, -Math.cos(a * 1.05) * 1.57] }); }, 24, { rad: .1 });
+  // 장창(붉은 창영)
+  E.spear = new PartBatch(S => {
+    S.seg([0, -.6, 0], [0, 1.12, 0], .019, .016, COL.woodD, { l: L_WOOD, n: 5 }); S.cone(.036, .19, 0, 1.21, 0, steel, { n: 4, l: L_METAL, rough: .3 });
+    S.ico(.045, 0, 1.08, 0, C(0xb02a22), { d: 0, sc: [1, 1.3, 1] });
+  }, 150, { rad: .06, shadow: false });
+  // 월도(적장용 긴 자루 칼)
+  E.glaive = new PartBatch(S => {
+    S.seg([0, -.7, 0], [0, .95, 0], .024, .022, C(0x5a2a1e), { l: L_WOOD, n: 5 }); S.box(.07, .03, .09, 0, .95, 0, COL.brass, { l: L_METAL, rough: .4 });
+    S.box(.02, .3, .12, 0, 1.11, .015, steel, { l: L_METAL, rough: .28 }); S.box(.02, .2, .1, 0, 1.33, .05, steel, { l: L_METAL, rough: .28, r: [.3, 0, 0] });
+    S.cone(.05, .12, 0, 1.46, .1, steel, { n: 4, l: L_METAL, rough: .28, rz: .012, r: [.5, 0, 0] }); S.ico(.05, 0, .9, 0, C(0xb02a22), { d: 0 });
+  }, 12, { rad: .1, shadow: false });
   KIT.coin = new PartBatch(S => { S.cyl(.075, .022, 0, 0, 0, COL.gold, { n: 8, l: L_METAL, rough: .35, emis: .16, jit: 0 }); S.cyl(.05, .026, 0, 0, 0, mulC(COL.gold, 1.3), { n: 8, l: L_METAL, rough: .3, emis: .2, jit: 0 }); }, 160, { shadow: false, rad: .05 });
-  KIT.goo = new PartBatch(S => { S.ico(.08, 0, 0, 0, COL.slime, { d: 1, rough: .3, emis: .08 }); }, 200, { shadow: false, rad: .06 });
   KIT.rubble = new PartBatch(S => { S.rock(.14, 0, 0, 0, COL.stone, {}); }, 160, { rad: .1 });
-  KIT.plank = new PartBatch(S => { S.box(.12, .6, .05, 0, 0, 0, COL.wood, { l: L_WOOD }); }, 100, { rad: .08 });
+  KIT.plank = new PartBatch(S => { S.box(.12, .6, .05, 0, 0, 0, COL.wood, { l: L_WOOD }); }, 140, { rad: .08 });
   initBestiary();
 }
 
 const SPEC = {
-  skel: { hip: .6, pelvisH: .12, torsoH: .46, shX: .21, shY: .42, uArm: .27, lArm: .29, hipX: .085, uLeg: .29, lLeg: .3, stride: .62, lean: .12, stoop: .1, eyeX: .058, eyeY: .185, eyeZ: .15, top: 1.42 },
-  ogre: { hip: .43, pelvisH: .08, torsoH: .5, shX: .3, shY: .43, uArm: .25, lArm: .3, hipX: .12, uLeg: .21, lLeg: .21, stride: .5, lean: .1, stoop: .14, eyeX: .055, eyeY: .125, eyeZ: .15, top: 1.2 },
+  man: { hip: .585, pelvisH: .1, torsoH: .46, shX: .225, shY: .4, uArm: .27, lArm: .27, hipX: .09, uLeg: .29, lLeg: .29, stride: .6, lean: .1, stoop: .04, top: 1.42 },
+  hulk: { hip: .585, pelvisH: .1, torsoH: .46, shX: .24, shY: .4, uArm: .27, lArm: .27, hipX: .1, uLeg: .29, lLeg: .29, stride: .5, lean: .1, stoop: .12, top: 1.42 },
 };
 const RIGOUT = { headM: _M[3], handR: new THREE.Vector3(), handL: new THREE.Vector3(), tip: new THREE.Vector3(), torch: new THREE.Vector3() };
+// 사람형 공용 리그. 아군(src/52-allies.js)도 쓰므로 기존 플래그의 동작은 그대로다.
+// 조선워치에서 더한 플래그(모두 선택):
+//   tintH/tintL  부위별 tint          mount   말 안장 행렬(있으면 그 위에 앉는다)
+//   crouch 0..1  웅크려 달리기        roll    몸 전체 앞구르기 각도
+//   charge       칼을 치켜들고 돌격    lance   창을 앞으로 겨눔      hoist  두 팔을 머리 위로(운제 운반)
+//   girth        몸통 굵기 배율        wTint   무기 tint
+//   gear         [{ b: PartBatch, at: 0 몸통 | 1 머리 | 2 골반, t: tint, s: 배율, y: 높이, glow }] 덧입는 장비
 function rigHuman(kit, sp, e) {
   const s = e.scale || 1, mv = e.mv, ph = e.ph, fl = e.flash || 0, tint = e.tint || null, fz = e.flinch || 0;
-  const sw = Math.sin(ph) * sp.stride * mv, cw = Math.cos(ph);
-  let twist = Math.sin(ph) * .12 * mv, lean = sp.lean * mv + sp.stoop, lunge = 0, dip = 0;
+  const tH = e.tintH === undefined ? tint : e.tintH, tL = e.tintL === undefined ? tint : e.tintL, cr = e.crouch || 0, ride = e.mount || null;
+  const sw = ride ? 0 : Math.sin(ph) * sp.stride * mv, cw = Math.cos(ph);
+  let twist = Math.sin(ph) * .12 * mv, lean = sp.lean * mv + sp.stoop + cr * .75, lunge = 0, dip = 0;
   let shR = .25 * sw - .15, elR = -.35, bladeA = .55, shL = -.7 * sw - .1, elL = -.3, rzR = -.1, rzL = .1;
+  if (ride) { twist = 0; lean = .1 * mv; shR = -.35; elR = -.6; shL = -.75 + .05 * Math.sin(ph * 2) * mv; elL = -.85; }
   if (e.shamble) { shR = -1.0 + .12 * Math.sin(ph); elR = -.7; shL = -.75 + .2 * Math.sin(ph + 1); elL = -.5; bladeA = .2; }
   if (e.shield) { shL = -.55; elL = -1.25; rzL = .2; }
   if (e.torch) { shL = -1.25 + .06 * Math.sin(ph * 2); elL = -.5; }
   if (e.heavy) { shR = -.3 + .3 * sw; elR = -.5; bladeA = 1.9; shL = -.2 - .5 * sw; elL = -.6; }
   if (e.claw) { shR = -1.25 + .45 * sw; elR = -.55; shL = -1.25 - .45 * sw; elL = -.55; }
   if (e.staff) { shR = -.75; elR = -.95; bladeA = .12; }
-  if (e.cast > 0) { const u = easeInOut(Math.min(1, e.cast * 1.6)); shR = lerp(shR, -2.7, u); elR = lerp(elR, -.25, u); shL = lerp(shL, -2.3, u); elL = lerp(elL, -.4, u); }
+  if (e.charge) { shR = -2.35 + .18 * Math.sin(ph * 2) * mv; elR = -.4; bladeA = .35; lean += .14 * mv; }
+  if (e.lance) { shR = -.45; elR = -1.05; bladeA = 1.32; }
+  if (e.hoist) { shR = shL = -2.95; elR = elL = -.15; rzR = -.05; rzL = .05; }
+  if (e.cast > 0) { const u = easeInOut(Math.min(1, e.cast * 1.6)); shR = lerp(shR, -2.7, u); elR = lerp(elR, -.25, u); if (!ride) { shL = lerp(shL, -2.3, u); elL = lerp(elL, -.4, u); } }
   if (e.drum) { const b = Math.sin(e.beat || 0); shR = -.95 - .5 * Math.max(0, b); elR = -1.15; shL = -.95 - .5 * Math.max(0, -b); elL = -1.15; bladeA = .9; }
   let atk = e.atk;
   if (e.bow) {
@@ -2963,20 +2943,24 @@ function rigHuman(kit, sp, e) {
     else { const u = easeOut((t - .52) / .48); shR = lerp(-.85, shR, u); elR = lerp(-.12, elR, u); bladeA = lerp(1.75, bladeA, u); twist = lerp(.42, twist, u); lean = lerp(.26, lean, u); lunge = .14 * (1 - u); dip = .05 * (1 - u); }
   }
   const bob = -sp.uLeg * (1 - Math.cos(sw)) - dip + (e.heavy ? Math.abs(Math.sin(ph)) * .035 * mv : Math.abs(Math.sin(ph)) * .02 * mv);
-  const M0 = xf(_M[0], null, e.x, e.y, e.z, 0, e.yaw, 0, s, s, s);
-  const M1 = xf(_M[1], M0, 0, sp.hip + sp.uLeg * 0 + bob, lunge - fz * .06, lean * .4 - fz * .18, twist * .5, (e.shamble ? Math.sin(ph) * .05 * mv : 0));
+  let M0;
+  if (ride) M0 = _M[0].copy(ride);
+  else if (e.roll) { xf(_M[21], null, e.x, e.y + .7 * s, e.z, 0, e.yaw, 0, s, s, s); xf(_M[22], _M[21], 0, 0, 0, e.roll, 0, 0); M0 = xf(_M[0], _M[22], 0, -.7, 0, 0, 0, 0); }
+  else { const g = e.girth || 1; M0 = xf(_M[0], null, e.x, e.y, e.z, 0, e.yaw, 0, s * g, s, s * g); }
+  const M1 = ride ? xf(_M[1], M0, 0, .04 + Math.abs(Math.sin(ph)) * .02 * mv, lunge * .5, lean * .4 - fz * .18, twist * .5, 0)
+    : xf(_M[1], M0, 0, sp.hip + bob - cr * .13, lunge - fz * .06, lean * .4 - fz * .18, twist * .5, (e.shamble ? Math.sin(ph) * .05 * mv : 0));
   kit.pelvis.put(M1, fl, tint);
   const M2 = xf(_M[2], M1, 0, sp.pelvisH, 0, lean * .6 - fz * .4, twist, 0);
   kit.torso.put(M2, fl, tint);
-  const M3 = xf(_M[3], M2, 0, sp.torsoH, 0, -lean * .6 - fz * .35 + (e.shamble ? Math.sin(ph * 2) * .05 : 0), -twist * .8, e.shamble ? Math.sin(ph) * .1 * mv : 0);
-  kit.head.put(M3, fl, tint);
+  const M3 = xf(_M[3], M2, 0, sp.torsoH, 0, -lean * (.6 + .3 * cr) - fz * .35 + (e.shamble ? Math.sin(ph * 2) * .05 : 0), -twist * .8, e.shamble ? Math.sin(ph) * .1 * mv : 0);
+  kit.head.put(M3, fl, tH);
   const M4 = xf(_M[4], M2, sp.shX, sp.shY, 0, shL + fz * .5, 0, rzL + fz * .3), M5 = xf(_M[5], M4, 0, -sp.uArm, 0, elL, 0, 0);
-  kit.uArm.put(M4, fl, tint); kit.lArm.put(M5, fl, tint);
+  kit.uArm.put(M4, fl, tint); kit.lArm.put(M5, fl, tL);
   const M6 = xf(_M[6], M2, -sp.shX, sp.shY, 0, shR + fz * .4, 0, rzR - fz * .3), M7 = xf(_M[7], M6, 0, -sp.uArm, 0, elR, 0, 0);
-  kit.uArm.put(M6, fl, tint); kit.lArm.put(M7, fl, tint);
+  kit.uArm.put(M6, fl, tint); kit.lArm.put(M7, fl, tL);
   RIGOUT.handR.set(0, -sp.lArm, 0).applyMatrix4(M7); RIGOUT.handL.set(0, -sp.lArm, 0).applyMatrix4(M5);
   const I = KIT.item, psiR = shR + elR + fz * .4, psiL = shL + elL + fz * .5;
-  if (e.weapon) { const M8 = xf(_M[8], M7, 0, -sp.lArm, 0, bladeA - psiR, 0, 0, e.wScale || 1, e.wScale || 1, e.wScale || 1); e.weapon.put(M8, fl, null); RIGOUT.tip.set(0, .6, 0).applyMatrix4(M8); }
+  if (e.weapon) { const M8 = xf(_M[8], M7, 0, -sp.lArm, 0, bladeA - psiR, 0, 0, e.wScale || 1, e.wScale || 1, e.wScale || 1); e.weapon.put(M8, fl, e.wTint || null); RIGOUT.tip.set(0, .6, 0).applyMatrix4(M8); }
   if (e.shield) { const M9 = xf(_M[9], M5, .04, -sp.lArm * .6, .06, -psiL + .05, .25, 0); e.shield.put(M9, fl, e.shieldTint || null); }
   if (e.torch) { const M9 = xf(_M[9], M5, 0, -sp.lArm, 0, .25 - psiL, 0, 0); I.torch.put(M9, 0, null); RIGOUT.torch.set(0, .46, 0).applyMatrix4(M9); }
   if (e.bow) { const M9 = xf(_M[9], M5, 0, -sp.lArm, 0, HPI + .0, 0, 0); I.bow.put(M9, fl, null); }
@@ -2984,34 +2968,21 @@ function rigHuman(kit, sp, e) {
   if (e.plate) I.plate.put(M2, fl, null);
   if (e.hood) I.hood.put(M3, fl, null); if (e.robe) I.robe.put(M2, fl, null); if (e.drum) I.drum.put(M2, fl, null); if (e.standard) I.standard.put(M2, 0, null);
   if (e.keg) I.keg.put(M2, fl, null); if (e.wraps) { I.wraps.put(M2, fl, null); I.wrapHead.put(M3, fl, null); } if (e.crown) I.crown.put(M3, fl, null);
-  const kL = Math.max(0, cw) * 1.0 * mv, kR = Math.max(0, -cw) * 1.0 * mv;
-  const M10 = xf(_M[10], M1, sp.hipX, 0, 0, -sw - kL * .25, 0, 0), M11 = xf(_M[11], M10, 0, -sp.uLeg, 0, kL, 0, 0);
-  const M12 = xf(_M[12], M1, -sp.hipX, 0, 0, sw - kR * .25, 0, 0), M13 = xf(_M[13], M12, 0, -sp.uLeg, 0, kR, 0, 0);
-  kit.uLeg.put(M10, fl, tint); kit.lLeg.put(M11, fl, tint); kit.uLeg.put(M12, fl, tint); kit.lLeg.put(M13, fl, tint);
-  return M3;
-}
-function rigRat(e) {
-  const K = KIT.rat, ph = e.ph, s = e.scale || 1, fl = e.flash || 0, mv = e.mv;
-  const M0 = xf(_M[0], null, e.x, e.y + (.2 + Math.abs(Math.sin(ph * 2)) * .035 * mv) * s, e.z, Math.sin(ph * 2) * .07 * mv - (e.flinch || 0) * .5, e.yaw, 0, s, s, s);
-  K.body.put(M0, fl, e.tint);
-  for (let i = 0; i < 4; i++) {
-    const fr = i < 2, sd = (i & 1) ? -1 : 1, a = Math.sin(ph * 2 + (fr === (sd > 0) ? 0 : PI)) * .9 * mv;
-    K.leg.put(xf(_M[4 + i], M0, sd * .12, -.04, fr ? .16 : -.16, a, 0, sd * .15), fl, e.tint);
+  if (e.gear) for (const g of e.gear) {
+    const P = g.at === 1 ? M3 : g.at === 2 ? M1 : M2;
+    g.b.put(g.s ? xf(_M[20], P, 0, g.y || 0, 0, 0, 0, 0, g.s, g.s, g.s) : P, g.glow ? 0 : fl, g.t || null);
   }
-  const T1 = xf(_M[8], M0, 0, .03, -.26, .25, Math.sin(ph + 1) * .4, 0); K.tail.put(T1, fl, e.tint);
-  K.tail.put(xf(_M[9], T1, 0, 0, -.24, -.2, Math.sin(ph + 2.2) * .6, 0, .8, .8, 1), fl, e.tint);
-  return M0;
-}
-function rigSlime(e) {
-  const s = e.scale || 1, h = e.hop || 0, fl = e.flash || 0;
-  let sy = 1, y = 0;
-  if (h < .22) sy = 1 - .3 * easeOut(h / .22);
-  else if (h < .6) { const u = (h - .22) / .38; sy = .7 + .62 * Math.sin(Math.min(1, u * 1.6) * HPI) - .12 * u; y = Math.sin(u * PI) * .34; }
-  else if (h < .76) { const u = (h - .6) / .16; sy = 1.2 - .5 * Math.sin(u * PI) - .2 * u; }
-  else sy = 1 + .04 * Math.sin((h - .76) / .24 * TAU);
-  sy *= 1 - (e.flinch || 0) * .25; const sx = 1 / Math.sqrt(Math.max(.4, sy));
-  const M0 = xf(_M[0], null, e.x, e.y + y * s, e.z, 0, e.yaw, 0, s * sx, s * sy, s * sx);
-  KIT.slime.body.put(M0, fl, e.tint); return M0;
+  if (ride) {
+    const M10 = xf(_M[10], M1, sp.hipX, 0, 0, -1.2, 0, .5), M11 = xf(_M[11], M10, 0, -sp.uLeg, 0, 1.25, 0, 0);
+    const M12 = xf(_M[12], M1, -sp.hipX, 0, 0, -1.2, 0, -.5), M13 = xf(_M[13], M12, 0, -sp.uLeg, 0, 1.25, 0, 0);
+    kit.uLeg.put(M10, fl, tint); kit.lLeg.put(M11, fl, tL); kit.uLeg.put(M12, fl, tint); kit.lLeg.put(M13, fl, tL);
+    return M3;
+  }
+  const kL = Math.max(0, cw) * 1.0 * mv, kR = Math.max(0, -cw) * 1.0 * mv, cb = cr * .9, ck = cr * 1.3;
+  const M10 = xf(_M[10], M1, sp.hipX, 0, 0, -sw - kL * .25 - cb, 0, 0), M11 = xf(_M[11], M10, 0, -sp.uLeg, 0, kL + ck, 0, 0);
+  const M12 = xf(_M[12], M1, -sp.hipX, 0, 0, sw - kR * .25 - cb, 0, 0), M13 = xf(_M[13], M12, 0, -sp.uLeg, 0, kR + ck, 0, 0);
+  kit.uLeg.put(M10, fl, tint); kit.lLeg.put(M11, fl, tL); kit.uLeg.put(M12, fl, tint); kit.lLeg.put(M13, fl, tL);
+  return M3;
 }
 function rigBat(e, K = KIT.bat, wx = .06, wy = .02) {
   const s = e.scale || 1, fl = e.flash || 0, f = Math.sin(e.ph), tint = e.tint || null;
@@ -3059,180 +3030,376 @@ function updateDebris(dt, groundAt, onCoin) {
 function clearDebris() { DEB.length = 0; }
 
 
-SPEC.golem = { hip: .5, pelvisH: .1, torsoH: .56, shX: .36, shY: .44, uArm: .26, lArm: .38, hipX: .15, uLeg: .22, lLeg: .24, stride: .42, lean: .1, stoop: .16, eyeX: .04, eyeY: .1, eyeZ: .16, top: 1.35 };
+// ── 조선워치 침공군: 장비·말·공성 병기·비행체 키트와 리그 ─────────────────────────
+// 군대(수·당·몽골·왜) 구분은 ① 인스턴스 tint ② 군대별 머리 장비 ③ 군대별 깃발로 한다.
+// 군대별 PartBatch는 그 군대의 전장에서만 인스턴스가 생기므로(n = 0이면 안 그림) 드로콜이 늘지 않는다.
+const ar_ARMIES = ['sui', 'tang', 'mongol', 'wa'];
 
-function golemKit(cap) {
-  const k = {}, limb = cap * 2, c = [.34, .34, .37], cd = [.22, .22, .25], gl = [1, .9, .8], rk = () => ({ l: L_ROCK, jit: .08 });
-  k.pelvis = new PartBatch(S => { S.rock(.2, 0, 0, 0, cd, { sq: .7 }); }, cap, { rad: .2, shadow: false });
-  k.torso = new PartBatch(S => {
-    S.rock(.3, 0, .2, 0, c, { sq: .9 }); S.rock(.27, 0, .4, -.02, c, { sq: .7 }); S.rock(.13, -.1, .56, -.12, cd, { sq: .9 });
-    for (const s of [-1, 1]) S.rock(.19, s * .33, .44, 0, cd, { sq: .8 });
-    S.box(.035, .26, .03, .06, .26, .28, gl, { emis: .1, jit: 0, r: [0, 0, .35] }); S.box(.03, .18, .03, -.07, .3, .28, gl, { emis: .1, jit: 0, r: [0, 0, -.5] }); S.box(.03, .14, .03, 0, .14, .27, gl, { emis: .1, jit: 0, r: [0, 0, 1.2] });
-  }, cap, { rad: .3 });
-  k.head = new PartBatch(S => { S.rock(.14, 0, .1, .03, c, { sq: .85 }); S.box(.22, .05, .1, 0, .17, .1, cd, rk()); S.box(.15, .035, .03, 0, .1, .155, gl, { emis: .22, jit: 0 }); }, cap, { rad: .14, shadow: false });
-  k.uArm = new PartBatch(S => { S.rock(.13, 0, -.12, 0, c, { sq: 1.25 }); }, limb, { rad: .12, shadow: false });
-  k.lArm = new PartBatch(S => { S.rock(.17, 0, -.15, 0, c, { sq: 1.15 }); S.rock(.15, 0, -.36, .02, cd, { sq: .9 }); }, limb, { rad: .15, shadow: false });
-  k.uLeg = new PartBatch(S => { S.rock(.15, 0, -.1, 0, cd, { sq: 1.1 }); }, limb, { rad: .13, shadow: false });
-  k.lLeg = new PartBatch(S => { S.rock(.15, 0, -.12, 0, c, { sq: 1.1 }); S.box(.24, .1, .32, 0, -.24, .04, cd, rk()); }, limb, { rad: .13, shadow: false });
-  return k;
+// 깃발 천(양면). 밤 화면에서 묻히지 않게 살짝 자체 발광을 준다.
+function ar_cloth(S, x0, x1, yTop, len, z, col, col2, o = {}) {
+  const nx = o.nx || 3, ny = o.ny || 5, rng = makeRng(o.seed || 9), em = o.emis === undefined ? .035 : o.emis;
+  for (let j = 0; j < ny; j++) for (let i = 0; i < nx; i++) {
+    if (o.swallow && j === ny - 1 && i > 0 && i < nx - 1) continue;
+    const xa = lerp(x0, x1, i / nx), xb = lerp(x0, x1, (i + 1) / nx), ya = yTop - len * j / ny, yb = yTop - len * (j + 1) / ny;
+    const emb = col2 && (o.band ? j === 1 || j === 2 : (i >= 1 && i < nx - 1 && j >= 1 && j <= ny - 3));
+    const c = mulC(emb ? col2 : col, .86 + .22 * rng());
+    const q = [[xa, ya], [xb, ya], [xb, yb], [xa, yb]];
+    for (const [order, nz] of [[[0, 3, 2, 0, 2, 1], 1], [[0, 1, 2, 0, 2, 3], -1]]) for (const k of order) S.v(q[k][0], q[k][1], z, 0, 0, nz, c[0], c[1], c[2], q[k][0] * .5, q[k][1] * .5, L_CLOTH, .95, 0, em);
+  }
+}
+// 양면 사각 판
+function ar_quad2(S, a, b, c, d, col, layer, rough, o) { S.quad(a, b, c, d, col, layer, rough, o); S.quad(a, d, c, b, col, layer, rough, o); }
+
+// 군대별 머리 장비와 깃발
+function ar_armyKit(a) {
+  const A = ARMY[a], main = C(A.main), sub = C(A.sub), trim = C(A.trim), iron = COL.iron, gold = mulC(COL.gold, .9), N = { rad: .17, shadow: false };
+  const K = {};
+  if (a === 'sui') {
+    // 찰갑 투구: 검은 쇠 종장판 + 가죽 드림 + 황색 띠와 꼭지
+    K.hat = new PartBatch(S => {
+      S.add(gDome(8, 3), { s: [.142, .135, .15], p: [0, .165, 0], c: mulC(iron, 1.5), l: L_METAL, rough: .5 });
+      S.cyl(.147, .035, 0, .175, 0, mulC(sub, 1.1), { n: 8, emis: .02 });
+      S.box(.28, .15, .05, 0, .1, -.115, mulC(trim, 1.3), {}); for (const s of [-1, 1]) S.box(.045, .14, .15, s * .125, .1, -.035, mulC(trim, 1.3), {});
+      S.cone(.035, .1, 0, .34, 0, mulC(sub, 1.2), { n: 4, emis: .03 });
+    }, 170, N);
+    K.heavy = K.hat;
+  } else if (a === 'tang') {
+    // 붉은 술 투구: 밝은 강철 + 챙 + 붉은 술
+    K.hat = new PartBatch(S => {
+      const st = mulC(trim, 1.25), red = mulC(main, 1.9);
+      S.add(gDome(8, 3), { s: [.142, .13, .15], p: [0, .165, 0], c: st, l: L_METAL, rough: .35 });
+      S.cyl(.19, .022, 0, .172, 0, st, { n: 8, l: L_METAL, rough: .35 });
+      S.box(.26, .13, .04, 0, .1, -.115, red, { l: L_CLOTH, emis: .02 }); for (const s of [-1, 1]) S.box(.04, .12, .12, s * .12, .1, -.04, st, { l: L_METAL, rough: .4 });
+      S.seg([0, .28, 0], [0, .37, 0], .014, .014, mulC(sub, 1.1), { n: 4, l: L_METAL });
+      S.ico(.06, 0, .41, 0, red, { d: 0, sc: [1, 1.25, 1], emis: .05 }); S.ico(.045, 0, .35, -.04, red, { d: 0, emis: .05 });
+    }, 170, N);
+    K.heavy = K.hat;
+  } else if (a === 'mongol') {
+    // 털모자: 모피 테 + 흰 펠트 고깔 + 귀·목 가리개
+    K.hat = new PartBatch(S => {
+      const fur = mulC(trim, 1.25), felt = mulC(sub, .95);
+      S.cyl(.168, .075, 0, .19, 0, fur, { n: 8, jit: .1 });
+      S.cone(.135, .19, 0, .32, 0, felt, { n: 6, emis: .025 });
+      S.ico(.03, 0, .425, 0, mulC(main, 2.2), { d: 0, emis: .05 });
+      for (const s of [-1, 1]) S.box(.05, .17, .14, s * .135, .08, -.02, fur, { jit: .1 });
+      S.box(.25, .17, .05, 0, .08, -.115, fur, { jit: .1 });
+    }, 170, N);
+    K.heavy = K.hat;
+  } else {
+    // 진가사: 넓고 납작한 검은 옻칠 삿갓 + 흰 테 + 붉은 원
+    K.hat = new PartBatch(S => {
+      const lac = [.035, .035, .045], red = mulC(sub, 1.5);
+      S.cone(.275, .115, 0, .247, 0, lac, { n: 8, rough: .3 });
+      S.cyl(.282, .014, 0, .187, 0, mulC(trim, .95), { n: 8, emis: .03 });
+      S.box(.075, .014, .085, 0, .258, .12, red, { r: [.4, 0, 0], emis: .06, jit: 0 });
+      S.box(.075, .014, .085, 0, .258, -.12, red, { r: [-.4, 0, 0], emis: .06, jit: 0 });
+      S.ico(.025, 0, .31, 0, gold, { d: 0, l: L_METAL });
+    }, 170, N);
+    // 가부토: 검은 투구 + 붉은 엮음 시코로 + 금빛 앞꾸밈(밖으로 벌어진 뿔 한 쌍과 가운데 원판)
+    K.heavy = new PartBatch(S => {
+      const lac = [.05, .05, .065], red = mulC(sub, 1.4);
+      S.add(gDome(8, 3), { s: [.15, .13, .16], p: [0, .165, 0], c: lac, l: L_METAL, rough: .35 });
+      S.box(.36, .045, .21, 0, .155, -.07, lac, { rough: .4 }); S.box(.41, .045, .25, 0, .11, -.085, red, { emis: .02 }); S.box(.45, .04, .28, 0, .065, -.1, lac, { rough: .4 });
+      S.box(.2, .02, .08, 0, .18, .14, lac, { rough: .4 });
+      for (const s of [-1, 1]) { S.seg([s * .03, .2, .16], [s * .11, .34, .155], .02, .028, gold, { n: 4, l: L_METAL, rough: .3, emis: .05 }); S.seg([s * .11, .34, .155], [s * .21, .47, .15], .028, .012, gold, { n: 4, l: L_METAL, rough: .3, emis: .05 }); }
+      S.cyl(.04, .015, 0, .25, .165, gold, { n: 6, r: [HPI, 0, 0], l: L_METAL, rough: .3, emis: .05 });
+    }, 50, N);
+  }
+  // 깃발: 몸통 좌표(등 뒤 z = -.14에 깃대)
+  K.flag = new PartBatch(S => {
+    const pole = COL.woodD;
+    if (a === 'mongol') {
+      // 술데: 검은 말총을 두른 깃대(전쟁의 술데) + 청색 띠
+      S.seg([0, .1, -.14], [0, 1.5, -.2], .022, .018, pole, { l: L_WOOD, n: 4 });
+      S.cyl(.12, .035, 0, 1.43, -.2, mulC(COL.brass, 1.5), { n: 8, l: L_METAL, rough: .35, emis: .03 });
+      for (let k = 0; k < 9; k++) { const t = k / 9 * TAU, cx = Math.cos(t), sz = Math.sin(t); S.seg([cx * .1, 1.42, -.2 + sz * .1], [cx * .15, 1.0 + (k & 1) * .07, -.2 + sz * .15], .03, .008, k & 1 ? [.06, .055, .06] : [.11, .1, .1], { n: 3 }); }
+      S.cone(.034, .22, 0, 1.6, -.2, mulC(COL.brass, 1.6), { n: 4, l: L_METAL, rough: .3, emis: .03 });
+      S.box(.16, .022, .022, 0, 1.5, -.2, mulC(COL.brass, 1.5), { l: L_METAL });
+      S.cyl(.03, .12, 0, .95, -.185, mulC(main, 2.2), { n: 6, emis: .04 });
+      S.ico(.05, 0, 1.47, -.2, mulC(COL.gold, 1.2), { d: 0, l: L_METAL, emis: .08 });
+      // 밤에도 보이도록 말총 아래에 청·백 두 갈래 드림을 단다
+      ar_cloth(S, .02, .2, .98, .4, -.19, mulC(main, 2.4), null, { nx: 1, ny: 3, seed: 5, emis: .06 }); ar_cloth(S, -.2, -.02, .98, .3, -.19, mulC(sub, 1.0), null, { nx: 1, ny: 2, seed: 6, emis: .05 });
+    } else if (a === 'wa') {
+      // 사시모노: 등 뒤의 좁고 긴 흰 깃발에 붉은 띠
+      const lac = [.05, .05, .06];
+      S.seg([0, .1, -.14], [0, 1.56, -.17], .016, .014, lac, { n: 4 });
+      S.seg([0, 1.54, -.17], [.27, 1.54, -.17], .012, .012, lac, { n: 4 });
+      ar_cloth(S, .01, .27, 1.53, .78, -.17, mulC(trim, 1.05), mulC(sub, 1.5), { nx: 2, ny: 6, band: 1, seed: 31, emis: .05 });
+    } else {
+      // 수·당 군기: 가로대에 드리운 네모 깃발
+      const col = a === 'sui' ? mulC(sub, 1.15) : mulC(main, 2.0), col2 = a === 'sui' ? mulC(main, .9) : mulC(sub, 1.2);
+      S.seg([0, .1, -.14], [0, 1.6, -.2], .022, .018, pole, { l: L_WOOD, n: 4 }); S.seg([-.21, 1.47, -.2], [.21, 1.47, -.2], .016, .016, pole, { l: L_WOOD, n: 4 });
+      ar_cloth(S, -.19, .19, 1.46, .62, -.2, col, col2, { nx: 3, ny: 5, swallow: 1, seed: 21, emis: a === 'sui' ? .03 : .05 });
+      S.ico(.04, 0, 1.64, -.2, a === 'tang' ? gold : mulC(trim, 1.3), { d: 0, l: L_METAL });
+      for (const s of [-1, 1]) S.seg([s * .21, 1.47, -.2], [s * .21, 1.28, -.2], .018, .006, col2, { n: 3, emis: .03 });
+    }
+  }, 110, { rad: .3, shadow: false });
+  return K;
 }
 
 function initBestiary() {
-  const I = KIT.item, cloth = C(0x3b3048), clothL = C(0x6a4a78), wrap = C(0xcdbf9a), N = { rad: .2, shadow: false };
-  KIT.golem = golemKit(8);
+  const I = KIT.item, N = { rad: .2, shadow: false }, iron = COL.iron, steel = mulC(COL.steel, 1.1), gold = mulC(COL.gold, .9), skin = COL.skin;
+  const W = [.9, .9, .9], wd = [.5, .4, .29], wdD = [.33, .26, .19], hide = [.6, .47, .34];
+
+  // ── 사람에게 덧입히는 장비 ──
+  // 복면 두건(세작·자객·닌자)
   I.hood = new PartBatch(S => {
-    S.add(gDome(8, 4), { s: [.2, .17, .21], p: [0, .19, -.03], c: cloth, l: L_CLOTH });
-    S.box(.34, .24, .1, 0, .1, -.15, cloth, { l: L_CLOTH }); S.box(.3, .05, .05, 0, .2, .15, clothL, { l: L_CLOTH });
-    for (const s of [-1, 1]) S.box(.06, .26, .2, s * .18, .1, -.04, mulC(cloth, .8), { l: L_CLOTH });
-  }, 12, N);
+    const b = [.045, .045, .06];
+    S.add(gDome(8, 4), { s: [.15, .14, .155], p: [0, .165, -.005], c: b, l: L_CLOTH });
+    S.box(.212, .1, .212, 0, .07, 0, b, { l: L_CLOTH, jit: 0 }); S.box(.22, .2, .06, 0, .09, -.1, mulC(b, .8), { l: L_CLOTH });
+    S.box(.03, .16, .02, .08, .0, -.13, b, { l: L_CLOTH, r: [.3, 0, .2] });
+  }, 90, N);
+  // 긴 겉옷(독전관) — 흰 천, tint로 군대색
   I.robe = new PartBatch(S => {
-    S.add(gCyl(8, .5, true), { s: [.3, 1.12, .27], p: [0, -.12, 0], c: cloth, l: L_CLOTH, dbl: true, deform: v => { if (v.y < 0) { const j = .85 + .3 * vnoise(Math.atan2(v.z, v.x) * 2 + 3, 1, 7); v.x *= j; v.z *= j; v.y += (j - 1) * .25; } }, cf: v => .7 + .3 * sat(v.y / .56 + .5) });
-    S.box(.46, .1, .28, 0, .4, 0, clothL, { l: L_CLOTH }); S.cyl(.2, .05, 0, .02, 0, COL.rope, { n: 8 });
+    S.add(gCyl(8, .55, true), { s: [.3, 1.0, .27], p: [0, -.1, 0], c: W, l: L_CLOTH, dbl: true, deform: v => { if (v.y < 0) { const j = .9 + .2 * vnoise(Math.atan2(v.z, v.x) * 2 + 3, 1, 7); v.x *= j; v.z *= j; } }, cf: v => .72 + .28 * sat(v.y / .5 + .5) });
+    S.box(.46, .1, .28, 0, .4, 0, W, { l: L_CLOTH }); S.cyl(.2, .05, 0, .04, 0, [.25, .2, .16], { n: 8 });
   }, 12, N);
+  // 영기(令旗): 독전관이 휘두르는 세모 깃발 — 흰 천, wTint로 군대색
   I.staff = new PartBatch(S => {
-    S.seg([0, -.55, 0], [0, .95, 0], .028, .024, COL.woodD, { l: L_WOOD, n: 5 });
-    for (let a = 0; a < 3; a++) S.seg([0, .9, 0], [Math.cos(a * 2.1) * .09, 1.08, Math.sin(a * 2.1) * .09], .02, .008, COL.bone, { l: L_BONE, n: 4 });
-    S.ico(.075, 0, 1.06, 0, [.35, 1, .5], { d: 1, emis: .2, jit: 0 });
+    S.seg([0, -.55, 0], [0, 1.3, 0], .022, .018, COL.woodD, { l: L_WOOD, n: 5 }); S.cone(.03, .1, 0, 1.36, 0, [2.2, 1.7, .6], { n: 4, l: L_METAL });
+    const a = [0, 1.28, -.02], b = [0, .86, -.02], c = [0, 1.07, -.6], o = { emis: .05 };
+    S.tri(a, b, c, W, L_CLOTH, .95, o); S.tri(a, c, b, W, L_CLOTH, .95, o);
   }, 12, N);
+  // 전고(戰鼓): 배에 멘 붉은 북
   I.drum = new PartBatch(S => {
-    const T = new Soup(); T.cyl(.2, .2, 0, 0, 0, C(0x7a2c24), { n: 10, l: L_WOOD }); T.cyl(.205, .03, 0, .1, 0, C(0xc9b28a), { n: 10 }); T.cyl(.212, .025, 0, -.09, 0, COL.brass, { n: 10, l: L_METAL }); T.cyl(.212, .025, 0, .08, 0, COL.brass, { n: 10, l: L_METAL });
+    const T = new Soup(); T.cyl(.2, .2, 0, 0, 0, C(0x8a2c22), { n: 10, l: L_WOOD }); T.cyl(.205, .03, 0, .1, 0, C(0xd8c49a), { n: 10 }); T.cyl(.212, .025, 0, -.09, 0, COL.brass, { n: 10, l: L_METAL }); T.cyl(.212, .025, 0, .08, 0, COL.brass, { n: 10, l: L_METAL });
     S.merge(T, { p: [0, .1, .28], r: [.5, 0, 0], ao: null }); S.box(.05, .5, .03, .05, .26, .13, COL.leather, { r: [0, 0, .55] });
-  }, 8, N);
+  }, 12, N);
+  // (호환용) 흰 군기 — 군대색 깃발은 KIT.army[a].flag
   I.standard = new PartBatch(S => {
     S.seg([0, .1, -.14], [0, 1.55, -.2], .022, .018, COL.woodD, { l: L_WOOD, n: 4 }); S.seg([-.2, 1.42, -.2], [.2, 1.42, -.2], .016, .016, COL.woodD, { l: L_WOOD, n: 4 });
-    clothPanel(S, { x0: -.18, x1: .18, yTop: 1.41, len: .56, z: -.2, col: COL.clothR, col2: mulC(COL.gold, .6), rng: makeRng(21), sway: 0, nx: 3, ny: 5 });
-    PROP.skull(S, 0, 1.62, -.2, .07, 0);
+    ar_cloth(S, -.18, .18, 1.41, .56, -.2, W, null, { nx: 3, ny: 5, swallow: 1 });
   }, 8, { rad: .3, shadow: false });
-  I.stick = new PartBatch(S => { S.seg([0, -.05, 0], [0, .3, 0], .02, .018, COL.bone, { l: L_BONE, n: 4 }); S.ico(.04, 0, .32, 0, COL.boneD, { d: 0, l: L_BONE }); }, 8, N);
+  // 북채·나무 메
+  I.stick = new PartBatch(S => { S.seg([0, -.05, 0], [0, .3, 0], .02, .018, COL.wood, { l: L_WOOD, n: 4 }); S.ico(.045, 0, .32, 0, COL.woodL, { d: 0, l: L_WOOD }); }, 40, N);
+  // 등에 멘 단지(기름 항아리 / 화약 단지) — 밝은 질그릇색, tint로 재질
   I.keg = new PartBatch(S => {
-    const T = new Soup(); PROP.barrel(T, 0, 0, 0, .8, makeRng(3)); S.merge(T, { p: [.215, .26, -.24], r: [0, 0, HPI], ao: null });
-    S.seg([0, .4, -.24], [.05, .52, -.22], .012, .01, COL.rope, { n: 3 }); S.ico(.035, .05, .53, -.22, COL.ember, { d: 0, emis: .6, jit: 0 });
-    S.box(.05, .5, .03, 0, .22, .12, COL.leather, { r: [0, 0, .5] });
-  }, 12, N);
-  I.wraps = new PartBatch(S => {
-    let k = 0; for (const [y, w, rz] of [[.12, .3, .1], [.2, .33, -.12], [.29, .35, .08], [.37, .37, -.06]]) S.box(w, .05, .25, 0, y, 0, mulC(wrap, .8 + .1 * (k++ & 1) * 3), { l: L_CLOTH, r: [0, 0, rz] });
-    S.box(.05, .3, .02, .1, -.08, .12, wrap, { l: L_CLOTH, r: [0, 0, .15] });
-  }, 12, N);
-  I.wrapHead = new PartBatch(S => { S.cyl(.16, .07, 0, .26, 0, wrap, { n: 8, l: L_CLOTH }); S.cyl(.158, .05, 0, .09, .01, mulC(wrap, .85), { n: 8, l: L_CLOTH }); S.box(.04, .22, .02, .1, .06, -.15, wrap, { l: L_CLOTH, r: [.3, 0, .2] }); }, 12, N);
+    const clay = [.8, .68, .56];
+    S.ico(.17, 0, .25, -.25, clay, { d: 1, sc: [1, 1.05, 1], rough: .6 }); S.cyl(.07, .07, 0, .44, -.25, mulC(clay, .8), { n: 6 }); S.cyl(.09, .02, 0, .48, -.25, mulC(clay, .9), { n: 6 });
+    S.seg([0, .48, -.25], [.05, .58, -.23], .012, .01, COL.rope, { n: 3 }); S.ico(.035, .05, .59, -.23, COL.ember, { d: 0, emis: .6, jit: 0 });
+    S.box(.05, .5, .03, 0, .22, .12, COL.leather, { r: [0, 0, .5] }); S.box(.05, .5, .03, 0, .22, .12, COL.leather, { r: [0, 0, -.5] });
+  }, 36, N);
+  // 가죽 멜빵 / 붉은 머리띠(결사대)
+  I.wraps = new PartBatch(S => { S.box(.05, .52, .245, .0, .22, 0, COL.leather, { r: [0, 0, .6] }); S.box(.36, .05, .245, 0, .05, 0, COL.leather, {}); }, 12, N);
+  I.wrapHead = new PartBatch(S => {
+    const red = C(0xc0261e);
+    S.box(.205, .04, .205, 0, .185, 0, red, { l: L_CLOTH, emis: .04, jit: 0 });
+    S.box(.03, .15, .015, .04, .11, -.115, red, { l: L_CLOTH, r: [.25, 0, .15], emis: .04 }); S.box(.03, .12, .015, -.03, .12, -.115, red, { l: L_CLOTH, r: [.35, 0, -.2], emis: .04 });
+  }, 60, N);
+  // 투구 깃 장식(장교·중갑병) — 흰 술, tint로 군대색
   I.crown = new PartBatch(S => {
-    const g = mulC(COL.gold, .9);
-    S.cyl(.165, .07, 0, .3, 0, g, { n: 8, l: L_METAL, rough: .35, emis: .03 });
-    for (let a = 0; a < 6; a++) S.cone(.03, .12, Math.cos(a * 1.047) * .15, .39, Math.sin(a * 1.047) * .15, g, { n: 4, l: L_METAL, rough: .35, emis: .03 });
-    for (const s of [-1, 1]) S.box(.05, .3, .16, s * .17, .12, -.02, C(0x2a4a8a), { l: L_CLOTH });
-    S.ico(.03, 0, .31, .16, [.2, .9, .8], { d: 0, emis: .3, jit: 0 });
-  }, 2, N);
-  I.khopesh = new PartBatch(S => {
-    const g = mulC(COL.gold, .85); S.box(.04, .2, .04, 0, 0, 0, COL.leather, {}); S.box(.14, .03, .05, 0, .11, 0, g, { l: L_METAL });
-    let p = [.24, 0]; for (const [y, z] of [[.4, .03], [.52, .1], [.62, .2], [.66, .32]]) { const dy = y - p[0], dz = z - p[1], l = Math.hypot(dy, dz); S.box(.02, l + .02, .075, 0, (y + p[0]) / 2, (z + p[1]) / 2, g, { l: L_METAL, rough: .35, r: [Math.atan2(dz, dy), 0, 0] }); p = [y, z]; }
-    S.box(.02, .14, .07, 0, .18, 0, g, { l: L_METAL, rough: .35 });
-  }, 2, N);
-  I.iceclub = new PartBatch(S => {
-    S.seg([0, -.12, 0], [0, .5, 0], .045, .06, COL.wood, { l: L_WOOD, n: 6 });
-    for (let a = 0; a < 5; a++) S.add(gOct(), { s: [.09, .25, .09], p: [Math.cos(a * 1.26) * .07, .6 + (a & 1) * .06, Math.sin(a * 1.26) * .07], r: [Math.sin(a * 1.26) * .5, a, -Math.cos(a * 1.26) * .5], c: COL.ice, rough: .15, emis: .05 });
-  }, 2, { rad: .1, shadow: false });
+    S.seg([0, .3, 0], [0, .47, -.02], .016, .014, [.8, .7, .4], { n: 4, l: L_METAL });
+    S.ico(.062, 0, .52, -.03, W, { d: 0, sc: [1, 1.45, 1], emis: .05 }); S.ico(.045, 0, .45, -.07, W, { d: 0, emis: .05 });
+  }, 40, N);
+  // 찰갑 흉갑 + 어깨 + 치마 갑 — 밝은 쇠, tint로 군대별 재질
+  I.cuirass = new PartBatch(S => {
+    const m1 = [.78, .78, .8], m2 = [.52, .52, .55];
+    for (let r = 0; r < 4; r++) S.box(.372, .092, .252, 0, .065 + r * .095, 0, r & 1 ? m1 : m2, { l: L_METAL, rough: .42, jit: .03 });
+    for (const s of [-1, 1]) { S.box(.14, .07, .21, s * .235, .405, 0, m1, { l: L_METAL, rough: .42 }); S.box(.125, .07, .19, s * .255, .335, 0, m2, { l: L_METAL, rough: .42 }); S.box(.155, .2, .05, s * .085, -.11, .118, m2, { l: L_METAL, rough: .45 }); }
+    S.box(.31, .2, .05, 0, -.11, -.118, m2, { l: L_METAL, rough: .45 });
+    S.cyl(.075, .02, 0, .27, .13, [1.5, 1.2, .5], { n: 8, r: [HPI, 0, 0], l: L_METAL, rough: .25 });
+  }, 40, N);
+  // 방패병의 큰 둥근 방패: 가죽을 씌운 나무판 + 쇠 테와 배꼽 — 밝은 색, tint로 군대색
+  I.buckler = new PartBatch(S => {
+    S.add(gDome(10, 2), { s: [.37, .08, .37], p: [0, 0, 0], r: [HPI, 0, 0], c: [.82, .8, .76], rough: .7 });
+    S.add(gTorus(10, .06, 4), { s: .355, p: [0, 0, .005], c: [.2, .2, .22], l: L_METAL }); S.add(gTorus(10, .09, 4), { s: .2, p: [0, 0, .045], c: [.42, .4, .38] });
+    S.sph(.08, 0, 0, .08, [.3, .3, .33], { l: L_METAL, w: 6, h: 4, smooth: false });
+  }, 50, { rad: .25, shadow: false });
+  // 섶단(왜 화공병): 기름 먹여 불붙인 나뭇단
+  I.fagot = new PartBatch(S => {
+    const tw = [.42, .32, .2];
+    for (let k = 0; k < 7; k++) { const a = k * .9, r = k ? .07 : 0; S.seg([Math.cos(a) * r - .2, .3 + Math.sin(a) * r, -.24], [Math.cos(a + .4) * r + .2, .3 + Math.sin(a + .4) * r, -.24], .03, .026, mulC(tw, .8 + .06 * k), { l: L_WOOD, n: 4 }); }
+    for (const x of [-.1, .1]) S.cyl(.115, .03, x, .3, -.24, COL.rope, { n: 6, r: [0, 0, HPI] });
+    S.ico(.05, .2, .34, -.24, COL.ember, { d: 0, emis: .7, jit: 0 }); S.ico(.035, .16, .4, -.22, COL.ember, { d: 0, emis: .6, jit: 0 });
+    S.box(.05, .5, .03, 0, .22, .12, COL.leather, { r: [0, 0, .5] }); S.box(.05, .5, .03, 0, .22, .12, COL.leather, { r: [0, 0, -.5] });
+  }, 40, N);
 
-  KIT.spider = {
+  KIT.army = {}; for (const a of ar_ARMIES) KIT.army[a] = ar_armyKit(a);
+
+  // ── 말 ── 몸통(목·머리 포함)/다리/꼬리는 털빛 tint, 마구·마갑은 군대색 tint
+  const hc = [.8, .76, .72], hd = [.26, .23, .21], lea = [.5, .38, .28];
+  KIT.horse = {
     body: new PartBatch(S => {
-      const c = [.3, .27, .27], cd = [.19, .17, .18];
-      S.ico(.2, 0, .03, -.2, c, { sc: [.95, .8, 1.25], d: 1 }); S.ico(.13, 0, 0, .08, cd, { sc: [1, .72, 1.1], d: 1 });
-      S.box(.07, .02, .13, 0, .19, -.2, [1, .25, .12], { emis: .12, jit: 0 });
-      for (const s of [-1, 1]) { S.cone(.025, .1, s * .045, -.06, .2, C(0x1a1414), { n: 4, r: [PI - .5, 0, 0] }); for (const [ex, ey, ez] of [[.035, .06, .19], [.075, .05, .16]]) S.box(.022, .022, .02, s * ex, ey, ez, COL.black, { jit: 0 }); }
-    }, 70, { rad: .2 }),
-    leg: new PartBatch(S => { const c = [.2, .18, .19]; S.seg([0, 0, 0], [.2, .15, 0], .024, .02, c, { n: 4 }); S.seg([.2, .15, 0], [.4, -.17, 0], .02, .009, c, { n: 4 }); }, 560, { rad: .05, shadow: false }),
+      S.ico(.2, 0, 0, 0, hc, { sc: [.9, 1.0, 2.1], d: 1 }); S.ico(.2, 0, .02, .3, hc, { sc: [.96, 1.1, 1.0], d: 1 }); S.ico(.2, 0, .03, -.32, hc, { sc: [1.0, 1.08, 1.05], d: 1 });
+      S.seg([0, .08, .4], [0, .47, .62], .14, .095, hc, { n: 6 }); S.seg([0, .5, .6], [0, .36, .86], .1, .062, hc, { n: 6 }); S.box(.095, .075, .085, 0, .33, .895, hd, {});
+      for (const s of [-1, 1]) { S.cone(.03, .09, s * .05, .6, .585, hc, { n: 4 }); S.box(.02, .026, .022, s * .078, .47, .7, COL.black, { jit: 0 }); }
+      for (let k = 0; k < 5; k++) { const t = .08 + .2 * k; S.box(.045, .11, .1, 0, .08 + .39 * t + .07, .4 + .22 * t - .1, hd, { r: [-.5, 0, 0] }); }
+    }, 70, { rad: .3 }),
+    leg: new PartBatch(S => { S.seg([0, 0, 0], [0, -.27, .015], .07, .046, hc, { n: 5 }); S.seg([0, -.27, .015], [0, -.5, 0], .042, .033, hc, { n: 5 }); S.box(.072, .05, .088, 0, -.52, .01, [.1, .09, .08], {}); }, 280, { rad: .06, shadow: false }),
+    tail: new PartBatch(S => { S.seg([0, 0, 0], [0, -.14, -.12], .045, .05, hd, { n: 5 }); S.seg([0, -.14, -.12], [0, -.42, -.16], .05, .015, hd, { n: 5 }); }, 70, { rad: .06, shadow: false }),
+    tack: new PartBatch(S => {
+      S.box(.4, .03, .46, 0, .195, -.03, W, { l: L_CLOTH }); for (const s of [-1, 1]) S.box(.03, .2, .42, s * .2, .1, -.03, W, { l: L_CLOTH });
+      S.box(.22, .07, .3, 0, .24, -.03, lea, {}); S.box(.24, .1, .05, 0, .275, .13, lea, {}); S.box(.24, .12, .05, 0, .285, -.19, lea, {});
+      S.ico(.05, 0, -.03, .5, W, { d: 0, emis: .03 });
+    }, 70, { rad: .25, shadow: false }),
+    bard: new PartBatch(S => {
+      const m1 = [.76, .76, .79], m2 = [.5, .5, .54], o = () => ({ l: L_METAL, rough: .42, jit: .03 });
+      for (const s of [-1, 1]) { S.box(.03, .22, .92, s * .212, .04, 0, m1, o()); S.box(.032, .14, .92, s * .216, -.13, 0, m2, o()); }
+      S.box(.44, .03, .42, 0, .21, -.4, m1, o()); S.box(.44, .32, .04, 0, -.03, .5, m1, o()); S.box(.44, .28, .04, 0, -.01, -.53, m2, o());
+      S.seg([0, .1, .42], [0, .45, .62], .165, .118, m2, { n: 6, l: L_METAL, rough: .42 }); S.box(.11, .03, .25, 0, .475, .74, m1, { r: [.5, 0, 0], l: L_METAL, rough: .4 });
+      S.box(.22, .07, .3, 0, .24, -.03, lea, {}); S.box(.24, .1, .05, 0, .275, .13, lea, {}); S.box(.24, .12, .05, 0, .285, -.19, lea, {});
+    }, 14, { rad: .3, shadow: false }),
   };
-  KIT.wolf = {
+
+  // ── 공성 병기 ──
+  KIT.wheel = new PartBatch(S => {
+    S.cyl(.2, .05, 0, 0, 0, [.4, .31, .21], { n: 10, r: [0, 0, HPI], l: L_WOOD }); S.cyl(.06, .09, 0, 0, 0, iron, { n: 6, r: [0, 0, HPI], l: L_METAL });
+    for (let a = 0; a < 2; a++) S.box(.058, .38, .055, 0, 0, 0, [.62, .5, .36], { r: [a * HPI, 0, 0], l: L_WOOD });
+  }, 80, { rad: .18 });
+  // 충차: 지붕 덮은 수레 + 그 안에 매단 통나무 망치
+  KIT.ram = {
     body: new PartBatch(S => {
-      const f = [.3, .3, .33], fd = [.2, .2, .23];
-      S.ico(.2, 0, .02, .16, f, { sc: [.78, .95, 1.15], d: 1 }); S.ico(.16, 0, 0, -.2, fd, { sc: [.78, .85, 1.35], d: 1 }); S.ico(.1, 0, 0, .3, [.42, .42, .45], { sc: [.7, .7, .6], d: 1 });
-      for (let k = 0; k < 4; k++) S.cone(.045, .13, 0, .2 - k * .02, .2 - k * .13, fd, { n: 4, r: [-.5, 0, 0] });
-      S.seg([0, .08, .3], [0, .2, .46], .11, .085, f, { n: 6 });
-      S.ico(.105, 0, .24, .52, f, { sc: [.9, .85, 1.1], d: 1 }); S.box(.085, .07, .17, 0, .21, .66, fd, {}); S.box(.04, .03, .03, 0, .235, .75, COL.black, { jit: 0 }); S.box(.07, .025, .14, 0, .16, .64, C(0x3a1a18), {});
-      for (const s of [-1, 1]) { S.cone(.035, .1, s * .065, .35, .48, fd, { n: 4 }); S.box(.025, .022, .02, s * .05, .27, .615, COL.black, { jit: 0 }); S.box(.012, .035, .012, s * .03, .165, .7, COL.bone, { jit: 0 }); }
-    }, 28, { rad: .22 }),
-    leg: new PartBatch(S => { const fd = [.2, .2, .23]; S.seg([0, 0, 0], [0, -.2, -.03], .055, .038, fd, { n: 5 }); S.seg([0, -.2, -.03], [0, -.39, .02], .034, .026, fd, { n: 5 }); S.box(.06, .035, .09, 0, -.4, .04, [.13, .13, .15], {}); }, 112, { rad: .05, shadow: false }),
-    tail: new PartBatch(S => { S.seg([0, 0, 0], [0, -.07, -.3], .055, .02, [.2, .2, .23], { n: 5 }); }, 28, { rad: .05, shadow: false }),
-  };
-  KIT.wraith = {
-    body: new PartBatch(S => {
-      const c = [.2, .25, .32], cd = [.12, .15, .2];
-      S.add(gCyl(8, .32, true), { s: [.36, .96, .36], p: [0, .5, 0], c, l: L_CLOTH, dbl: true, emis: .012, deform: v => { if (v.y < 0) { const j = .75 + .55 * vnoise(Math.atan2(v.z, v.x) * 2.3 + 1, 2, 9); v.x *= j; v.z = v.z * j - .12; v.y += (j - 1) * .3; } }, cf: v => .55 + .45 * sat(v.y / .48 + .5) });
-      S.ico(.22, 0, .9, -.02, cd, { sc: [1.3, .45, .95], d: 1, l: L_CLOTH });
-      S.add(gDome(8, 4), { s: [.19, .2, .2], p: [0, 1.06, -.03], c: cd, l: L_CLOTH }); S.box(.3, .22, .1, 0, .98, -.14, cd, { l: L_CLOTH });
-      S.sph(.115, 0, 1.03, .05, COL.bone, { sc: [1, 1.05, 1], l: L_BONE, w: 7, h: 5, smooth: false, emis: .03 }); S.box(.11, .06, .08, 0, .93, .1, COL.boneD, { l: L_BONE });
-      for (const s of [-1, 1]) S.box(.045, .045, .03, s * .045, 1.04, .15, COL.black, { jit: 0 });
+      for (const s of [-1, 1]) S.box(.07, .07, 1.1, s * .25, .27, 0, wdD, { l: L_WOOD });
+      for (const z of [-.46, .46]) { S.box(.58, .07, .07, 0, .27, z, wdD, { l: L_WOOD }); for (const s of [-1, 1]) S.seg([s * .28, .3, z], [0, .93, z], .032, .03, wdD, { l: L_WOOD, n: 4 }); }
+      S.box(.06, .06, 1.08, 0, .94, 0, wdD, { l: L_WOOD });
+      for (const s of [-1, 1]) { S.box(.67, .03, 1.0, s * .158, .665, 0, hide, { r: [0, 0, -s * 1.086], jit: .06 }); S.box(.1, .034, 1.02, s * .29, .41, 0, W, { r: [0, 0, -s * 1.086], l: L_CLOTH, emis: .02 }); }
+    }, 30, { rad: .5 }),
+    log: new PartBatch(S => {
+      S.seg([0, 0, -.62], [0, 0, .7], .088, .088, [.46, .34, .22], { l: L_WOOD, n: 6 }); S.seg([0, 0, .7], [0, 0, .9], .1, .045, mulC(iron, 1.4), { l: L_METAL, n: 6, rough: .45 });
+      S.seg([0, 0, .52], [0, 0, .6], .096, .096, mulC(iron, 1.4), { l: L_METAL, n: 6 });
+      for (const z of [-.32, .32]) S.seg([0, .4, z], [0, .06, z], .012, .012, COL.rope, { n: 3 });
     }, 30, { rad: .3 }),
-    arm: new PartBatch(S => { const c = [.16, .2, .27]; S.seg([0, 0, 0], [0, -.1, .3], .075, .05, c, { l: L_CLOTH, n: 5 }); for (let k = -1; k <= 1; k++) S.seg([k * .025, -.1, .3], [k * .05, -.16, .42], .012, .006, COL.bone, { n: 3, l: L_BONE }); }, 60, { rad: .08, shadow: false }),
   };
+  // 운제: 수레 위에 비스듬히 세운 공성 사다리(뒤에서 두 병사가 밀고 온다)
+  KIT.ladder = new PartBatch(S => {
+    const c = [.64, .52, .36], a = [0, .3, -.42], b = [0, 1.62, .78];
+    for (const s of [-1, 1]) {
+      S.box(.06, .06, .8, s * .2, .24, -.05, wdD, { l: L_WOOD });
+      S.seg([s * .14, a[1], a[2]], [s * .14, b[1], b[2]], .028, .026, c, { l: L_WOOD, n: 4 });
+      S.seg([s * .2, .26, .3], [s * .14, .95, .2], .024, .022, wdD, { l: L_WOOD, n: 4 });
+      S.box(.03, .03, .12, s * .14, b[1] + .01, b[2] + .05, mulC(iron, 1.6), { l: L_METAL });
+    }
+    for (const z of [-.42, .3]) S.box(.46, .06, .06, 0, .24, z, wdD, { l: L_WOOD });
+    for (let k = 1; k < 10; k++) { const t = k / 10; S.box(.28, .028, .03, 0, lerp(a[1], b[1], t), lerp(a[2], b[2], t), mulC(c, .85), { l: L_WOOD }); }
+    S.box(.5, .03, .03, 0, .62, -.5, wdD, { l: L_WOOD }); for (const s of [-1, 1]) S.seg([s * .2, .26, -.42], [s * .23, .62, -.5], .02, .02, wdD, { l: L_WOOD, n: 4 });
+  }, 30, { rad: .5 });
+  // 누차: 바퀴 달린 공성탑(단위 크기 — def.scale 2.3배로 그린다)
+  KIT.stower = new PartBatch(S => {
+    S.box(.62, .07, .74, 0, .15, 0, wdD, { l: L_WOOD });
+    for (const sx of [-1, 1]) for (const sz of [-1, 1]) S.seg([sx * .28, .18, sz * .33], [sx * .215, 1.04, sz * .255], .03, .026, wdD, { l: L_WOOD, n: 4 });
+    S.box(.5, .42, .6, 0, .4, 0, wd, { l: L_WOOD, jit: .04 }); S.box(.44, .4, .52, 0, .8, 0, wd, { l: L_WOOD, jit: .04 });
+    S.box(.54, .04, .64, 0, .61, 0, wdD, { l: L_WOOD }); S.box(.47, .84, .03, 0, .62, .3, hide, { r: [-.075, 0, 0], jit: .06 });
+    S.box(.52, .05, .6, 0, 1.03, 0, wdD, { l: L_WOOD });
+    for (const sx of [-1, 1]) { S.box(.03, .12, .6, sx * .25, 1.11, 0, wd, { l: L_WOOD }); S.seg([sx * .255, .22, -.28], [sx * .23, .6, .26], .016, .016, wdD, { l: L_WOOD, n: 4 }); S.seg([sx * .23, .62, .24], [sx * .22, 1.0, -.24], .016, .016, wdD, { l: L_WOOD, n: 4 }); }
+    S.box(.52, .12, .03, 0, 1.11, -.29, wd, { l: L_WOOD });
+    for (const x of [-.19, 0, .19]) S.box(.11, .15, .03, x, 1.125, .29, wd, { l: L_WOOD });
+    S.box(.3, .34, .025, 0, .98, .345, wdD, { l: L_WOOD, r: [-.16, 0, 0] });
+    S.box(.14, .2, .02, 0, .84, .262, COL.black, { jit: 0 });
+    for (let k = 0; k < 6; k++) S.box(.16, .02, .02, 0, .26 + k * .13, -.31, wdD, { l: L_WOOD });
+  }, 8, { rad: .6 });
+
+  // ── 비행체 ──
+  // 전투매 / 송골매
+  KIT.bat = {
+    body: new PartBatch(S => {
+      const br = [.42, .31, .2], pale = [.8, .72, .58], dk = [.2, .15, .11];
+      S.ico(.1, 0, 0, 0, br, { sc: [.8, .75, 1.5], d: 1, c2: [pale[0], pale[1], pale[2], v => smooth(.03, -.05, v.y)] }); S.ico(.062, 0, .04, .15, br, { d: 1 });
+      S.cone(.024, .065, 0, .025, .225, [1.0, .75, .2], { n: 4, r: [HPI + .35, 0, 0] });
+      for (const s of [-1, 1]) S.box(.02, .02, .02, s * .04, .055, .19, COL.black, { jit: 0 });
+      const t0 = [0, 0, -.1], tl = [-.1, 0, -.36], tr = [.1, 0, -.36]; S.tri(t0, tl, tr, dk, L_PLAIN, .9); S.tri(t0, tr, tl, dk, L_PLAIN, .9);
+    }, 50, { rad: .1 }),
+    wing: new PartBatch(S => {
+      const c = [.46, .34, .22], c2 = [.24, .18, .13], pts = [[0, 0, .09], [.22, .03, .13], [.54, .02, .03], [.5, 0, -.05], [.4, 0, -.06], [.3, 0, -.11], [.16, 0, -.1], [0, 0, -.1]];
+      for (let i = 1; i < pts.length - 1; i++) { S.tri(pts[0], pts[i + 1], pts[i], i & 1 ? c : c2, L_PLAIN, .9); S.tri(pts[0], pts[i], pts[i + 1], i & 1 ? c : c2, L_PLAIN, .9); }
+      S.seg([0, 0, .09], [.5, .02, .04], .016, .008, c2, { n: 3 });
+    }, 100, { rad: .1 }),
+  };
+  // 대연(大鳶) 척후: 방패연(wing)과 그 아래 매달린 척후병(body)
   KIT.garg = {
     body: new PartBatch(S => {
-      const st = [.3, .31, .35], sd = [.2, .21, .24];
-      S.ico(.17, 0, 0, 0, st, { sc: [.9, 1.0, 1.05], d: 1, l: L_ROCK }); S.ico(.11, 0, .13, .17, st, { sc: [.95, .9, 1.05], d: 1, l: L_ROCK }); S.box(.1, .06, .1, 0, .08, .27, sd, { l: L_ROCK });
+      const cl = [.13, .13, .17], dk = [.07, .07, .09], hair = C(0x15110e);
+      S.box(.2, .3, .13, 0, 0, 0, cl, { l: L_CLOTH }); S.box(.14, .15, .14, 0, .225, .01, skin, {}); S.box(.15, .06, .15, 0, .31, 0, hair, { jit: 0 });
+      S.box(.15, .035, .15, 0, .27, 0, C(0xc0261e), { jit: 0, emis: .04 });
       for (const s of [-1, 1]) {
-        S.seg([s * .06, .2, .14], [s * .13, .3, .04], .03, .02, sd, { n: 4 }); S.seg([s * .13, .3, .04], [s * .12, .36, -.08], .02, .006, sd, { n: 4 }); S.box(.03, .03, .02, s * .045, .15, .265, COL.black, { jit: 0 });
-        S.seg([s * .12, -.02, .08], [s * .15, -.16, .2], .04, .028, sd, { n: 4 }); S.seg([s * .09, -.1, -.08], [s * .12, -.24, 0], .045, .03, sd, { n: 4 });
+        S.seg([s * .11, .12, 0], [s * .2, .5, .04], .036, .03, cl, { n: 4 }); S.box(.05, .05, .05, s * .2, .53, .04, skin, {});
+        S.seg([s * .06, -.15, 0], [s * .07, -.42, -.12], .05, .04, cl, { n: 4 }); S.seg([s * .07, -.42, -.12], [s * .07, -.6, -.3], .04, .034, dk, { n: 4 });
+        S.seg([s * .26, .54, .04], [s * .32, 1.02, .1], .008, .008, COL.rope, { n: 3 });
       }
-      S.seg([0, -.05, -.15], [0, -.14, -.42], .04, .012, sd, { n: 4 }); S.cone(.04, .08, 0, -.15, -.46, sd, { n: 4, r: [-HPI, 0, 0] });
+      S.seg([-.27, .54, .04], [.27, .54, .04], .015, .015, COL.woodL, { n: 4, l: L_WOOD });
     }, 24, { rad: .2 }),
     wing: new PartBatch(S => {
-      const c = [.26, .27, .31], c2 = [.17, .18, .21], pts = [[0, 0, .12], [.3, .06, .2], [.74, .04, .1], [.66, 0, -.1], [.46, 0, -.04], [.36, 0, -.24], [.18, 0, -.1], [0, 0, -.18]];
-      for (let i = 1; i < pts.length - 1; i++) { S.tri(pts[0], pts[i + 1], pts[i], i & 1 ? c : c2, L_PLAIN, .9); S.tri(pts[0], pts[i], pts[i + 1], i & 1 ? c : c2, L_PLAIN, .9); }
-      S.seg([0, 0, .12], [.3, .06, .2], .03, .022, c2, { n: 4 }); S.seg([.3, .06, .2], [.74, .04, .1], .022, .01, c2, { n: 4 });
-    }, 48, { rad: .15, shadow: false }),
+      // 마름모꼴의 큰 연: 앞·옆·뒤 꼭짓점과 대나무 살, 긴 꼬리 둘
+      const pa = [1, 1, 1], pb = [.5, .5, .5], bam = [.42, .34, .2], o = { emis: .04 };
+      const F = [0, 0, .62], Bk = [0, 0, -.72], Lf = [-.62, 0, .12], Rt = [.62, 0, .12], Cn = [0, .05, .1];
+      for (const [p, q, c] of [[F, Rt, pa], [Rt, Bk, pb], [Bk, Lf, pa], [Lf, F, pb]]) { S.tri(Cn, p, q, c, L_CLOTH, .9, o); S.tri(Cn, q, p, c, L_CLOTH, .9, o); }
+      S.seg([0, -.012, .62], [0, -.012, -.72], .014, .014, bam, { n: 3 }); S.seg([-.62, -.012, .12], [.62, -.012, .12], .014, .014, bam, { n: 3 });
+      for (const s of [-1, 1]) ar_quad2(S, [s * .05, 0, -.7], [s * .11, 0, -.7], [s * .2, -.16, -1.35], [s * .14, -.16, -1.35], pa, L_CLOTH, .9, o);
+    }, 24, { rad: .4, shadow: false }),
   };
-  KIT.wisp = { core: new PartBatch(S => { S.ico(.07, 0, 0, 0, [.5, .5, .5], { d: 1, emis: .45, jit: 0 }); }, 60, { rad: .07, shadow: false }) };
-  const tc = [.2, .29, .15], tcd = [.13, .2, .1], pale = [.46, .46, .28];
-  const toadLeg = sg => new PartBatch(S => { S.seg([0, 0, 0], [sg * .17, .05, -.1], .075, .06, tc, { n: 5 }); S.seg([sg * .17, .05, -.1], [sg * .2, -.12, .08], .055, .04, tcd, { n: 5 }); S.box(.1, .03, .18, sg * .21, -.14, .14, tcd, {}); }, 40, { rad: .1, shadow: false });
-  KIT.toad = {
-    body: new PartBatch(S => {
-      S.ico(.27, 0, .17, -.02, tc, { sc: [1.1, .72, 1.2], d: 1, c2: [pale[0], pale[1], pale[2], v => smooth(0, -.14, v.y)] }); S.ico(.19, 0, .2, .2, tc, { sc: [1.15, .68, 1.0], d: 1 });
-      S.box(.34, .02, .2, 0, .15, .27, [.05, .06, .04], { jit: 0 }); S.ico(.12, 0, .08, .26, pale, { sc: [1.1, .7, .8], d: 1 });
-      for (const s of [-1, 1]) { S.sph(.075, s * .12, .33, .2, tcd, { w: 6, h: 4 }); S.box(.05, .05, .03, s * .125, .345, .265, COL.black, { jit: 0 }); S.seg([s * .2, .1, .16], [s * .26, -.02, .26], .045, .035, tcd, { n: 4 }); S.box(.08, .025, .1, s * .27, -.03, .3, tcd, {}); }
-      for (const [x, y, z] of [[.1, .34, -.1], [-.14, .31, -.02], [.02, .36, -.2], [-.05, .33, .05]]) S.ico(.035, x, y, z, tcd, { d: 0 });
-    }, 40, { rad: .3 }),
-    legR: toadLeg(1), legL: toadLeg(-1),
-  };
+  // 풍등: 불 밝힌 종이 등
+  KIT.wisp = { core: new PartBatch(S => {
+    const paper = [1, .82, .52];
+    S.cyl(.07, .2, 0, .02, 0, paper, { n: 6, rt: 1.5, emis: .42, jit: 0 }); S.add(gDome(6, 2), { s: [.105, .06, .105], p: [0, .12, 0], c: paper, emis: .36, jit: 0 });
+    S.cyl(.074, .014, 0, -.08, 0, [.2, .14, .08], { n: 6, jit: 0 }); S.ico(.03, 0, -.06, 0, [1, .6, .2], { d: 0, emis: 1, jit: 0 });
+  }, 60, { rad: .08, shadow: false }) };
 }
 
-function rigSpider(e) {
-  const K = KIT.spider, s = e.scale || 1, fl = e.flash || 0, ph = e.ph, mv = e.mv, Z = [.15, .08, 0, -.08], A = [1.0, .4, -.3, -.9];
-  const M0 = xf(_M[0], null, e.x, e.y + (.19 + Math.abs(Math.sin(ph * 2)) * .015 * mv) * s, e.z, -(e.flinch || 0) * .3, e.yaw, Math.sin(ph) * .04 * mv, s, s, s);
-  K.body.put(M0, fl, e.tint);
-  for (let i = 0; i < 4; i++) for (const sd of [-1, 1]) {
-    const g = ((i + (sd > 0 ? 0 : 1)) & 1) ? PI : 0, a = A[i] + Math.sin(ph * 2 + g) * .32 * mv, lift = Math.max(0, Math.cos(ph * 2 + g)) * .3 * mv;
-    K.leg.put(xf(_M[1 + i * 2 + (sd > 0 ? 0 : 1)], M0, sd * .09, 0, Z[i], 0, sd > 0 ? -a : PI + a, lift), fl, e.tint);
+// ── 리그 ──
+// 말. e.coat = 털빛 tint, e.tack = 마구/마갑 tint. 안장 행렬을 돌려준다(rigHuman의 e.mount로 넘긴다).
+function ar_rigHorse(e, bard) {
+  const K = KIT.horse, hs = e.hs || 1.34, s = (e.scale || 1) * hs, fl = e.flash || 0, mv = e.mv, ph = e.ph, fz = e.flinch || 0, coat = e.coat || null;
+  const bob = Math.abs(Math.sin(ph)) * .045 * mv, pit = Math.sin(ph * 2) * .035 * mv - fz * .2;
+  const H = xf(_M[14], null, e.x, e.y + (.615 + bob) * s, e.z, pit, e.yaw, 0, s, s, s);
+  K.body.put(H, fl, coat); (bard ? K.bard : K.tack).put(H, fl, e.tack || null);
+  for (let i = 0; i < 4; i++) {
+    const fr = i < 2, sd = (i & 1) ? -1 : 1, a = Math.sin(ph + ((fr === (sd > 0)) ? 0 : PI) + (fr ? 0 : .5)) * .62 * mv;
+    K.leg.put(xf(_M[15], H, sd * .1, -.07, fr ? .27 : -.3, a - pit, 0, 0), fl, coat);
   }
-  return M0;
+  K.tail.put(xf(_M[15], H, 0, .1, -.5, -.1 + Math.sin(ph * 2) * .15 * mv, Math.sin(ph + 1) * .25 * mv, 0), fl, coat);
+  return xf(_M[16], H, 0, .255, -.03, -pit * .6, 0, 0, 1 / hs, 1 / hs, 1 / hs);   // 기수는 말보다 작게(사람 크기 그대로)
 }
-function rigWolf(e) {
-  const K = KIT.wolf, ph = e.ph, s = e.scale || 1, fl = e.flash || 0, mv = e.mv, g = Math.sin(ph * 2);
-  const M0 = xf(_M[0], null, e.x, e.y + (.43 + Math.abs(g) * .06 * mv) * s, e.z, g * .1 * mv - (e.flinch || 0) * .4, e.yaw, 0, s, s, s);
+// 기병: 말 + 그 위에 앉은 사람
+function ar_rigRider(e, bard) {
+  e.mount = ar_rigHorse(e, bard);
+  return rigHuman(KIT.man, SPEC.man, e);
+}
+// 충차: e.hop(밀고-멈추는 박자)에 맞춰 통나무가 앞뒤로 흔들린다
+function ar_rigRam(e) {
+  const K = KIT.ram, s = e.scale || 1, fl = e.flash || 0, h = e.hop || 0, fz = e.flinch || 0;
+  const heave = (h > .22 && h < .62) ? Math.sin((h - .22) / .4 * PI) : 0, swing = Math.sin(h * TAU) * .13;
+  const M0 = xf(_M[14], null, e.x, e.y, e.z, -heave * .03 - fz * .05, e.yaw, Math.sin(e.ph * .5) * .012, s, s, s);
   K.body.put(M0, fl, e.tint);
-  for (let i = 0; i < 4; i++) { const fr = i < 2, sd = (i & 1) ? -1 : 1, a = Math.sin(ph * 2 + (fr ? 0 : 2.6) + (sd > 0 ? 0 : .5)) * .85 * mv; K.leg.put(xf(_M[4 + i], M0, sd * .1, -.04, fr ? .2 : -.26, a, 0, 0), fl, e.tint); }
-  K.tail.put(xf(_M[8], M0, 0, .06, -.4, -.3 + g * .2 * mv, Math.sin(ph + 1) * .3, 0), fl, e.tint);
+  K.log.put(xf(_M[15], M0, 0, .52, .04 + swing, 0, 0, 0), fl, null);
+  const rot = e.ph / (5.6 * .2);
+  for (let i = 0; i < 4; i++) KIT.wheel.put(xf(_M[15], M0, (i & 1 ? -1 : 1) * .34, .2, i < 2 ? .36 : -.36, rot, 0, 0), fl, null);
   return M0;
 }
-function rigWraith(e) {
-  const K = KIT.wraith, s = e.scale || 1, fl = e.flash || 0, t = SH.uTime.value + (e.lseed || 0);
-  const M0 = xf(_M[0], null, e.x, e.y + (.22 + Math.sin(t * 2.1) * .07) * s, e.z, .16 * e.mv - (e.flinch || 0) * .4, e.yaw, Math.sin(t * 1.3) * .06, s, s, s);
-  K.body.put(M0, fl, e.tint);
-  for (const sd of [-1, 1]) K.arm.put(xf(_M[sd > 0 ? 1 : 2], M0, sd * .22, .84, .04, -.25 + Math.sin(t * 1.7 + sd) * .22, sd * -.25, 0), fl, e.tint);
+// 운제: 사다리 수레를 앞세우고 두 병사가 뒤에서 나란히 민다
+function ar_rigLadder(e) {
+  const s = e.scale || 1, x0 = e.x, z0 = e.z, ph0 = e.ph, fl = e.flash || 0, sy = Math.sin(e.yaw), cy = Math.cos(e.yaw);
+  for (const sd of [-1, 1]) {
+    e.x = x0 + (-sy * .62 + cy * sd * .21) * s; e.z = z0 + (-cy * .62 - sy * sd * .21) * s; e.ph = ph0 + (sd > 0 ? 0 : PI);
+    rigHuman(KIT.man, SPEC.man, e);
+  }
+  e.x = x0; e.z = z0; e.ph = ph0;
+  const M0 = xf(_M[14], null, x0 + sy * .12 * s, e.y, z0 + cy * .12 * s, -(e.flinch || 0) * .06, e.yaw, Math.sin(ph0 * .5) * .012 * e.mv, s, s, s);
+  KIT.ladder.put(M0, fl, e.tintW || null);
+  const rot = ph0 / (5.6 * .2);
+  for (const sd of [-1, 1]) KIT.wheel.put(xf(_M[15], M0, sd * .27, .2, -.05, rot, 0, 0), fl, null);
   return M0;
 }
+// 누차: 천천히 굴러오는 공성탑. e.flagB = 꼭대기 깃발 PartBatch
+function ar_rigTower(e) {
+  const s = e.scale || 1, fl = e.flash || 0, fz = e.flinch || 0;
+  const M0 = xf(_M[14], null, e.x, e.y, e.z, -fz * .03, e.yaw, Math.sin(e.ph * .7) * .012 * e.mv, s, s, s);
+  KIT.stower.put(M0, fl, e.tint);
+  const rot = e.ph / (5.6 * .11);
+  for (let i = 0; i < 4; i++) KIT.wheel.put(xf(_M[15], M0, (i & 1 ? -1 : 1) * .33, .11, i < 2 ? .25 : -.25, rot, 0, 0, .55, .55, .55), fl, null);
+  if (e.flagB) e.flagB.put(xf(_M[15], M0, 0, .98, .02, 0, 0, 0, .42, .42, .42), 0, null);
+  return M0;
+}
+// 대연 척후: 비스듬히 뜬 방패연 아래 사람이 매달려 흔들린다
+function ar_rigKite(e) {
+  const K = KIT.garg, s = e.scale || 1, fl = e.flash || 0, t = e.ph, fz = e.flinch || 0;
+  const M0 = xf(_M[0], null, e.x, e.y + Math.sin(t * .5) * .1, e.z, 0, e.yaw, Math.sin(t * .31) * .12, s, s, s);
+  K.wing.put(xf(_M[1], M0, 0, .5, .12, -.26 + Math.sin(t * .8) * .07 + fz * .4, 0, 0), fl, e.tint);
+  K.body.put(xf(_M[2], M0, 0, -.5, 0, .28 + Math.sin(t * .5 + 1) * .1, 0, 0), fl, null);
+  return M0;
+}
+// 풍등: 불빛이 일렁이며 떠간다
 function rigWisp(e) {
-  const s = (e.scale || 1) * (1 + .15 * Math.sin(SH.uTime.value * 9 + (e.lseed || 0) * 5));
-  const M0 = xf(_M[0], null, e.x, e.y, e.z, 0, e.yaw, 0, s, s, s); KIT.wisp.core.put(M0, e.flash || 0, e.tint); return M0;
-}
-function rigToad(e) {
-  const K = KIT.toad, s = e.scale || 1, h = e.hop || 0, fl = e.flash || 0;
-  let y = 0, pitch = 0, ext = 0, sq = 1;
-  if (h < .22) sq = 1 - .22 * easeOut(h / .22);
-  else if (h < .62) { const u = (h - .22) / .4; y = Math.sin(u * PI) * .5; pitch = -.45 * Math.cos(u * PI); ext = Math.sin(Math.min(1, u * 1.5) * PI); sq = 1.08; }
-  else if (h < .78) sq = 1 - .25 * Math.sin((h - .62) / .16 * PI);
-  sq *= 1 - (e.flinch || 0) * .2;
-  const M0 = xf(_M[0], null, e.x, e.y + (.1 + y) * s, e.z, pitch, e.yaw, 0, s, s * sq, s);
-  K.body.put(M0, fl, e.tint);
-  K.legR.put(xf(_M[1], M0, .17, .06, -.14, -ext * .9, 0, 0), fl, e.tint); K.legL.put(xf(_M[2], M0, -.17, .06, -.14, -ext * .9, 0, 0), fl, e.tint);
-  return M0;
+  const t = SH.uTime.value + (e.lseed || 0), s = (e.scale || 1) * (1 + .05 * Math.sin(t * 9));
+  const M0 = xf(_M[0], null, e.x, e.y, e.z, Math.sin(t * 1.7) * .12, e.yaw, Math.sin(t * 1.3) * .12, s, s, s); KIT.wisp.core.put(M0, e.flash || 0, e.tint); return M0;
 }
 
 
@@ -3692,49 +3859,126 @@ function explodeAt(x, y, z, dmg, splash, tower) {
 
 
 const MON = {
-  skel: { name: 'Skeleton', hp: 34, spd: 1.35, rad: .27, mass: 1, bounty: 6, lives: 1, hitH: .75, top: 1.45, dmg: 6, atkT: .95, eye: [3.4, .9, .2], scale: 1, death: 'bones', blade: true },
-  rat: { name: 'Giant rat', tip: 'Fast and frail. Comes in packs.', hp: 13, spd: 2.65, rad: .2, mass: .45, bounty: 3, lives: 1, hitH: .2, top: .5, dmg: 3, atkT: .6, eye: [3.2, .4, .3], scale: 1, death: 'fur', cat: 'swarm' },
-  slime: { name: 'Slime', tip: 'Splits in two when it dies.', hp: 95, spd: .82, rad: .42, mass: 2.2, bounty: 9, lives: 1, hitH: .3, top: .75, dmg: 8, atkT: 1.2, eye: [1.8, 2.8, .4], scale: 1, death: 'goo', hop: [.95, 2.35], split: ['slimelet', 2] },
-  slimelet: { name: 'Slimelet', hp: 30, spd: 1.2, rad: .26, mass: .9, bounty: 3, lives: 1, hitH: .2, top: .48, dmg: 4, atkT: 1.0, eye: [1.8, 2.8, .4], scale: .58, death: 'goo', hop: [1.25, 2.35], cat: 'swarm' },
-  knight: { name: 'Skeleton knight', tip: 'Its armor turns most arrows.', hp: 118, spd: 1.0, rad: .3, mass: 2.2, bounty: 15, lives: 1, hitH: .8, top: 1.6, dmg: 11, atkT: 1.05, eye: [.5, 1.7, 3.4], scale: 1.08, armor: .35, death: 'bones', blade: true, cat: 'armor', tint: [.74, .78, .9] },
-  bat: { name: 'Bat', tip: 'Flies over the road. Only archers and spires reach it.', hp: 20, spd: 2.3, rad: .22, mass: .3, bounty: 6, lives: 1, hitH: 0, top: .35, dmg: 0, atkT: 1, eye: [3.2, .5, .3], scale: 1.25, fly: true, death: 'bat', cat: 'air', alt: [2.9, 3.8], flap: 21 },
-  ghoul: { name: 'Ghoul', tip: 'Runs faster the more it is hurt.', hp: 40, spd: 1.85, rad: .27, mass: .9, bounty: 7, lives: 1, hitH: .5, top: .95, dmg: 9, atkT: .7, eye: [3.2, 2.8, .6], scale: .62, frenzy: .55, death: 'flesh', tint: [1.24, 1.03, 1.9] },
-  spider: { name: 'Cave spider', tip: 'Slips past your footmen.', hp: 20, spd: 2.25, rad: .24, mass: .4, bounty: 3, lives: 1, hitH: .18, top: .45, dmg: 4, atkT: .6, eye: [3.4, .3, .2], scale: 1, slip: true, death: 'bug', cat: 'swarm', tint: [.6, .55, .6] },
-  scarab: { name: 'Scarab', hp: 9, spd: 2.5, rad: .15, mass: .2, bounty: 1, lives: 1, hitH: .1, top: .28, dmg: 2, atkT: .6, eye: [1.2, 3.0, 2.6], scale: .5, slip: true, death: 'bug', cat: 'swarm', tint: [1.5, 1.15, .45] },
-  wolf: { name: 'Dire wolf', tip: 'Fast, and it bites hard.', hp: 38, spd: 2.7, rad: .3, mass: .9, bounty: 7, lives: 1, hitH: .4, top: .85, dmg: 12, atkT: .7, eye: [3.4, 2.6, .3], scale: 1, death: 'fur', cat: 'swarm', tint: [.8, .8, .9] },
-  bomber: { name: 'Sapper', tip: 'Its powder keg blows up friend and foe.', hp: 38, spd: 1.55, rad: .27, mass: 1, bounty: 8, lives: 2, hitH: .75, top: 1.55, dmg: 0, atkT: 1, eye: [3.6, 1.4, .2], scale: 1, explode: { r: 1.7, dmg: 46, men: 30 }, death: 'bones', tint: [.95, .85, .75] },
-  wraith: { name: 'Wraith', tip: 'Arrows and swords miss while it fades.', hp: 58, spd: 1.3, rad: .28, mass: 1, bounty: 11, lives: 1, hitH: .8, top: 1.5, dmg: 0, atkT: 1, eye: [.8, 2.4, 3.6], scale: 1, ghost: [1.7, 3.0], death: 'ghost' },
-  toad: { name: 'Bog toad', tip: 'Covers ground in long hops.', hp: 78, spd: 1.0, rad: .38, mass: 1.8, bounty: 9, lives: 1, hitH: .3, top: .75, dmg: 9, atkT: 1.0, eye: [3.0, 2.4, .3], scale: 1, hop: [1.2, 2.5], death: 'flesh' },
-  wisp: { name: 'Wisp', tip: 'A fast flyer. Easy to kill, hard to catch.', hp: 10, spd: 3.0, rad: .14, mass: .1, bounty: 2, lives: 1, hitH: 0, top: .3, dmg: 0, atkT: 1, eye: [1, 1, 1], scale: 1, fly: true, death: 'wisp', cat: 'air', alt: [1.3, 2.3], flap: 6, glow: 8 },
-  drummer: { name: 'War drummer', tip: 'Speeds up everything near it.', hp: 92, spd: 1.15, rad: .3, mass: 1.6, bounty: 14, lives: 1, hitH: .8, top: 2.35, dmg: 6, atkT: 1, eye: [3.6, .6, .2], scale: 1.05, aura: [3.4, .3], death: 'bones' },
-  gargoyle: { name: 'Gargoyle', tip: 'A flyer that shrugs off arrows.', hp: 90, spd: 1.6, rad: .32, mass: 1.2, bounty: 13, lives: 1, hitH: 0, top: .6, dmg: 0, atkT: 1, eye: [3.6, 1.2, .2], scale: 1.15, fly: true, armor: .5, death: 'rock', cat: 'air', alt: [2.4, 3.1], flap: 9 },
-  necro: { name: 'Necromancer', tip: 'Raises skeletons as it walks.', hp: 105, spd: .85, rad: .3, mass: 1.6, bounty: 18, lives: 1, hitH: .8, top: 1.8, dmg: 5, atkT: 1.2, eye: [.6, 3.4, 1.0], scale: 1.08, summon: { type: 'skel', n: 2, every: 7.5, max: 3, hp: .6 }, death: 'bones', tint: [.7, .74, .7] },
-  mummy: { name: 'Mummy', tip: 'Bursts into scarabs when it falls.', hp: 135, spd: .9, rad: .3, mass: 2, bounty: 14, lives: 1, hitH: .8, top: 1.55, dmg: 12, atkT: 1.1, eye: [.6, 3.0, 2.6], scale: 1.1, split: ['scarab', 3], death: 'bones', tint: [1.08, .95, .72] },
-  brute: { name: 'Troll', tip: 'Heals unless you keep hitting it.', hp: 360, spd: .82, rad: .5, mass: 8, bounty: 30, lives: 2, hitH: 1.0, top: 1.95, dmg: 24, atkT: 1.4, eye: [3.4, 2.4, .4], scale: 1.5, regen: .035, death: 'flesh', cat: 'armor', tint: [.83, .8, 2.0] },
-  golem: { name: 'Golem', tip: 'Shrugs off arrows and is hard to slow.', hp: 470, spd: .62, rad: .5, mass: 9, bounty: 34, lives: 2, hitH: 1.1, top: 2.1, dmg: 26, atkT: 1.5, eye: [3.2, 2.6, 1.6], scale: 1.5, armor: .35, slowRes: .5, death: 'rock', cat: 'armor' },
-  brood: { name: 'Brood mother', tip: 'Bursts into spiders when it falls.', hp: 230, spd: .92, rad: .55, mass: 5, bounty: 24, lives: 2, hitH: .45, top: 1.05, dmg: 14, atkT: 1.0, eye: [3.4, .3, .2], scale: 2.3, split: ['spider', 5], death: 'bug', tint: [.7, .5, .6] },
-  giant: { name: 'Bone Giant', tip: 'Slow and enormous. Hit it with everything.', hp: 1250, spd: .88, rad: .92, mass: 40, bounty: 200, lives: 5, hitH: 2.2, top: 4.0, dmg: 46, atkT: 1.7, eye: [5, .9, .2], scale: 2.7, boss: true, death: 'bones', blade: true, cat: 'armor' },
-  ogre: { name: 'Ogre', tip: 'Smashes footmen aside.', hp: 1400, spd: .8, rad: 1.0, mass: 46, bounty: 200, lives: 5, hitH: 1.9, top: 3.4, dmg: 52, atkT: 1.8, eye: [4.5, 2.2, .3], scale: 2.6, boss: true, death: 'flesh', blade: true, cat: 'armor' },
-  jotun: { name: 'Frost Jotun', tip: 'Its stomp freezes nearby towers.', hp: 1150, spd: .8, rad: 1.0, mass: 46, bounty: 200, lives: 5, hitH: 1.9, top: 3.6, dmg: 52, atkT: 1.8, eye: [.8, 2.4, 4], scale: 2.75, boss: true, stomp: { every: 10, r: 5.2, stun: 1.8 }, death: 'flesh', blade: true, cat: 'armor', tint: [1.0, 1.25, 3.4] },
-  queen: { name: 'Brood Queen', tip: 'Keeps hatching spiders.', hp: 1150, spd: .85, rad: 1.1, mass: 40, bounty: 200, lives: 5, hitH: 1.0, top: 2.0, dmg: 40, atkT: 1.5, eye: [3.8, .3, .9], scale: 4.2, boss: true, summon: { type: 'spider', n: 2, every: 8, max: 99, hp: 1 }, death: 'bug', cat: 'armor', tint: [.85, .55, 1.0] },
-  colossus: { name: 'Magma Colossus', tip: 'Speeds up when it is nearly dead.', hp: 1250, spd: .7, rad: 1.05, mass: 60, bounty: 200, lives: 5, hitH: 2.2, top: 4.3, dmg: 60, atkT: 2.0, eye: [4, 1.6, .3], scale: 3.0, boss: true, armor: .85, slowRes: .3, enrage: [.3, 1.25], death: 'rock', cat: 'armor', tint: [1.5, .5, .26] },
-  king: { name: 'The Buried King', tip: 'Summons mummies to walk with him.', hp: 1250, spd: .86, rad: .92, mass: 40, bounty: 200, lives: 5, hitH: 2.2, top: 4.2, dmg: 46, atkT: 1.7, eye: [.6, 3.0, 2.6], scale: 2.7, boss: true, summon: { type: 'mummy', n: 1, every: 9, max: 99, hp: .7 }, death: 'bones', blade: true, cat: 'armor', tint: [1.2, 1.0, .55] },
+  // 수치·능력 필드는 원작 그대로. 조선워치에서 바꾼 것은 이름·설명과 겉모습 필드(scale, top, hitH, death, blade, ride)뿐이다.
+  skel: { name: '보졸', names: { wa: '아시가루' }, tip: '창칼을 든 기본 보병.', tips: { wa: '가볍게 무장한 왜군 보병.' }, hp: 34, spd: 1.35, rad: .27, mass: 1, bounty: 6, lives: 1, hitH: .75, top: 1.55, dmg: 6, atkT: .95, scale: 1, death: 'man', blade: true },
+  rat: { name: '척후병', tip: '빠르고 약하다. 떼로 온다.', hp: 13, spd: 2.65, rad: .2, mass: .45, bounty: 3, lives: 1, hitH: .45, top: .98, dmg: 3, atkT: .6, scale: .76, death: 'man', blade: true, cat: 'swarm' },
+  slime: { name: '충차', tip: '부서지면 수레꾼 둘이 나온다.', hp: 95, spd: .82, rad: .42, mass: 2.2, bounty: 9, lives: 1, hitH: .5, top: 1.05, dmg: 8, atkT: 1.2, scale: 1, death: 'wood', hop: [.95, 2.35], split: ['slimelet', 2] },
+  slimelet: { name: '수레꾼', tip: '충차를 밀던 병사.', hp: 30, spd: 1.2, rad: .26, mass: .9, bounty: 3, lives: 1, hitH: .6, top: 1.25, dmg: 4, atkT: 1.0, scale: .84, death: 'man', hop: [1.25, 2.35], cat: 'swarm' },
+  knight: { name: '중갑병', names: { sui: '철갑병', tang: '명광개병', mongol: '찰갑병', wa: '사무라이' }, tip: '갑옷이 화살을 잘 막는다.', hp: 118, spd: 1.0, rad: .3, mass: 2.2, bounty: 15, lives: 1, hitH: .8, top: 1.75, dmg: 11, atkT: 1.05, scale: 1.08, armor: .35, death: 'man', blade: true, cat: 'armor' },
+  bat: { name: '전투매', names: { mongol: '송골매' }, tip: '날아든다. 망루와 솟대만 닿는다.', hp: 20, spd: 2.3, rad: .22, mass: .3, bounty: 6, lives: 1, hitH: 0, top: .35, dmg: 0, atkT: 1, scale: 1.25, fly: true, death: 'bird', cat: 'air', alt: [2.9, 3.8], flap: 21 },
+  ghoul: { name: '결사대', tip: '다칠수록 더 빨리 달린다.', hp: 40, spd: 1.85, rad: .27, mass: .9, bounty: 7, lives: 1, hitH: .7, top: 1.45, dmg: 9, atkT: .7, scale: .96, frenzy: .55, death: 'man', blade: true },
+  spider: { name: '세작', tip: '초소 병사 사이로 빠져나간다.', hp: 20, spd: 2.25, rad: .24, mass: .4, bounty: 3, lives: 1, hitH: .4, top: .95, dmg: 4, atkT: .6, scale: .82, slip: true, death: 'man', blade: true, cat: 'swarm' },
+  scarab: { name: '등성병', tip: '작고 빠르다. 초소를 빠져나간다.', hp: 9, spd: 2.5, rad: .15, mass: .2, bounty: 1, lives: 1, hitH: .4, top: .98, dmg: 2, atkT: .6, scale: .64, slip: true, death: 'man', blade: true, cat: 'swarm' },
+  wolf: { name: '경기병', names: { wa: '기마 무사' }, tip: '빠르고 매섭게 친다.', hp: 38, spd: 2.7, rad: .3, mass: .9, bounty: 7, lives: 1, hitH: .75, top: 1.78, dmg: 12, atkT: .7, scale: .8, death: 'rider', blade: true, ride: true, cat: 'swarm' },
+  bomber: { name: '화공병', tip: '불 단지가 터지면 모두 다친다.', hp: 38, spd: 1.55, rad: .27, mass: 1, bounty: 8, lives: 2, hitH: .75, top: 1.6, dmg: 0, atkT: 1, scale: 1, explode: { r: 1.7, dmg: 46, men: 30 }, death: 'man' },
+  wraith: { name: '자객', tip: '흐려지면 화살도 칼도 빗나간다.', hp: 58, spd: 1.3, rad: .28, mass: 1, bounty: 11, lives: 1, hitH: .8, top: 1.45, dmg: 0, atkT: 1, scale: 1, ghost: [1.7, 3.0], death: 'smoke' },
+  toad: { name: '방패병', tip: '방패를 들고 멀리 뛰어든다.', hp: 78, spd: 1.0, rad: .38, mass: 1.8, bounty: 9, lives: 1, hitH: .7, top: 1.55, dmg: 9, atkT: 1.0, scale: 1, hop: [1.2, 2.5], death: 'man', blade: true },
+  wisp: { name: '풍등', tip: '빠르고 약하다. 잡기 어렵다.', hp: 10, spd: 3.0, rad: .14, mass: .1, bounty: 2, lives: 1, hitH: 0, top: .35, dmg: 0, atkT: 1, scale: 1.25, fly: true, death: 'lamp', cat: 'air', alt: [1.3, 2.3], flap: 6, glow: 8 },
+  drummer: { name: '전고수', tip: '북소리로 주변 적을 재촉한다.', hp: 92, spd: 1.15, rad: .3, mass: 1.6, bounty: 14, lives: 1, hitH: .8, top: 2.35, dmg: 6, atkT: 1, scale: 1.05, aura: [3.4, .3], death: 'man' },
+  gargoyle: { name: '대연 척후', tip: '연을 타고 난다. 화살에 강하다.', hp: 90, spd: 1.6, rad: .32, mass: 1.2, bounty: 13, lives: 1, hitH: 0, top: .95, dmg: 0, atkT: 1, scale: 1.15, fly: true, armor: .5, death: 'kite', cat: 'air', alt: [2.4, 3.1], flap: 9 },
+  necro: { name: '독전관', tip: '깃발을 흔들어 증원을 부른다.', hp: 105, spd: .85, rad: .3, mass: 1.6, bounty: 18, lives: 1, hitH: .8, top: 2.0, dmg: 5, atkT: 1.2, scale: 1.08, summon: { type: 'skel', n: 2, every: 7.5, max: 3, hp: .6 }, death: 'man' },
+  mummy: { name: '운제', tip: '쓰러지면 등성병 셋이 나온다.', hp: 135, spd: .9, rad: .3, mass: 2, bounty: 14, lives: 1, hitH: .8, top: 1.95, dmg: 12, atkT: 1.1, scale: .95, split: ['scarab', 3], death: 'wood' },
+  brute: { name: '역사', names: { mongol: '부흐 장사' }, tip: '계속 치지 않으면 회복한다.', hp: 360, spd: .82, rad: .5, mass: 8, bounty: 30, lives: 2, hitH: 1.0, top: 2.15, dmg: 24, atkT: 1.4, scale: 1.42, regen: .035, death: 'man', cat: 'armor' },
+  golem: { name: '철기', names: { wa: '철갑 무사' }, tip: '화살에 강하고 잘 안 느려진다.', hp: 470, spd: .62, rad: .5, mass: 9, bounty: 34, lives: 2, hitH: 1.1, top: 2.4, dmg: 26, atkT: 1.5, scale: 1.08, armor: .35, slowRes: .5, death: 'rider', blade: true, ride: true, cat: 'armor' },
+  brood: { name: '누차', tip: '부서지면 세작 다섯이 나온다.', hp: 230, spd: .92, rad: .55, mass: 5, bounty: 24, lives: 2, hitH: 1.2, top: 3.0, dmg: 14, atkT: 1.0, scale: 2.3, split: ['spider', 5], death: 'wood' },
+  giant: { name: '이세적', tip: '느리고 굳세다. 힘을 모아 쳐라.', hp: 1250, spd: .88, rad: .92, mass: 40, bounty: 200, lives: 5, hitH: 2.0, top: 3.85, dmg: 46, atkT: 1.7, scale: 1.9, boss: true, death: 'rider', blade: true, ride: true, cat: 'armor' },
+  ogre: { name: '설인귀', tip: '초소 병사들을 쓸어버린다.', hp: 1400, spd: .8, rad: 1.0, mass: 46, bounty: 200, lives: 5, hitH: 1.9, top: 3.75, dmg: 52, atkT: 1.8, scale: 1.85, boss: true, death: 'rider', blade: true, ride: true, cat: 'armor' },
+  jotun: { name: '살리타', tip: '돌 세례로 주변 수비를 멈춘다.', hp: 1150, spd: .8, rad: 1.0, mass: 46, bounty: 200, lives: 5, hitH: 1.9, top: 3.85, dmg: 52, atkT: 1.8, scale: 1.9, boss: true, stomp: { every: 10, r: 5.2, stun: 1.8 }, death: 'rider', blade: true, ride: true, cat: 'armor' },
+  queen: { name: '우중문', tip: '끊임없이 병사를 불러낸다.', hp: 1150, spd: .85, rad: 1.1, mass: 40, bounty: 200, lives: 5, hitH: 1.8, top: 3.75, dmg: 40, atkT: 1.5, scale: 1.85, boss: true, summon: { type: 'spider', n: 2, every: 8, max: 99, hp: 1 }, death: 'rider', blade: true, ride: true, cat: 'armor' },
+  colossus: { name: '호소카와 다다오키', short: '호소카와', tip: '궁지에 몰리면 맹렬히 돌진한다.', hp: 1250, spd: .7, rad: 1.05, mass: 60, bounty: 200, lives: 5, hitH: 2.2, top: 4.0, dmg: 60, atkT: 2.0, scale: 1.98, boss: true, armor: .85, slowRes: .3, enrage: [.3, 1.25], death: 'rider', blade: true, ride: true, cat: 'armor' },
+  king: { name: '우키타 히데이에', short: '우키타', tip: '운제 든 병사들을 불러낸다.', hp: 1250, spd: .86, rad: .92, mass: 40, bounty: 200, lives: 5, hitH: 2.2, top: 3.85, dmg: 46, atkT: 1.7, scale: 1.9, boss: true, summon: { type: 'mummy', n: 1, every: 9, max: 99, hp: .7 }, death: 'rider', blade: true, ride: true, cat: 'armor' },
 };
 
+// ── 군대별 겉모습 ──────────────────────────────────────────────────────────────
+// 색은 ARMY[curArmy()]에서만 가져온다. 전장의 bio.tints(원작 괴물용)는 쓰지 않는다.
+const ar_LOOKS = {};
+function ar_look() {
+  const a = curArmy(); let L = ar_LOOKS[a]; if (L) return L;
+  const A = ARMY[a], main = C(A.main), sub = C(A.sub), trim = C(A.trim);
+  L = ar_LOOKS[a] = { a, main, sub, trim, K: KIT.army[a] };
+  L.cloth = a === 'wa' ? [.115, .115, .15] : mixC(mulC(main, 1.75), [.5, .5, .5], .12);          // 군복
+  L.bright = { sui: mulC(sub, 1.25), tang: mulC(sub, 1.2), mongol: mulC(sub, .9), wa: mulC(sub, 1.6) }[a];   // 전고수·독전관·깃 장식
+  L.armor = { sui: [.6, .44, .3], tang: [1.25, 1.22, 1.3], mongol: [.66, .52, .4], wa: [.85, .14, .12] }[a];   // 갑옷 재질
+  L.shield = { sui: mulC(sub, 1.3), tang: mulC(main, 2.2), mongol: mulC(main, 1.8), wa: mulC(sub, 1.4) }[a];
+  L.tack = { sui: mulC(sub, 1.1), tang: mulC(main, 2.2), mongol: mulC(main, 1.9), wa: mulC(sub, 1.5) }[a];
+  const bay = [.5, .27, .15], dbay = [.27, .16, .11], blk = [.13, .12, .12], gry = [.95, .95, .97], dun = [.82, .62, .36], chs = [.6, .28, .13];
+  L.coats = { sui: [bay, dbay, chs], tang: [bay, blk, gry, dbay], mongol: [dun, bay, dun, chs], wa: [dbay, blk, chs] }[a];
+  L.lamp = { sui: [1.1, 1.0, .6], tang: [1.2, .8, .5], mongol: [1.0, .95, .85], wa: [1.25, .75, .45] }[a];
+  L.lampHex = { sui: 0xffc060, tang: 0xff9040, mongol: 0xffd9a0, wa: 0xff8030 }[a];
+  const fc = { sui: sub, tang: main, mongol: main, wa: sub }[a], fm = Math.max(fc[0], fc[1], fc[2]);
+  L.flash = mulC(fc, 1.6 / fm);                                // 소환·호령 섬광
+  L.kite = mixC([1, 1, 1], mulC(fc, 1.3 / fm), .7);            // 대연
+  L.wood = mixC([1, 1, 1], mulC(fc, 1 / fm), .22);            // 공성 병기 나무
+  L.falcon = a === 'mongol' ? [1.9, 1.9, 2.0] : [1, 1, 1];
+  return L;
+}
+const ar_BOSS = {
+  queen: { coat: [.3, .18, .12], w: 'sword', ws: 1.4 },
+  giant: { coat: [.14, .13, .13], bard: true, w: 'glaive', ws: 1.1 },
+  ogre: { coat: [1.05, 1.03, 1.0], w: 'glaive', ws: 1.1, cloth: [.95, .95, .95], armor: [1.35, 1.35, 1.4], crest: [1, 1, 1] },
+  jotun: { coat: [.82, .62, .36], w: 'club', ws: 1.25 },
+  colossus: { coat: [.13, .12, .12], w: 'sword', ws: 1.5 },
+  king: { coat: [1.05, 1.03, 1.0], w: 'spear', ws: 1.1, cloth: [.5, .06, .06], armor: [1.0, .78, .3], tack: [1.1, .9, .4] },
+};
+const ar_HEMP = [.64, .57, .44];
+// 태어날 때 한 번: 타입과 군대에 맞는 옷·장비·자세를 정한다.
+function ar_outfit(m) {
+  const L = ar_look(), K = L.K, I = KIT.item, t = m.type, v = rr(.86, 1.14), g = [], wa = L.a === 'wa';
+  const hat = { b: K.hat, at: 1 }, hv = { b: K.heavy, at: 1 }, crest = { b: I.crown, at: 1, t: L.bright };
+  m.tint = mulC(L.cloth, v); m.tintH = null; m.tintL = null; m.gear = g; m.weapon = null; m.spec = SPEC.man;
+  if (t === 'skel') {
+    g.push(hat);
+    if (rnd() < .5) { m.weapon = I.spear; m.staff = true; } else m.weapon = I.sword;
+    if (wa && rnd() < .45) g.push({ b: K.flag, s: .82, glow: 1 });
+  } else if (t === 'rat') { m.crouch = .5; m.weapon = I.sword; m.wScale = .62; m.tint = mulC(mixC(L.cloth, ar_HEMP, .45), v); g.push({ b: I.wraps }); }
+  else if (t === 'slimelet') { m.weapon = I.stick; m.wScale = 1.4; m.tint = mulC(ar_HEMP, v); }
+  else if (t === 'knight') {
+    g.push(hv); g.push({ b: I.cuirass, t: L.armor }); m.weapon = I.sword; m.wScale = 1.2;
+    if (wa) g.push({ b: K.flag, s: .9, glow: 1 }); else { g.push(crest); m.shield = I.shieldR; m.shieldTint = L.shield; }
+  } else if (t === 'ghoul') { m.charge = true; m.weapon = I.sword; m.wScale = 1.1; m.tint = mulC([.78, .74, .64], v); g.push({ b: I.wrapHead, at: 1 }); }
+  else if (t === 'spider') { m.crouch = .95; m.weapon = I.sword; m.wScale = .55; m.tint = [.085, .085, .11]; m.tintL = [.3, .3, .36]; g.push({ b: I.hood, at: 1 }); }
+  else if (t === 'scarab') { m.crouch = .25; g.push(hat); m.weapon = I.sword; m.wScale = .85; }
+  else if (t === 'wolf') {
+    g.push(hat); m.coat = mulC(L.coats[Math.floor(rnd() * L.coats.length)], v); m.tack = L.tack;
+    if (L.a === 'sui' || L.a === 'tang') { m.weapon = I.spear; m.lance = true; } else m.weapon = I.sword;
+    if (wa && rnd() < .6) g.push({ b: K.flag, s: .9, glow: 1 });
+  } else if (t === 'bomber') { g.push(hat); g.push(wa ? { b: I.fagot } : { b: I.keg, t: [.95, .7, .5] }); m.tint = mulC(L.cloth, v * .85); }
+  else if (t === 'wraith') { m.crouch = .28; m.weapon = I.sword; m.wScale = .75; m.tint = [.07, .07, .09]; m.tintL = [.26, .26, .32]; g.push({ b: I.hood, at: 1 }); }
+  else if (t === 'toad') { g.push(hat); m.weapon = I.sword; m.shield = I.buckler; m.shieldTint = L.shield; }
+  else if (t === 'drummer') { g.push(hat); g.push({ b: K.flag, glow: 1 }); m.drum = true; m.weapon = I.stick; m.tint = mulC(L.bright, .9); }
+  else if (t === 'necro') { g.push(hv); g.push(crest); g.push({ b: I.robe, t: L.bright }); m.weapon = I.staff; m.staff = true; m.wTint = L.flash; m.tint = L.bright; }
+  else if (t === 'mummy') { g.push(hat); m.claw = true; m.tintW = L.wood; }
+  else if (t === 'brute') { m.spec = SPEC.hulk; m.girth = 1.24; m.weapon = I.club; m.wScale = 1.15; g.push({ b: I.wrapHead, at: 1 }); g.push({ b: I.cuirass, t: mixC(L.armor, [.5, .36, .24], .6) }); }
+  else if (t === 'golem') {
+    m.bard = !wa; m.coat = mulC(L.coats[0], .8); m.tack = m.bard ? L.armor : L.tack;
+    g.push(hv); if (wa) g.push({ b: K.flag, glow: 1 }); else g.push(crest); g.push({ b: I.cuirass, t: L.armor }); m.weapon = I.spear; m.lance = true; m.wScale = 1.15;
+  } else if (t === 'slime' || t === 'brood') { m.tint = L.wood; m.flagB = K.flag; }
+  else if (t === 'bat') m.tint = mulC(L.falcon, v);
+  else if (t === 'gargoyle') m.tint = L.kite;
+  else if (t === 'wisp') m.tint = L.lamp;
+  else if (m.def.boss) {
+    const B = ar_BOSS[t]; m.coat = B.coat; m.bard = !!B.bard && !wa; m.tack = m.bard ? (B.armor || L.armor) : (B.tack || L.tack);
+    if (B.cloth) m.tint = B.cloth;
+    g.push(hv); if (!wa) g.push({ b: I.crown, at: 1, t: B.crest || L.bright, s: 1.25 });
+    g.push({ b: I.cuirass, t: B.armor || L.armor }); g.push({ b: K.flag, s: 1.08, glow: 1 }); m.hs = 1.16;
+    m.weapon = I[B.w]; m.wScale = B.ws; if (B.w === 'glaive' || B.w === 'spear') m.staff = true;
+  }
+}
+
 function spawnMonster(type, o = {}) {
-  const B = G.B, def = MON[type], hpMul = o.hpMul || 1, bt = B.bio.tints;
+  const B = G.B, def = MON[type], hpMul = o.hpMul || 1;
   const m = {
     type, def, hp: def.hp * hpMul, maxHp: def.hp * hpMul, s: o.s === undefined ? .7 + rnd() * .5 : o.s, lat: o.lat === undefined ? rr(-.85, .85) : o.lat,
     x: 0, y: 0, z: 0, yaw: 0, ph: rnd() * 6, mv: 1, vf: def.spd, spdNow: def.spd, spdMul: rr(.93, 1.07) * (o.spdMul || 1), slowT: 0, slowF: 0,
     flash: 0, flinch: 0, atk: -1, cd: rr(.1, .5), foe: null, prog: 0, vis: false, dead: false, dying: 0, ks: 0, kl: 0, hop: rnd(), rad: def.rad * (o.radMul || 1), mass: def.mass,
-    hitH: def.hitH, scale: def.scale * rr(.95, 1.05), fly: !!def.fly, torch: false, flame: null, tint: (bt && bt[type]) || def.tint || null, men: 0, struck: false, step: 0, alive: true, lI: 0, lx: 0, ly: 0, lz: 0, lseed: rnd() * 9, vx: 0, vz: 0, pop: o.pop || 0,
+    hitH: def.hitH, scale: def.scale * rr(.95, 1.05), fly: !!def.fly, torch: false, flame: null, tint: null, men: 0, struck: false, step: 0, alive: true, lI: 0, lx: 0, ly: 0, lz: 0, lseed: rnd() * 9, vx: 0, vz: 0, pop: o.pop || 0,
     haste: 0, hitAt: -9, beat: rnd() * 6, eth: false, gT: rnd() * 4, cast: 0, sumN: 0, sumT: def.summon ? def.summon.every * rr(.45, .7) : 0, stT: def.stomp ? def.stomp.every * .6 : 0, rage: false,
   };
   m.home = m.lane = m.lat;
+  ar_outfit(m);
   if (type === 'skel' && rnd() < .26) { m.torch = true; m.flame = addFlame({ x: 0, y: -50, z: 0, size: .36, embers: .45, glow: .8 }); m.lI = 30; }
   if (type === 'bomber') { m.torch = true; m.flame = addFlame({ x: 0, y: -50, z: 0, size: .3, embers: .7, glow: .7 }); m.lI = 26; }
-  if (type === 'skel') m.tint = rnd() < .3 ? [.9, .86, .74] : null;
-  if (def.glow) { m.glowL = true; m.lI = def.glow; m.lCol = B.bio.wispHex || 0xb0a0ff; }
+  if (def.glow) { m.glowL = true; m.lI = def.glow; m.lCol = ar_look().lampHex; }
   if (m.fly) {
     const c = B.cave; m.x = c.x + rr(-.5, .5); m.z = c.z + rr(-1, 1); m.y = c.y + 2.2; m.s = c.s + rr(0, .6);
     m.alt = rr(def.alt[0], def.alt[1]); m.side = rr(-1.1, 1.1) * (def.glow ? 1.4 : 1); m.vis = true;
@@ -3769,85 +4013,78 @@ function blastAround(m, ex) {
   for (const o of G.mons) { if (o === m || o.dead || o.fly || o.hp <= 0) continue; const d = Math.hypot(o.x - m.x, o.z - m.z); if (d < ex.r + o.rad) hitMonster(o, ex.dmg * (1 - .5 * d / (ex.r + o.rad)), 'blast', (o.x - m.x) / (d || 1), (o.z - m.z) / (d || 1), null); }
   for (const f of G.men) { if (f.dead) continue; const d = Math.hypot(f.x - m.x, f.z - m.z); if (d < ex.r) { f.hp -= ex.men * G.dmgMul * .6; f.flash = 1; f.flinch = 1; if (f.hp <= 0) killFootman(f, (f.x - m.x) / (d || 1), (f.z - m.z) / (d || 1)); } }
 }
+// 판자·바퀴가 흩어지는 공성 병기 파편
+function ar_planks(m, n, ix, iz) {
+  const sc = Math.min(1.6, m.scale);
+  for (let i = 0; i < n; i++) {
+    _tm.compose(_tv.set(m.x + rr(-.35, .35) * sc, m.y + rr(.2, 1.1) * sc, m.z + rr(-.35, .35) * sc), _tq.set(rr(-1, 1), rr(-1, 1), rr(-1, 1), 1).normalize(), _ts.setScalar(rr(.6, 1.1) * sc));
+    addDebris(KIT.plank, _tm, m.tint, rr(-2.4, 2.4) + ix, rr(2, 4.8), rr(-2.4, 2.4) + iz, rr(3, 9), rr(2.4, 3.8));
+  }
+}
 function killMonster(m, kind, dx, dz, tower) {
-  const B = G.B, def = m.def, t = m.type, dth = def.death; if (tower) tower.kills++;
+  const B = G.B, def = m.def, dth = def.death; if (tower) tower.kills++;
   if (def.boss) { m.dying = 1.9; m.hp = 0; m.foe = null; G.slowmo = 1.4; sfx('roar', m.x, m.z, 1, 1); return; }
   G.slain++; G.waveKills++;
   const ix = (dx || 0) * 2.2, iz = (dz || 0) * 2.2, up = kind === 'blast' ? 1.7 : 1, sc = m.scale;
-  if (dth === 'bones') { shatter(e => rigMonster(e), m, [ix, 1.2 * up, iz], { spread: kind === 'blast' ? 2.6 : 1.5, up }); sfx('boneRattle', m.x, m.z, .8, rnd()); fxDust(m.x, m.y + .1, m.z, 3, .6, { a: .35 }); }
-  else if (dth === 'fur') { shatter(e => rigMonster(e), m, [ix, 2.2 * up, iz], { spread: 1.2, life: .6 }); sfx('ratSqueal', m.x, m.z, .55, rnd()); fxDust(m.x, m.y + .1, m.z, 2, .4, { a: .3 }); }
-  else if (dth === 'bat') { shatter(e => rigMonster(e), m, [ix + m.vx * .5, .5, iz + m.vz * .5], { spread: 1.0, life: .7 }); sfx('batScreech', m.x, m.z, .6, rnd()); }
-  else if (dth === 'flesh') { shatter(e => rigMonster(e), m, [ix, 1.6 * up, iz], { spread: 1.5, life: .7, up }); sfx('squelch', m.x, m.z, .7, .5); fxDust(m.x, m.y + .1, m.z, 3 + Math.round(sc * 2), .5 * sc + .3, { a: .35 }); FX.decals.add(B.heightAt, m.x, m.z, .5 * sc + .3, .03, .012, .012, .6, 16); }
-  else if (dth === 'bug') { shatter(e => rigMonster(e), m, [ix, 1.8 * up, iz], { spread: 1.6, life: .55 }); sfx('squelch', m.x, m.z, .5, .9); FX.decals.add(B.heightAt, m.x, m.z, .35 * sc + .15, .02, .03, .012, .6, 14); for (let i = 0; i < 3; i++) fxSmoke(m.x, m.y + .15, m.z, rr(-1, 1), rr(.4, 1), rr(-1, 1), rr(.3, .6), .25 * sc, .4, .14, .22, .1, .45, { drag: 3 }); }
-  else if (dth === 'rock') {
-    shatter(e => rigMonster(e), m, [ix + m.vx * .4, 1.4 * up, iz + m.vz * .4], { spread: 1.8, life: .9 }); sfx('hammer', m.x, m.z, 1, rnd()); fxDust(m.x, m.y + .2, m.z, 6 + Math.round(sc * 3), .7 * sc, { speed: 2.4 });
-    for (let i = 0; i < 5; i++) { _tm.compose(_tv.set(m.x + rr(-.3, .3) * sc, m.y + rr(.2, 1) * sc, m.z + rr(-.3, .3) * sc), _tq.identity(), _ts.setScalar(rr(.6, 1.2))); addDebris(KIT.rubble, _tm, m.tint, rr(-2.5, 2.5) + ix, rr(2, 4.5), rr(-2.5, 2.5) + iz, rr(3, 9), rr(2.5, 4)); }
+  if (dth === 'man') { shatter(e => rigMonster(e), m, [ix, 1.2 * up, iz], { spread: kind === 'blast' ? 2.6 : 1.4, up, life: .8 }); sfx('boneRattle', m.x, m.z, .7, rnd()); fxDust(m.x, m.y + .1, m.z, 3 + Math.round(sc), .5 * sc + .1, { a: .35 }); }
+  else if (dth === 'rider') { shatter(e => rigMonster(e), m, [ix, 1.7 * up, iz], { spread: 1.5, up, life: .8 }); sfx('boneRattle', m.x, m.z, .8, rnd()); sfx('ratSqueal', m.x, m.z, .3, rnd()); fxDust(m.x, m.y + .1, m.z, 5 + Math.round(sc * 2), .7 * sc, { a: .4, speed: 1.8 }); }
+  else if (dth === 'bird') { shatter(e => rigMonster(e), m, [ix + m.vx * .5, .5, iz + m.vz * .5], { spread: 1.0, life: .7 }); sfx('batScreech', m.x, m.z, .6, rnd()); }
+  else if (dth === 'kite') { shatter(e => rigMonster(e), m, [ix + m.vx * .4, .8, iz + m.vz * .4], { spread: 1.3, life: .9 }); sfx('slash', m.x, m.z, .7, rnd()); sfx('boneRattle', m.x, m.z, .5, rnd()); }
+  else if (dth === 'wood') {
+    shatter(e => rigMonster(e), m, [ix, 1.5 * up, iz], { spread: 1.9, up, life: .9 }); ar_planks(m, 5 + Math.round(sc * 3), ix, iz);
+    sfx('hammer', m.x, m.z, 1, rnd()); fxDust(m.x, m.y + .2, m.z, 7 + Math.round(sc * 3), .8 * Math.min(1.8, sc), { speed: 2.4 });
   }
-  else if (dth === 'ghost') { shatter(e => rigMonster(e), m, [ix * .4, 2.2, iz * .4], { spread: .8, life: .45 }); sfx('batScreech', m.x, m.z, .45, .1); fxTimed(5, m.x, m.y + .8, m.z, 2.4, 2.4, .5, 1.1, 2.2, .9, .3); for (let i = 0; i < 6; i++) fxSmoke(m.x + rr(-.2, .2), m.y + rr(.2, 1.2), m.z + rr(-.2, .2), rr(-.5, .5), rr(.6, 1.6), rr(-.5, .5), rr(.6, 1.1), .4, .7, .3, .42, .6, .4, { drag: 1.5, rise: .3 }); }
-  else if (dth === 'wisp') { const c = m.tint || [1, 1, 1]; fxTimed(5, m.x, m.y, m.z, 1.5, 1.5, c[0] * 2, c[1] * 2, c[2] * 2, .9, .22); fxSparks(m.x, m.y, m.z, 7, 3.2, c[0] * 2.4, c[1] * 2.4, c[2] * 2.4, { size: .05, grav: 2 }); sfx('ignite', m.x, m.z, .35, rnd()); }
-  else {
-    const big = t === 'slime', n = big ? 14 : 7;
-    for (let i = 0; i < n; i++) { _tm.compose(_tv.set(m.x + rr(-.2, .2) * sc, m.y + rr(.1, .5) * sc, m.z + rr(-.2, .2) * sc), _tq.identity(), _ts.setScalar(rr(.8, 1.8) * sc)); addDebris(KIT.goo, _tm, null, rr(-3, 3) + ix, rr(2, 5.5), rr(-3, 3) + iz, 0, 2, { goo: 1 }); }
-    FX.decals.add(B.heightAt, m.x, m.z, .95 * sc + .2, .012, .034, .014, .75, 22);
-    fxTimed(4, m.x, m.y + .08, m.z, 2.6 * sc, 2.6 * sc, .25, .8, .2, .6, .3, { ground: true });
-    for (let i = 0; i < 5; i++) fxSmoke(m.x, m.y + .3, m.z, rr(-1, 1), rr(.5, 1.5), rr(-1, 1), rr(.4, .8), .35 * sc, .5, .12, .3, .12, .5, { drag: 3 });
-    sfx('squelch', m.x, m.z, .8, big ? .8 : .2);
-  }
+  else if (dth === 'smoke') { shatter(e => rigMonster(e), m, [ix * .4, 1.4, iz * .4], { spread: .9, life: .6 }); sfx('boneRattle', m.x, m.z, .5, .1); for (let i = 0; i < 7; i++) fxSmoke(m.x + rr(-.2, .2), m.y + rr(.2, 1.2), m.z + rr(-.2, .2), rr(-.5, .5), rr(.5, 1.4), rr(-.5, .5), rr(.7, 1.2), .4, .8, .34, .34, .36, .45, { drag: 1.5, rise: .3 }); }
+  else if (dth === 'lamp') { const c = m.tint || [1, 1, 1]; shatter(e => rigMonster(e), m, [ix + m.vx * .3, .2, iz + m.vz * .3], { spread: .6, life: .5 }); fxTimed(5, m.x, m.y, m.z, 1.5, 1.5, c[0] * 2, c[1] * 1.6, c[2] * 1.2, .9, .22); fxSparks(m.x, m.y, m.z, 7, 3.2, c[0] * 2.4, c[1] * 1.8, c[2] * 1.2, { size: .05, grav: 2 }); sfx('ignite', m.x, m.z, .35, rnd()); }
   if (def.split && G.mons.length < 90) { const [ty, n] = def.split; for (let i = 0; i < n; i++) { const u = n > 1 ? i / (n - 1) * 2 - 1 : 0; spawnMonster(ty, { s: Math.max(.5, m.s - .15 - .1 * Math.abs(u)), lat: clamp(m.lat + u * .34, -.95, .95), hpMul: m.maxHp / def.hp, pop: 1 }).kl = u * 2.2; } }
   if (m.torch && m.flame) fxEmbers(m.flame.x, m.flame.y, m.flame.z, 8, .15);
   dropCoins(m.x, m.y + m.hitH * .6, m.z, Math.round(def.bounty * G.bountyMul), clamp(Math.round(def.bounty / 3), 1, 6));
   removeMonster(m);
   if (def.explode) blastAround(m, def.explode);
 }
+// 적장이 말에서 떨어진다: 흙먼지와 군기색 섬광(폭발은 쓰지 않는다)
 function finishBoss(m) {
+  const fc = ar_look().flash;
   G.slain++; G.waveKills++;
   shatter(e => rigMonster(e), m, [0, 2.5, 0], { spread: 3.4, up: 1.5, life: 1.5, hold: .25 });
-  fxDust(m.x, m.y + .2, m.z, 26, 2.4, { speed: 4.5, life: 1.6 }); fxExplosion(m.x, m.y + 1, m.z, .9); FX.shake = 1.2;
+  fxDust(m.x, m.y + .2, m.z, 30, 2.6, { speed: 4.5, life: 1.6 }); fxTimed(4, m.x, m.y + .08, m.z, 7, 7, fc[0], fc[1], fc[2], .7, .6, { ground: true }); FX.shake = 1.2;
   FX.decals.add(G.B.heightAt, m.x, m.z, 2.6, .02, .017, .015, .8, 60);
   sfx('bossDie', m.x, m.z, 1.2, 1);
   dropCoins(m.x, m.y + 1.4, m.z, Math.round(m.def.bounty * G.bountyMul), 26);
   G.bossDown = true; removeMonster(m);
 }
 
-const SKEL_EYE = [.058, .185, .152, .07], OGRE_EYE = [.055, .125, .15, .06], BUG_EYE = [.05, .055, .19, .035];
+// ── 타입별 리그 ──
+function ar_rigMan(m) { return rigHuman(KIT.man, m.spec, m); }
+// 방패병: 도약 구간(hop .22~.62)에 몸을 말아 앞으로 한 바퀴 구른다
+function ar_rigLeaper(m) {
+  const h = m.foe ? 0 : (m.hop || 0), y0 = m.y, base = m.atk >= 0 ? 0 : .12; let y = 0, roll = 0, cr = base;
+  if (h < .22) cr = base + .4 * easeOut(h / .22);
+  else if (h < .62) { const u = (h - .22) / .4; y = Math.sin(u * PI) * .5; roll = easeInOut(u) * TAU; cr = .7; }
+  else if (h < .78) cr = base + .4 * (1 - (h - .62) / .16);
+  m.y = y0 + y * m.scale; m.roll = roll; m.crouch = cr;
+  const M = rigHuman(KIT.man, m.spec, m); m.y = y0; return M;
+}
+function ar_rigMounted(m) { return ar_rigRider(m, m.bard); }
 const RIGS = {
-  skel(m) { m.weapon = KIT.item.sword; m.shamble = true; return rigHuman(KIT.skel, SPEC.skel, m); },
-  knight(m) { m.weapon = KIT.item.sword; m.wScale = 1.2; m.shield = KIT.item.shieldR; m.helm = true; m.plate = true; return rigHuman(KIT.skel, SPEC.skel, m); },
-  giant(m) { m.weapon = KIT.item.greatsword; m.wScale = 1.1; m.heavy = true; return rigHuman(KIT.giant, SPEC.skel, m); },
-  ogre(m) { m.weapon = KIT.item.club; m.wScale = 1.2; m.heavy = true; return rigHuman(KIT.ogre, SPEC.ogre, m); },
-  rat: rigRat, bat: m => rigBat(m), slime: rigSlime, slimelet: rigSlime,
-  ghoul(m) { m.claw = true; return rigHuman(KIT.ogre, SPEC.ogre, m); },
-  brute(m) { m.weapon = KIT.item.club; m.wScale = 1.1; m.heavy = true; return rigHuman(KIT.ogre, SPEC.ogre, m); },
-  jotun(m) { m.weapon = KIT.item.iceclub; m.wScale = 1.3; m.heavy = true; return rigHuman(KIT.ogre, SPEC.ogre, m); },
-  golem(m) { m.heavy = true; return rigHuman(KIT.golem, SPEC.golem, m); },
-  colossus(m) { m.heavy = true; return rigHuman(KIT.golem, SPEC.golem, m); },
-  necro(m) { m.weapon = KIT.item.staff; m.staff = true; m.hood = true; m.robe = true; return rigHuman(KIT.skel, SPEC.skel, m); },
-  drummer(m) { m.weapon = KIT.item.stick; m.drum = true; m.standard = true; return rigHuman(KIT.skel, SPEC.skel, m); },
-  bomber(m) { m.keg = true; return rigHuman(KIT.skel, SPEC.skel, m); },
-  mummy(m) { m.shamble = true; m.wraps = true; return rigHuman(KIT.skel, SPEC.skel, m); },
-  king(m) { m.weapon = KIT.item.khopesh; m.wScale = 1.25; m.heavy = true; m.crown = true; m.wraps = true; return rigHuman(KIT.giant, SPEC.skel, m); },
-  spider: rigSpider, scarab: rigSpider, brood: rigSpider, queen: rigSpider, wolf: rigWolf, wraith: rigWraith, toad: rigToad, wisp: rigWisp,
-  gargoyle: m => rigBat(m, KIT.garg, .1, .06),
+  skel: ar_rigMan, rat: ar_rigMan, slimelet: ar_rigMan, knight: ar_rigMan, ghoul: ar_rigMan, spider: ar_rigMan, scarab: ar_rigMan, bomber: ar_rigMan,
+  wraith: ar_rigMan, drummer: ar_rigMan, necro: ar_rigMan, brute: ar_rigMan, toad: ar_rigLeaper,
+  wolf: ar_rigMounted, golem: ar_rigMounted, giant: ar_rigMounted, ogre: ar_rigMounted, jotun: ar_rigMounted, queen: ar_rigMounted, colossus: ar_rigMounted, king: ar_rigMounted,
+  slime: ar_rigRam, mummy: ar_rigLadder, brood: ar_rigTower,
+  bat: m => rigBat(m), gargoyle: ar_rigKite, wisp: rigWisp,
 };
 function rigMonster(m) { return RIGS[m.type](m); }
-const EYES = {
-  skel: SKEL_EYE, knight: SKEL_EYE, giant: [.058, .185, .152, .075], ogre: OGRE_EYE, rat: [.05, .03, .42, .05], bat: [.04, .03, .16, .05], slime: [.13, .2, .44, .08], slimelet: [.13, .2, .44, .08],
-  ghoul: OGRE_EYE, brute: OGRE_EYE, jotun: OGRE_EYE, golem: [.04, .1, .17, .05], colossus: [.04, .1, .17, .05], necro: SKEL_EYE, drummer: SKEL_EYE, bomber: SKEL_EYE, mummy: SKEL_EYE, king: [.058, .185, .152, .075],
-  spider: BUG_EYE, scarab: BUG_EYE, brood: [.05, .055, .19, .022], queen: [.05, .055, .19, .016], wolf: [.05, .27, .63, .04], wraith: [.045, 1.04, .17, .055], toad: [.125, .345, .285, .035], gargoyle: [.045, .15, .28, .045], wisp: null,
-};
+// 사람 병사의 눈은 빛나지 않는다. 남기는 광원은 풍등·횃불·화공병의 불씨뿐이다.
 function drawMonster(m, t) {
-  const M = rigMonster(m), ey = EYES[m.type], c = m.def.eye, sc = m.scale, tw = .8 + .2 * Math.sin(t * 9 + m.lseed * 7), ty = m.type;
-  if (ey) {
-    for (const sg of [-1, 1]) { _tv.set(sg * ey[0], ey[1], ey[2]).applyMatrix4(M); FX.add.push(_tv.x, _tv.y, _tv.z, ey[3] * sc * 1.5, ey[3] * sc * 1.5, 0, 0, c[0], c[1], c[2], tw, 0, 0, 0, 0); }
-    _tv.set(0, ey[1], ey[2]).applyMatrix4(M); FX.add.push(_tv.x, _tv.y, _tv.z, ey[3] * sc * 9, ey[3] * sc * 9, 0, 0, c[0] * .3, c[1] * .3, c[2] * .3, .5 * tw, 2, 0, 0, 0);
-  }
-  if (ty === 'wisp') { const k = m.tint || [1, 1, 1]; FX.add.push(m.x, m.y, m.z, .26, .26, 0, 0, k[0] * 2.2, k[1] * 2.2, k[2] * 2.2, tw, 0, 0, 0, 0); FX.add.push(m.x, m.y, m.z, 1.5, 1.5, 0, 0, k[0] * .5, k[1] * .5, k[2] * .5, .5 * tw, 2, 0, 0, 0); m.lx = m.x; m.ly = m.y; m.lz = m.z; if (rnd() < .3) fxPart(m.x + rr(-.05, .05), m.y + rr(-.05, .05), m.z + rr(-.05, .05), -m.vx * .2, rr(-.2, .2), -m.vz * .2, rr(.3, .6), .05, k[0] * 1.6, k[1] * 1.6, k[2] * 1.6, { drag: 1 }); }
-  else if (ty === 'wraith') { const a = m.eth ? .5 + .2 * Math.sin(t * 23) : .16; FX.add.push(m.x, m.y + .75 * sc, m.z, 2.3 * sc, 2.6 * sc, 0, 0, .25, .55, 1.2, a, 2, 0, 0, 0); if (m.eth && rnd() < .3) fxPart(m.x + rr(-.25, .25), m.y + rr(.1, 1.3), m.z + rr(-.25, .25), 0, rr(.3, .9), 0, rr(.3, .6), .05, .5, 1.0, 2.0, { drag: .5 }); }
-  else if (ty === 'necro' || ty === 'queen' || ty === 'king') { if (m.cast > 0) { const g = ty === 'necro' ? [.4, 1.6, .6] : ty === 'queen' ? [1.2, .5, 1.6] : [.4, 1.5, 1.3]; FX.add.push(m.x, m.y + m.hitH * 1.6, m.z, 3.2 * m.cast * sc, 3.2 * m.cast * sc, 0, 0, g[0], g[1], g[2], .28 * m.cast, 2, 0, 0, 0); } }
-  else if (ty === 'colossus' && rnd() < (m.rage ? .5 : .12)) fxPart(m.x + rr(-.7, .7), m.y + rr(.6, 3), m.z + rr(-.7, .7), rr(-.3, .3), rr(.6, 1.8), rr(-.3, .3), rr(.6, 1.2), rr(.05, .08), 2.6, .9, .15, { drag: .3, wob: 1, rise: .3 });
+  rigMonster(m);
+  const sc = m.scale, tw = .8 + .2 * Math.sin(t * 9 + m.lseed * 7), ty = m.type;
+  if (ty === 'wisp') { const k = m.tint || [1, 1, 1]; FX.add.push(m.x, m.y, m.z, .3, .3, 0, 0, k[0] * 2.2, k[1] * 1.7, k[2] * 1.1, tw, 0, 0, 0, 0); FX.add.push(m.x, m.y, m.z, 1.5, 1.5, 0, 0, k[0] * .5, k[1] * .4, k[2] * .25, .5 * tw, 2, 0, 0, 0); m.lx = m.x; m.ly = m.y; m.lz = m.z; if (rnd() < .12) fxPart(m.x + rr(-.04, .04), m.y - .1, m.z + rr(-.04, .04), -m.vx * .2, rr(-.4, -.1), -m.vz * .2, rr(.3, .6), .04, k[0] * 1.8, k[1] * 1.1, k[2] * .5, { drag: 1 }); }
+  else if (ty === 'wraith') { if (m.eth && rnd() < .4) fxSmoke(m.x + rr(-.25, .25), m.y + rr(.1, 1.2) * sc, m.z + rr(-.25, .25), rr(-.2, .2), rr(.15, .5), rr(-.2, .2), rr(.5, .9), .3, .7, .3, .3, .32, .42, { drag: 1.5 }); }
+  else if (m.def.summon && m.cast > 0) { const g = ar_look().flash; FX.add.push(m.x, m.y + m.def.top * .8, m.z, 2.6 * m.cast * sc, 2.6 * m.cast * sc, 0, 0, g[0], g[1], g[2], .22 * m.cast, 2, 0, 0, 0); }
+  else if (ty === 'colossus' && m.rage && rnd() < .45) fxDust(m.x + rr(-.7, .7), m.y + .1, m.z + rr(-.7, .7), 1, .8, { a: .4 });
   if (m.torch && m.flame) { const p = RIGOUT.torch; m.flame.x = p.x; m.flame.y = p.y; m.flame.z = p.z; m.lx = p.x; m.ly = p.y + .2; m.lz = p.z; }
   if (m.slowT > 0 && rnd() < .2) { const a = rnd() * TAU; fxBolt([m.x, m.y + m.hitH, m.z], [m.x + Math.cos(a) * m.rad * 1.4, m.y + m.hitH + rr(-.3, .4), m.z + Math.sin(a) * m.rad * 1.4], .08, [.4, .65, 1.3], .028); }
-  if (m.vis || m.fly) G.hbars.push({ x: m.x, y: m.y + m.def.top * sc / m.def.scale + .22, z: m.z, f: sat(m.hp / m.maxHp), boss: !!m.def.boss, man: false, name: m.def.boss ? monName(m.type) : null });
+  if (m.vis || m.fly) G.hbars.push({ x: m.x, y: m.y + m.def.top * sc / m.def.scale + .22, z: m.z, f: sat(m.hp / m.maxHp), boss: !!m.def.boss, man: false, name: m.def.boss ? (m.def.short || monName(m.type)) : null });
 }
 
 function spawnFootman(tower) {
@@ -3914,7 +4151,7 @@ function strike(a, b, dmg, byMan) {
   const rot = Math.atan2(dx * ux + dz * uz, dx * rx + dz * rz);
   const blade = byMan || (a.def && a.def.blade) || big;
   if (blade) fxTimed(7, mx, my, mz, big ? 4.2 : 1.55, big ? 4.2 : 1.55, byMan ? 2.2 : 2.0, byMan ? 2.2 : 1.7, byMan ? 2.4 : 1.3, .9, .2, { rot });
-  if (byMan) { const metal = !!b.def.armor || (b.def.death === 'bones' && rnd() < .4); fxSparks(b.x - dx / l * b.rad, my, b.z - dz / l * b.rad, metal ? 7 : 3, 3.6, 3, 2.3, 1.2, { size: .055, grav: 7 }); sfx(metal ? 'clash' : 'slash', mx, mz, .7, rnd()); hitMonster(b, dmg, 'sword', dx / l, dz / l, a.tower); a.tower.recent += dmg * .5; }
+  if (byMan) { const metal = !!b.def.armor || ((b.def.death === 'man' || b.def.death === 'rider') && rnd() < .4); fxSparks(b.x - dx / l * b.rad, my, b.z - dz / l * b.rad, metal ? 7 : 3, 3.6, 3, 2.3, 1.2, { size: .055, grav: 7 }); sfx(metal ? 'clash' : 'slash', mx, mz, .7, rnd()); hitMonster(b, dmg, 'sword', dx / l, dz / l, a.tower); a.tower.recent += dmg * .5; }
   else {
     if (big) { fxDust(b.x, b.y + .1, b.z, 10, 1.4, { speed: 3 }); FX.shake = Math.min(1.2, FX.shake + .5); sfx('bossStep', b.x, b.z, 1, 1); fxTimed(4, b.x, b.y + .08, b.z, 4.5, 4.5, 1.2, .9, .6, .5, .35, { ground: true }); }
     const hitList = big ? G.men.filter(f => !f.dead && Math.hypot(f.x - b.x, f.z - b.z) < 1.5) : [b];
@@ -3955,20 +4192,24 @@ function updateUnits(dt) {
       m.sumT -= dt;
       if (m.sumT <= 0 && m.sumN < def.summon.max && mons.length < 78) {
         const sm = def.summon; m.sumT = sm.every; m.sumN++; m.cast = 1; sfx('ignite', m.x, m.z, .7, .3);
-        for (let i = 0; i < sm.n; i++) { const q = spawnMonster(sm.type, { s: Math.max(.5, m.s - .6 - .3 * i - (def.boss ? 1.2 : 0)), lat: clamp(m.lat + (i - (sm.n - 1) / 2) * .8 + rr(-.1, .1), -.9, .9), hpMul: (m.maxHp / def.hp) * sm.hp, pop: 1 }); fxTimed(4, q.x, q.y + .08, q.z, 1.8, 1.8, .4, 1.6, .7, .6, .5, { ground: true }); fxDust(q.x, q.y + .1, q.z, 4, .6, { a: .4, c: [.2, .34, .24] }); }
+        for (let i = 0; i < sm.n; i++) { const q = spawnMonster(sm.type, { s: Math.max(.5, m.s - .6 - .3 * i - (def.boss ? 1.2 : 0)), lat: clamp(m.lat + (i - (sm.n - 1) / 2) * .8 + rr(-.1, .1), -.9, .9), hpMul: (m.maxHp / def.hp) * sm.hp, pop: 1 }), fc = ar_look().flash; fxTimed(4, q.x, q.y + .08, q.z, 1.8, 1.8, fc[0], fc[1], fc[2], .5, .5, { ground: true }); fxDust(q.x, q.y + .1, q.z, 5, .7, { a: .4 }); }
       }
     }
     if (def.stomp && m.vis) {
       m.stT -= dt;
       if (m.stT <= 0) {
         const sp = def.stomp; m.stT = sp.every; FX.shake = Math.min(1.2, FX.shake + .8); sfx('bossStep', m.x, m.z, 1.2, 1); sfx('roar', m.x, m.z, .6, .4);
-        fxTimed(4, m.x, m.y + .08, m.z, sp.r * 2, sp.r * 2, .6, 1.2, 2.2, .8, .7, { ground: true }); fxDust(m.x, m.y + .1, m.z, 16, 1.8, { speed: 4, c: [.6, .7, .85] }); lightFlash(m.x, m.y + 1.5, m.z, 0x8fc8ff, 300, .5, 16);
-        for (const tw of G.towers) if (tw.alive && tw.state === 'active' && dist2(tw.x, tw.z, m.x, m.z) < sp.r * sp.r) { tw.stun = sp.stun; fxTimed(5, tw.x, tw.y + 2, tw.z, 3, 3, .6, 1.2, 2.4, .9, .3); }
+        // 살리타의 호령에 돌 세례가 쏟아진다: 흙먼지와 돌 파편(불·포연 없음)
+        m.cast = 1; fxTimed(4, m.x, m.y + .08, m.z, sp.r * 2, sp.r * 2, .8, .68, .52, .6, .7, { ground: true }); fxDust(m.x, m.y + .1, m.z, 16, 1.8, { speed: 4 });
+        for (const tw of G.towers) if (tw.alive && tw.state === 'active' && dist2(tw.x, tw.z, m.x, m.z) < sp.r * sp.r) {
+          tw.stun = sp.stun; fxDust(tw.x, tw.y + 1.7, tw.z, 9, 1.3, { speed: 3 }); sfx('hammer', tw.x, tw.z, .8, rnd());
+          for (let i = 0; i < 4; i++) { _tm.compose(_tv.set(tw.x + rr(-.5, .5), tw.y + rr(1.6, 2.6), tw.z + rr(-.5, .5)), _tq.identity(), _ts.setScalar(rr(.7, 1.3))); addDebris(KIT.rubble, _tm, [.62, .6, .56], rr(-2.2, 2.2), rr(.5, 3), rr(-2.2, 2.2), rr(3, 9), rr(1.6, 2.6)); }
+        }
       }
     }
     let want = def.spd * m.spdMul * (1 - m.slowF) * (1 + m.haste), hopMul = 1;
     if (def.frenzy) want *= 1 + def.frenzy * (1 - m.hp / m.maxHp);
-    if (def.enrage && m.hp < m.maxHp * def.enrage[0]) { want *= def.enrage[1]; if (!m.rage) { m.rage = true; sfx('roar', m.x, m.z, 1, .9); fxEmbers(m.x, m.y + 2, m.z, 40, 1.2); FX.shake = Math.min(1.2, FX.shake + .6); } }
+    if (def.enrage && m.hp < m.maxHp * def.enrage[0]) { want *= def.enrage[1]; if (!m.rage) { m.rage = true; sfx('roar', m.x, m.z, 1, .9); fxDust(m.x, m.y + .2, m.z, 22, 2.0, { speed: 4 }); FX.shake = Math.min(1.2, FX.shake + .6); } }
     if (def.hop) { if (!m.foe) m.hop = (m.hop + dt * def.hop[0] * (1 - m.slowF * .6)) % 1; hopMul = (m.hop > .22 && m.hop < .62) ? def.hop[1] : .1; }
     let v = want * hopMul, obstacle = null, og = 9;
     if (def.boss) {
@@ -3996,7 +4237,7 @@ function updateUnits(dt) {
     const kd = Math.exp(-7 * dt); m.s += (v - m.ks * 0) * dt + m.ks * dt; m.lat += m.kl * dt; m.ks *= kd; m.kl *= kd;
     m.lat += clamp(m.lane - m.lat, -1.3 * dt, 1.3 * dt); m.lat = clamp(m.lat, -maxLat, maxLat); m.s = Math.max(.3, m.s);
     const moved = v * dt;
-    if (def.death === 'fur' || def.death === 'bug') m.ph += moved * (def.boss ? 2.4 : def.death === 'bug' ? 9 / Math.sqrt(m.scale) : 7.5 / m.scale); else if (def.boss) m.ph += moved * 6.0 / m.scale * 1.15; else m.ph += moved * 5.6 / (m.scale || 1);
+    m.ph += moved * (def.ride ? 4.2 : 5.6) / (m.scale || 1);   // 말은 보폭이 길다
     m.mv = damp(m.mv, sat(v / (want * .5 + .01)), 10, dt);
     m.cd -= dt;
     if (m.atk >= 0) {
@@ -4820,7 +5061,7 @@ const PX = (() => {
 })();
 
 // 자동 생성물 — 직접 고치지 말 것. `python3 tools/hangul.py`(빌드가 호출)로 다시 만든다.
-// src/ 에서 쓰는 글자만 뽑은 16px 1비트 글리프. 반각 104자 + 전각 220자.
+// src/ 에서 쓰는 글자만 뽑은 16px 1비트 글리프. 반각 104자 + 전각 311자.
 // Glyph bitmaps derived from GNU Unifont (Unifont Regular), (c) Unifoundry and contributors.
 // Dual-licensed SIL OFL 1.1 / GPL-2.0-or-later with font embedding exception. See vendor/LICENSE-unifont.txt
 const hg_DATA = {
@@ -4838,22 +5079,28 @@ const hg_DATA = {
     'AAAAAAAAAEIkGCRCAAAAAAAAAAAAAAAAAH4AAAAAAAAAAAAAAAAAAAD/AAAAAAAAAAAAAAAAAAAAAAAASUkAAAAAAAAAAAAQIH8gEAAAAAAAAAgcKggICAgICAgICAgIAAAAAAAAAAgE/gQIAAAAAAgICAgICAgICAgIKhwIAAA=',
   ],
   full: [
-    "가간강개거검것게격경계고골공과구국군권귀그극근금기김까꺼꺾끌끝나",
-    "남내냈너년누눌는니다단달당대더덕데동된두둘둥듭디따뜨띠라란러레려",
-    "력로록루르른를리릭린림막만말맡메면모몽무문물민박밖방백번벌별병보",
-    "본봉부불브비빛빠사산살삼새서석선섯성세소속손수술스습시십쓰씨아안",
-    "약양어없엇에여열오올와왜요우워원율으은을음의이인일임자작장저적전",
-    "접정제졌조족종주줄중증지직진짐짓짝차천철첩청체쳤총최축취치켜키타",
-    "태터토퇴투트파팔페펜펴포표플피필하한할합해행홉화확활휘휠",
+    "가간갑강개객거검것게격결경계고골공과관광구국군굳궁권귀그극근금기",
+    "길김깃까꺼꺾꾼끊끌끝나난날남내낸냈너년누눌느는니다단달당닿대더덕",
+    "던데도독돌동된두둘둥든들듭등디따떼뛰뜨띠라란람러레려력렬렵령례로",
+    "록루르른를리릭린림마막만말망맡매맹멀멈메면명모몰몽무문물민밀박밖",
+    "발방백버번벌변별볍병보복본봉부북불브비빗빛빠빨사산살삼새서석선설",
+    "섬섭섯성세셋소속손솟송수술스습시식십쓰쓸씨아안않약양어없엇에여역",
+    "연열오온올옷와왜요우운워원율으은을음의이인일임자작잘잡장재저적전",
+    "접정제져졌조족졸종주줄중증지직진질짐짓짝차찰창척천철첩청체쳐쳤초",
+    "촉총최축춘충취치친칠카칼켜크키타태터토퇴투트파팔패페펜펴포폭표풍",
+    "플피필하한할합해행호홉화확환활회후휘휠흐흔히힘",
   ],
   fullBits: [
-    'AAAAAAAEP4QAhACEAIQAhwEEAQQCBAwEMAQABAAEAAQAAAAAP4QAhACEAQcBBAYEOAQABAAEEAQQABAAEAAP/AAAAAA/hACEAIQBBwEEBgQ4BAAEAAAP+BAEEAQQBA/4AAAAAAASP5IAkgCSAJIAngESARICEgwSMBIAEgASABIAAAAAAAQ/hACEAIQAhAC8AQQBBAIEDAQwBAAEAAQABAAAAAA/hACEAIQBPAEEBgQ4BAAEAAAf/BAEEAQQBA/8AAAAAD+EAIQAhAE8AQQGBDgEAAQAAACAAIABQAYwGAwAAAAAABI/kgCSAJIAkgDyARIBEgISDBIwEgASABIAEgAAAAA/hACEALwBBAEEBjw4BAAEAAAf/AAEAAQABAAEAAAAAD+EAIQAvAEEAQQGPDgEAAQAAA/4EAQQBBAED/gAAAAAABI/kgCSAJIA8gCSARIBcgISDBIwEgASABIAEgAAAAAAAB/8AAQABAAEAAQABAAEAIQAgACAf/8AAAAAAAAAAB/8AAQABAAEAAQAhACAf/8AAB/8AAQf+BAAD/wAAAAAH/wABAAEAAQABACEAIB//wAAD/gQBBAEEAQP+AAAAAAABD+EAIQAhACEAIcAhACEBIQEBAQEf/QABAAEAAAAAB/8AAQABAAEAAQABAAAf/8AgACAAIAAgACAAIAAAAAAH/wABAAEAAQABAAEf/8AgACAH/wABAAEAAQABAAAAAAf/AAEAAQABAAEAAQAAH//AIAQgBCAEAAQAA/8AAAAAD+EAIQAhACEAIQAhH/0BAQEPBQEEAAQABAAD/wAAAAAP4QAhACEAIQAhACEAAR/9AQEBAQEBAQEBAQEBAAAAAAAAB/8AAQABAAEAAQABAAEAAQAAAAAf/8AAAAAAAAAAB/8AAQABAAEAAQABH//AAAAAB/8AAQABAAEAAQAAAAAH/wABAAEAAQABAAEAAB//wAAEAAQABAAEAAP/AAAAAAf/AAEAAQABAAEAAR//wAAAAAf/BAEEAQQBA/8AAAAAAAEP4QAhACEAIQAhAEEAQQCBAwEMAQABAAEAAQAAAAAP4QAhACEAQQBBAYEOAQABAAAH/wQBBAEEAQP/AAAAAAABD+EBIQEhASEBIcEhAkECQQSBCQEAAQABAAEAAAAAAAEP4QEhASEBIQEvASECQQJBBIEJAQABAAEAAQAAAAAP4QEhASECTwJBBIEJAQABAAAH3wBBAEEAQQBBAAAAAAffAEEAQQCBAQIAAB//wAAAAAf/AAEH/gQAA/8AAAAAB98AQQBBAIEBAgAAH//AAAAAB/8EAAf+BAAD/wAAAAAAAQgBCAEIAQgBCAHIAQgBCAEIAQfhAAEAAQABA==',
-    'AAAAACAEIAQgBCAHIAQgBB+EAAQAAB/8EAQQBBAED/wAAAAAABIgEiASIBIgEiAeIBIgEiASIBIfkgASABIAEgAAAAAgEiASIBIgHiASIBIfkgASAAACCAIIAggFFBjjAAAAAAAEIAQgBCAEIAQgPCAEIAQgBCAEH4QABAAEAAQAAAAAIAQgBCA8IAQgBCA8H4QABAAEEAQQABAAEAAP/AAAAAAQABAAEAAQAA/8AAAAAH//AIAAgACAAIAAgACAAAAAABAAEAAQABAAD/wAAH//AIAAgB/8AAQf+BAAD/wAAAAAEAAQABAAEAAP/AAAAAB//wAAEAAQABAAEAAP/AAAAAAABCAEIAQgBCAEIAQgBCAEIAQgBB+EAAQABAAEAAAAAAAEP4QgBCAEIAQgByAEIAQgBCAEH4QABAAEAAQAAAAAP4QgBCAEIAcgBCAEH4QABAAEEAQQABAAEAAP/AAAAAA/hCAEIAQgByAEIAQfhAAEAAAf/AAEH/gQAA/8AAAAAD+EIAQgBCAHIAQgBB+EAAQAAA/4EAQQBBAED/gAAAAAABI/kiASIBIgEiAeIBIgEiASIBIfkgASABIAEgAAAAAABD+EIAQgBCAEIDwgBCAEIAQgBB+EAAQABAAEAAAAAD+EIAQgBCA8IAQgBB+EAAQAAB/8AAQABAAEAAQAAAAAABI/kiASIBIgEiByIBIgEiASIBIfkgASABIAEgAAAAAf/BAAEAAQAA/8AIAAgH//AAAP+BAEEAQQBA/4AAAAAD+EIAQgBCAEH4QEBAQEf/QABBAEEAAQABAAD/wAAAAAH/wQABAAEAAP/AAAAAB//wCAAIAAgACAAIAAgAAAAAAf/BAAEAAQAA/8AAB//wCAAIAf/AAEH/gQAA/8AAAAAB/8EAAQABAAD/wAAH//AIAAgA/4EAQQBBAED/gAAAAAH/wQABAAEAAP/AAAf/8AAAAAEAQQBB/8EAQP/AAAAAAABD+EIAQgBCAEIAQgBCAEIAQgBB+EAAQABAAEAAAAAAAEO4QiBCIEIgQiByIEIgQiBCIEGYQABAAEAAQAAAAAAAAffBBAEEAQQBBAEEAPPAAAAAAAAH//AAAAAAAAAAAABDuEIgQiBCIEIgQiBCIEIgQiBBmEAAQABAAEAAAAAAAEP4QAhACEAIQ/ByAEIAQgBCAEH4QABAAEAAQAAAAAP4QAhACEPwcgBCAEH4QABAAEEAQQABAAEAAP/AAAAAAABD+EAIQAhACEPzwgBCAEIAQgBB+EAAQABAAEAAAAAAASP5IAkgCSAJI/ciASIBIgEiASH5IAEgASABIAAAAAAAQ/hACEAIQAvD8EIAQgPCAEIAQfhAAEAAQABA==',
-    'AAAAAD+EAIQAvD8EIAQgPB+EAAQAAB/8AAQABAAEAAQAAAAAAAAf/AAEAAQf+BAAEAAP/ACAAIAAgH//AAAAAAAAAAAf/AAEH/gQAA/8AIAAgH//AAAf/AAEAAQABAAEAAAAAB/8AAQf+BAAD/wAAAAAf/8AgACAAIAAgACAAIAAAAAAAAAf/AAEAAQf+BAAEAAP/AAAAAAAAH//AAAAAAAAAAAf/AAEH/gQAA/8AAAAAH//AAAQABAAEAAQAA/8AAAAAB/8AAQf+BAAD/wAAH//AAAAAB/8AAQf+BAAD/wAAAAAAAQ/hACEAIQAhD8EIAQgBCAEIAQfhAAEAAQABAAAAAA/hACEAIQ/BCAEIAQfhAAEAAAf/AAEAAQABAAEAAAAAD+EAIQAhD8EIAQgBB+EAAQABBAEEAAQABAAD/wAAAAAP4QAhACEPwQgBCAEH4QABAAAH/wQBBAEEAQP/AAAAAA/hCCEIIQghyCEIIQfhAAEAAAf/AAEAAQABAAEAAAAAD+EIIQghCCHIIQghB+EAAQABBAEEAAQABAAD/wAAAAAP4QghCCEIIcghCCEH4QABAAAH/wABB/4EAAP/AAAAAA/hCCEIIQghyCEIIQfhAAEAAAf/BAAH/gQAA/8AAAAAAASP5IgkiCSIJIg8iCSIJIgkiCSH5IAEgASABIAAAAAP4QghCC8IIQghCC8H4QABAAEEAQQABAAEAAP/AAAAAAAAB/8EAQQBBAEEAQQBA/8AIAAgACAf/8AAAAAAAAAAB/8EAQQBBAED/wAgACAf/8AAA/4EAQQBBAED/gAAAAAH/wQBBAEEAQP/AAAAAB//wCAAIAAgACAAIAAgAAAAAAf/BAEEAQQBA/8AAAAAH//AIAQgBCAEAAQAA/8AAAAAB/8EAQQBBAED/wAAH//AIAAgB/8AAQf+BAAD/wAAAAAP4QghCCEIIQghCCEH4QABAAEEAQQABAAEAAP/AAAAAAghCCEIIQ/hyCEIIQfhAAEAAAf/AAEAAQABAAEAAAAACCEIIQghD+HIIQghB+EAAQAAB98AQQBBAEEAQQAAAAAIIQghCCEP4cghCCEH4QABAAAD/gQBBAEEAQP+AAAAAAgkiCSIJI/niCSIJIfkgASAAAP/gACAAIAAgACAAAAACCEIIQghD+8IIQghB+EAAQABBAEEAAQABAAD/wAAAAAIIQghCCEP7wghCCEH4QABAAAH/wABB/4EAAP/AAAAAAghCCEILw/hCCEILwfhAAEAAAf/AAEH/gQAA/8AAAAACCEIIQgvD+EIIQgvB+EAAQAAA/4EAQQBBAED/gAAAAAAAAQBBAEEAQf/BAEEAQP/ACAAIAAgH//AAAAAA==',
-    'AAAAABAEEAQf/BAED/wAgACAf/8AABAAEAAQABAAD/wAAAAAEAQQBB/8EAQP/ACAAIB//wAAD/gQBBAEEAQP+AAAAAAQBBAEH/wQBA/8AAAAAH//AIAAgACAAIAAgACAAAAAABAEEAQf/BAED/wAAH//AIAAgB/8AAQf+BAAD/wAAAAAAAAQBBAEEAQf/BAEEAQP/AAAAAAAAH//AAAAAAAAAAAABCCEIIQghCCEP4QghCCEIIQghB+EAAQABAAEAAAAACCEIIQghD+EIIQghB+EAAQAAAPgAAAf/AIgHBwAAAAAAAQkhCSEJIQkhD+HJIQkhCSEJIQfhAAEAAQABAAAAAAABAQEBAQEBAQECgcKBAoEEQQRBCCEAAQABAAEAAAAAAQEBAQEBAoHCgQRBCCEAAQABBAEEAAQABAAD/wAAAAABAQEBAQECgcKBBEEIIQABAAAH/wABB/4EAAP/AAAAAAEBAQEBAQKBwoEEQQghAAEAAAf/BAEEAQQBA/8AAAAAAASBBIEEgQSBBIKHgoSChIREhESIJIAEgASABIAAAAAAAQEBAQEBAQEBAo8CgQKBBEEEQQghAAEAAQABAAAAAAEBAQEBAQKPAoEEQQghAAEAAAf/AAEAAQABAAEAAAAAAQEBAQEBAo8CgQRBCCEAAQABBAEEAAQABAAD/wAAAAABAQEBAQECjwKBBEEIIQABAAAAIAAgAFABjAYDAAAAAAEBAQEBAQKPAoEEQQghAAEAAAP+BAEEAQQBA/4AAAAAAASBBIEEgQSBBIKcgoSChIREhESIJIAEgASABIAAAAAAAAAgACAAIABQAIgBBAYDACAAIAAgH//AAAAAAAAAAAAgACAAUAGMBgMAIAAgH//AAAf/AAEAAQABAAEAAAAAACAAIABQAYwGAwAgACAf/8AABAAEAAQABAAD/wAAAAAAIAAgAFABjAYDAAAAAB//wCAAIAAgACAAIAAgAAAAAAAgACAAUAGMBgMAAB//wCAAIAf/AAEH/gQAA/8AAAAAAAAAIAAgACAAUACIAQQGAwAAAAAAAB//wAAAAAAAAAAAIAAgAFABjAYDAAAf/8AAAAAEAQQBB/8EAQP/AAAAAAABAQEBAQEBAQECgQKBAoEEQQRBCCEAAQABAAEAAAAAAQEBAQEBAoECgQRBCCEAAQAABAEEAQf/BAED/wAAAAAAAAEEAQQBBAEEAooCigRRAAAAAAAAH//AAAAAAAAAAAABBEEEQQRBBEEEQQRBCqEKoQqhEREAAQABAAEAAAAAAAEDgQRBCCEIIQghyCEIIQghBEEDgQABAAEAAQAAAAADgQRBCCEIIcghBEEDgQABAAEEAQQABAAEAAP/A==',
-    'AAAAAA4EEQQghyCEIIQRBw4EAAQAAB/8AAQABAAEAAQAAAAADgQRBCCHIIQghBEHDgQABAAAD/gQBBAEEAQP+AAAAAAABA4EEQQghCCEILwghCCEIIQRBA4EAAQABAAEAAAAAA4EEQQghCC8IIQRBA4EAAQAABEQERAfEBEoD8YAAAAADgQRBCCEILwghBEEDgQABAAAAIAAgAFABjAYDAAAAAAAEg4SERIgkiCSIPIgkiCSIJIREg4SABIAEgASAAAAAAAEDgQRBCCEILwghCCEILwghBEEDgQABAAEAAQAAAAADgQRBCC8IIQghBE8DgQABAAAH/wABB/4EAAP/AAAAAAAAAfwCAgQBBAEEAQICAfwAIAAgACAf/8AAAAAAAAAAA/4EAQQBBAED/gAgACAf/8AAB/8AAQf+BAAD/wAAAAAAAQOBBEEIIQghCCHEQQOBAQEBAQEBH/0AAQABAAAAAAAEg4SERIgkiCSIJ4REg4SBBIEEgQSf9IAEgASAAAAAAAAB/AICBAEEAQQBAgIB/ACIAIgAiB//wAAAAAAAAAAD/gQBBAEEAQP+AAAAAB//wCAAIAAgACAAIAAgAAAAAAfBCCEIIQghB8EAAQABH/0BAQEBAQ8BAQEBAQEAAAAAB8EIIQghCCEHwQABH/0BAQEPBQEEAAQABAAD/wAAAAAD/gQBBAEEAQP+AAAf/8CIAIgH/wABB/4EAAP/AAAAAAAAAfwCAgQBBAEEAQICAfwAAAAAAAAf/8AAAAAAAAAAA/4EAQQBBAED/gAAAAAf/8AABAAEAAQABAAD/wAAAAAD/gQBBAEEAQP+AAAf/8AAAAAH/wABB/4EAAP/AAAAAAP+BAEEAQQBA/4AAB//wAAAAAf/BAEEAQQBA/8AAAAAAAEDgQRBCCEIIQghBEEDgQABAAEAAR/9AAEAAQAAAAAAAQOBBEEIIQghCCEIIQghCCEEQQOBAAEAAQABAAAAAAOBBEEIIQghCCEEQQOBAAEAAQQBBAAEAAQAA/8AAAAAA4EEQQghCCEIIQRBA4EAAQAAB/8AAQf+BAAD/wAAAAADgQRBCCEIIQghBEEDgQABAAAH/wQBBAEEAQP/AAAAAAABD+EBAQEBAQECgcKBAoEEQQRBCCEAAQABAAEAAAAAD+EBAQEBAoHCgQRBCCEAAQAAB/8AAQABAAEAAQAAAAAP4QEBAQECgcKBBEEIIQABAAAD/gQBBAEEAQP+AAAAAAABD+EBAQEBAQECjwKBAoEEQQRBCCEAAQABAAEAAAAAD+EBAQEBAo8CgQRBCCEAAQAAB/8AAQABAAEAAQAAAAAP4QEBAQECjwKBBEEIIQABAAEEAQQABAAEAAP/A==',
-    'AAAAAD+EBAQEBAo8CgQRBCCEAAQAABAEEAQf/BAED/wAAAAAP4QEBAQECjwKBBEEIIQABAAAD/gQBBAEEAQP+AAAAAAAEj+SBBIEEgQSCnIKEgoSERIREiCSABIAEgASAAAAAD+EBAQEPAoECgQRPCCEAAQAAAQQBBAEEAooMcYAAAAAAAAf/ACAAIABQAIgBBAYDACAAIAAgH//AAAAAAAAAAAf/ACAAUAGMBgMAIAAgH//AAAf/AAEAAQABAAEAAAAAB/8AIABQAYwGAwAgACAf/8AAA/4EAQQBBAED/gAAAAAH/wAgAFABjAYDAAAAAB//wCAAIAAgACAAIAAgAAAAAAf/ACAAUAGMBgMAAB//wCAAIAf/AAEH/gQAA/8AAAAAB/8AIABQAYwGAwAAH//AIAAgA/4EAQQBBAED/gAAAAAH/wAgAFABjAYDAAAf/8AAAAAD/gQBBAEEAQP+AAAAAAABD+EBAQEBAQECgQKBAoEEQQRBCCEAAQABAAEAAAAAD+EBAQEBAoECgQRBCCEAAQAAB/8AAQABAAEAAQAAAAAP4QEBAQECgQKBBEEIIQABAAEEAQQABAAEAAP/AAAAAA/hAQEBAQKBAoEEQQghAAEAAAf/BAEEAQQBA/8AAAAAD+EBAQEBAoECgQRBCCEAAQAAACAAIABQAYwGAwAAAAAf8QRBBEEEQcqhCqEREQABAAAH/wABAAEAAQABAAAAAAABB8EAAQ/hAQEBAcKBAoEEQQRBCCEAAQABAAEAAAAAB8EAAQ/hAQ8CgQRBCCEAAQABBAEEAAQABAAD/wAAAAAHwQABD+EBDwKBBEEIIQABAAAH/wABB/4EAAP/AAAAAAfBAAEP4QEPAoEEQQghAAEAAAQBBAEH/wQBA/8AAAAAB8EAAQ/hAQ8CgQRBCCEAAQAAA/4EAQQBBAED/gAAAAAABIfEgASP5IEEgRyChIKEhESERIgkgASABIAEgAAAAAfBAAEP7wEBAoEETwghAAEAAAEEAQQBBAKKDHGAAAAAACAH/wBQAYwGAwAgACAf/8AAA/4EAQQBBAED/gAAAAAAAQfBAAEP4QEBAoEEQQghAQEBAQEBH/0AAQABAAAAAAAgB/8AUAGMBgMAAB//wCAAIAf/AAEAAQABAAEAAAAAAQEP4QKBBEEIIQABAAEf/QEBAQEBAQEBAQEBAQAAAAAAAQfBAAEP4QEBAQECgQKBBEEEQQghAAEAAQABAAAAAAABD+EAIQAhAO8PIQBBAE8AgQMBDAEAAQABAAEAAAAAAAEP4QAhACEA4Q8hAEEAQQCBAwEMAQABAAEAAQAAAAAAAQ/hCAEIAQgBD8HIAQgBCAEIAQfhAAEAAQABA==',
-    'AAAAAAASP5IgEiASIBI/HiASIBIgEiASH5IAEgASABIAAAAAAAQ/hCAEIAQgBD88IAQgBCAEIAQfhAAEAAQABAAAAAAAAB/8EAAQAB/4EAAQAA/8AIAAgACAf/8AAAAAAAAAAAAEP4QgBCAEPwQgBCAEH4QEBAQEBAR/9AAEAAQAAAAAH/wQAB/4EAAP/AAAAAB//wCAAIAAgACAAIAAgAAAAAAAAB/8EAAQAB/4EAAQAA/8AAAAAAAAf/8AAAAAAAAAAAAEP4QABBEEEQQRBxEEEQQRBBEEP4QABAAEAAQAAAAAP4QABBEEEQcRBBEEP4QABAAAH/wABB/4EAAP/AAAAAAAEj+SABIREhESEXIREhESERIREj+SABIAEgASAAAAAD+SABIREhFyERIREj+SABIAEggSCAAIAAgAB/4AAAAAAAQ/hAAEEQQRPBEEEQQRPBEEEQQ/hAAEAAQABAAAAAAAAB/8AAAEEAQQBBAEEB/8AIAAgACAf/8AAAAAAAAAAAAAH/wAAAQQBBAEEAQQH/wCIAIgAiB//wAAAAAAAAAAH/wEEAQQBBAf/AAAf/8AAAAAH/wABB/4EAAP/AAAAAAABD+EAAQRBBEEEQQRBBEEEQQRBD+EAAQABAAEAAAAAD+EAAQRBBEEEQQRBD+EAAQAAB/8AAQf+BAAD/wAAAAAAAQPBAAEP8QABA8HEIQQhBCEEIQPBAAEAAQABAAAAAAEBH/EAAQfByCEIIQfBAAEAAQQBBAAEAAQAA/8AAAAAAQEf8QABB8HIIQghB8EAAQAAB/8AAQf+BAAD/wAAAAABAR/xAAEHwcghCCEHwQABAAAEAQQBB/8EAQP/AAAAAAAEg8SABI/0gASDx4QkhCSEJIQkg8SABIAEgASAAAAAAQSf9IAEh8eIJIgkh8SABIAAAf8CAIIAggCB/wAAAAAAIAf/AQQCAgH8ACAAIB//wAAEAQQBB/8EAQP/AAAAAAABB8EAAR/xAAEHwcghCCEHwQEBAQEf/QABAAEAAAAAAQEf8QRBCCHHwQEBAQEf/QAAB/8AAQABAAEAAQAAAAABAR/xBEEIIcfBAQEBAR/9AAAH/wABB/4EAAP/AAAAAAEBH/EEQQghB8EAAQABH/0BAQEBAQEBAQEBAQEAAAAAAQEf8QRBCCEHwQABH/0BAQEAB/8AAQf+BAAD/w=',
+    'AAAAAAAEP4QAhACEAIQAhwEEAQQCBAwEMAQABAAEAAQAAAAAP4QAhACEAQcBBAYEOAQABAAEEAQQABAAEAAP/AAAAAA/hACEAIQBBwEEBgQ4BAAEAAAQBBAEH/wQBA/8AAAAAD+EAIQAhAEHAQQGBDgEAAQAAA/4EAQQBBAED/gAAAAAABI/kgCSAJIAkgCeARIBEgISDBIwEgASABIAEgAAAAA/kgCSAJIBHgESBhI4EgASAAAP/gACAAIAAgACAAAAAAAEP4QAhACEAIQAvAEEAQQCBAwEMAQABAAEAAQAAAAAP4QAhACEATwBBAYEOAQABAAAH/wQBBAEEAQP/AAAAAA/hACEAIQBPAEEBgQ4BAAEAAAAgACAAUAGMBgMAAAAAAASP5IAkgCSAJIA8gESARICEgwSMBIAEgASABIAAAAAP4QAhAC8AQQBBAY8OAQABAAAH/wABAAEAAQABAAAAAA/hACEALwBBAEEBjw4BAAEAAAf/AAEH/gQAA/8AAAAAD+EAIQAvAEEAQQGPDgEAAQAAA/4EAQQBBAED/gAAAAAABI/kgCSAJIA8gCSARIBcgISDBIwEgASABIAEgAAAAAAAB/8AAQABAAEAAQABAAEAIQAgACAf/8AAAAAAAAAAB/8AAQABAAEAAQAhACAf/8AAB/8AAQf+BAAD/wAAAAAH/wABAAEAAQABACEAIB//wAAD/gQBBAEEAQP+AAAAAAABD+EAIQAhACEAIcAhACEBIQEBAQEf/QABAAEAAAAAD+EAIQAhACHAIQEhAQEf/QABBAEEAAQABAAD/wAAAAAP4QAhACEAIcAhASEBAR/9AAAD/gQBBAEEAQP+AAAAAAf/AAEAAQABAAEAAQAAH//AIAAgACAAIAAgACAAAAAAB/8AAQABAAEAAQABH//AIAAgB/8AAQABAAEAAQAAAAAH/wABAAEAAQABAAEAAB//wCAEIAQgBAAEAAP/AAAAAAf/AAEAAQABAAEAAR//wCAAIAf/BAAEAAQAA/8AAAAAB/8AAQABAAEAAQABH//AIAAgA/4EAQQBBAED/gAAAAAP4QAhACEAIQAhACEf/QEBAQ8FAQQABAAEAAP/AAAAAA/hACEAIQAhACEAIQABH/0BAQEBAQEBAQEBAQEAAAAAAAAH/wABAAEAAQABAAEAAQABAAAAAB//wAAAAAAAAAAH/wABAAEAAQABAAEf/8AAAAAH/wABAAEAAQABAAAAAAf/AAEAAQABAAEAAQAAH//AAAQABAAEAAQAA/8AAAAAB/8AAQABAAEAAQABH//AAAAAB/8EAQQBBAED/wAAAAAAAQ/hACEAIQAhACEAQQBBAIEDAQwBAAEAAQABA==',
+    'AAAAAD+EAIQAhAEEAQQGBDgEAAQAAB/8AAQf+BAAD/wAAAAAP4QAhACEAQQBBAYEOAQABAAAH/wQBBAEEAQP/AAAAAA/hACEAIQBBAEEBgQ4BAAEAAAAgACAAUAGMBgMAAAAAAAEP4QEhASEBIQEhwSECQQJBBIEJAQABAAEAAQAAAAAAAQ/hASEBIQEhAS8BIQJBAkEEgQkBAAEAAQABAAAAAA/hASEBIQJPAkEEgQkBAAEAAAffAEEAQQBBAEEAAAAAB98AQQBBAIEBAgAAAAAf/8AgBCAEIAQABAAD/wAAAAAH3wBBAEEAgQECAAAf/8AAAAAEDgQABD+EEQPOAAAAAAffAEEAQQCBAQIAAB//wAAAAAf/AAEH/gQAA/8AAAAAB98AQQBBAIEBAgAAH//AAAAAB/8EAAf+BAAD/wAAAAAAAQgBCAEIAQgBCAHIAQgBCAEIAQfhAAEAAQABAAAAAAgBCAEIAQgByAEIAQfhAAEAAQQBBAAEAAQAA/8AAAAACAEIAQgBCAHIAQgBB+EAAQAAB/8AAQf+BAAD/wAAAAAIAQgBCAEIAcgBCAEH4QABAAAH/wQBBAEEAQP/AAAAAAAEiASIBIgEiASIB4gEiASIBIgEh+SABIAEgASAAAAACASIBIgEiAeIBIgEh+SABIAEggSCAAIAAgAB/4AAAAAIBIgEiASIB4gEiASH5IAEgAAAggCCAIIBRQY4wAAAAAABCAEIAQgBCAEIDwgBCAEIAQgBB+EAAQABAAEAAAAACAEIAQgPCAEIAQgPB+EAAQABBAEEAAQABAAD/wAAAAAEAAQABAAEAAP/AAAAAB//wCAAIAAgACAAIAAgAAAAAAQABAAEAAQAA/8AAB//wCAAIAf/AAEH/gQAA/8AAAAAAAAEAAQABAAEAAQABAAD/wAAAAAAAB//wAAAAAAAAAAEAAQABAAEAAP/AAAAAB//wAAEAAQABAAEAAP/AAAAAAABCAEIAQgBCAEIAQgBCAEIAQgBB+EAAQABAAEAAAAAAAEP4QgBCAEIAQgByAEIAQgBCAEH4QABAAEAAQAAAAAP4QgBCAEIAcgBCAEH4QABAAEEAQQABAAEAAP/AAAAAA/hCAEIAQgByAEIAQfhAAEAAAf/AAEH/gQAA/8AAAAAD+EIAQgBCAHIAQgBB+EAAQAAA/4EAQQBBAED/gAAAAAP4QgBCAEIAcgBCAEH4QABAAAA+AAAB/8CAgH8AAAAAAAEj+SIBIgEiASIB4gEiASIBIgEh+SABIAEgASAAAAAAAEP4QgBCAEIAQgPCAEIAQgBCAEH4QABAAEAAQAAAAAP4QgBCAEIDwgBCAEH4QABAAAH/wABAAEAAQABA==',
+    'AAAAAD+EIAQgBCA8IAQgBB+EAAQABBAEEAAQABAAD/wAAAAAABI/kiASIBIgEiByIBIgEiASIBIfkgASABIAEgAAAAAAAB/8EAAQABAAEAAQAA/8AIAAgACAf/8AAAAAAAAAAB/8EAAQABAAD/wAgACAf/8AAB/8AAQABAAEAAQAAAAAH/wQABAAEAAP/ACAAIB//wAAH/wABB/4EAAP/AAAAAAf/BAAEAAQAA/8AIAAgH//AAAP+BAEEAQQBA/4AAAAAD+EIAQgBCAEH4QEBAQEf/QABBAEEAAQABAAD/wAAAAAH/wQABAAEAAP/AAAAAB//wCAAIAAgACAAIAAgAAAAAAf/BAAEAAQAA/8AAB//wCAAIAf/AAEH/gQAA/8AAAAAB/8EAAQABAAD/wAAH//AIAAgA/4EAQQBBAED/gAAAAAH/wQABAAEAAP/AAAAAB//wAAEAAQABAAEAAP/AAAAAAf/BAAEAAQAA/8AAB//wAAAAAf/AAEH/gQAA/8AAAAAB/8EAAQABAAD/wAAH//AAAAABAEEAQf/BAED/wAAAAAH/wQABAAEAAP/AAAf/8AAAAAD/gQBBAEEAQP+AAAAAAABD+EIAQgBCAEIAQgBCAEIAQgBB+EAAQABAAEAAAAAAAEO4QiBCIEIgQiByIEIgQiBCIEGYQABAAEAAQAAAAAABI7kiISIhIiEiJyIhIiEiISIhIZkgASABIAEgAAAAA7hCIEIgQiBBmEAAQABH/0BAQEBAQEBAQEBAQEAAAAAAAAH3wQQBBAEEAQQBBADzwAAAAAAAB//wAAAAAAAAAAAAQ7hCIEIgQiBCIEIgQiBCIEIgQZhAAEAAQABAAAAAAABD+EAIQAhACEPwcgBCAEIAQgBB+EAAQABAAEAAAAAD+EAIQAhD8HIAQgBB+EAAQABBAEEAAQABAAD/wAAAAAP4QAhACEPwcgBCAEH4QABAAAH/wQBBAEEAQP/AAAAAAABD+EAIQAhACEPzwgBCAEIAQgBB+EAAQABAAEAAAAAAASP5IAkgCSAJI/ciASIBIgEiASH5IAEgASABIAAAAAAAQ/hACEAIQAvD8EIAQgPCAEIAQfhAAEAAQABAAAAAA/hACEALw/BCAEIDwfhAAEAAAf/AAEAAQABAAEAAAAAD+EAIQAvD8EIAQgPB+EAAQAAB/8AAQf+BAAD/wAAAAAP4QAhAC8PwQgBCA8H4QABAAAEAQQBB/8EAQP/AAAAAA/hACEALw/BCAEIDwfhAAEAAAP+BAEEAQQBA/4AAAAAAASP5IAkgCSAPI/EiASIHIgEiASH5IAEgASABIAAAAAAAAf/AAEAAQf+BAAEAAP/ACAAIAAgH//AAAAAA==',
+    'AAAAAB/8AAQf+BAAD/wAgACAf/8AAB/8AAQABAAEAAQAAAAAH/wABB/4EAAP/AAAAAB//wCAAIAAgACAAIAAgAAAAAAAAB/8AAQABB/4EAAQAA/8AAAAAAAAf/8AAAAAAAAAAB/8AAQf+BAAD/wAAAAAf/8AABAAEAAQABAAD/wAAAAAH/wABB/4EAAP/AAAf/8AAAAAH/wABB/4EAAP/AAAAAAABD+EAIQAhACEPwQgBCAEIAQgBB+EAAQABAAEAAAAAD+EAIQAhD8EIAQgBB+EAAQAAB/8AAQABAAEAAQAAAAAP4QAhACEPwQgBCAEH4QABAAEEAQQABAAEAAP/AAAAAA/hACEAIQ/BCAEIAQfhAAEAAAf/BAEEAQQBA/8AAAAAAAEP4QghCCEIIQghyCEIIQghCCEH4QABAAEAAQAAAAAP4QghCCEIIcghCCEH4QABAAAH/wABAAEAAQABAAAAAA/hCCEIIQghyCEIIQfhAAEAAQQBBAAEAAQAA/8AAAAAD+EIIQghCCHIIQghB+EAAQAAB/8AAQf+BAAD/wAAAAAP4QghCCEIIcghCCEH4QABAAAD/gQBBAEEAQP+AAAAAA/hCCEIIQghyCEIIQfhAAEAAAf/BAAH/gQAA/8AAAAAAASP5IgkiCSIJIgniCSIJIgkiCSH5IAEgASABIAAAAAP5IgkiCSIJ4gkiCSH5IAEgAAB/wIAggCCAIH/AAAAAA/hCCEIIQgvCCEIIQfhAAEAAAf/AAEH/gQAA/8AAAAAD+EIIQghCC8IIQghB+EAAQAAB/8EAQQBBAED/wAAAAAABI/kiCSIJIgkiDyIJIgkiCSIJIfkgASABIAEgAAAAA/hCCEILwghCCEILwfhAAEAAQQBBAAEAAQAA/8AAAAAD+EIIQgvCCEIIQgvB+EAAQAAA/4EAQQBBAED/gAAAAAAAAf/BAEEAQQBBAEEAQP/ACAAIAAgH//AAAAAAAAAAAf/BAEEAQQBA/8AIAAgH//AAAf/AAEH/gQAA/8AAAAAB/8EAQQBBAED/wAgACAf/8AAA/4EAQQBBAED/gAAAAAH/wQBBAEEAQP/AAAAAB//wCAAIAAgACAAIAAgAAAAAAf/BAEEAQQBA/8AAAAAH//AIAQgBCAEAAQAA/8AAAAAB/8EAQQBBAED/wAAH//AIAAgB/8AAQf+BAAD/wAAAAAP4QghCCEIIQghCCEH4QABAAEEAQQABAAEAAP/AAAAAA/hCCEIIQghCCEIIQfhAAEAAAf/AAEH/gQAA/8AAAAACCEIIQghD+HIIQghB+EAAQAAB/8AAQABAAEAAQAAAAAIIQghCCEP4cghCCEH4QABAAAH3wBBAEEAQQBBA==',
+    'AAAAACCEIIQghD+HIIQghB+EAAQAAB/8AAQf+BAAD/wAAAAAIIQghCCEP4cghCCEH4QABAAAD/gQBBAEEAQP+AAAAAAgkiCSIJI/niCSIJIfkgASAAAP/gACAAIAAgACAAAAAAAEIIQghCCEIIQ/vCCEIIQghCCEH4QABAAEAAQAAAAAIIQghCCEP7wghCCEH4QABAAEEAQQABAAEAAP/AAAAAAghCCEIIQ/vCCEIIQfhAAEAAAf/AAEH/gQAA/8AAAAACCEIIQgvD+EIIQgvB+EAAQABBAEEAAQABAAD/wAAAAAIIQghCC8P4QghCC8H4QABAAAH/wABB/4EAAP/AAAAAAghCCEILw/hCCEILwfhAAEAAAQBBAEH/wQBA/8AAAAACCEIIQgvD+EIIQgvB+EAAQAAA/4EAQQBBAED/gAAAAAAAAQBBAEEAQf/BAEEAQP/ACAAIAAgH//AAAAAAAAAAAQBBAEH/wQBA/8AIAAgH//AAAf/AAEAAQABAAEAAAAABAEEAQf/BAED/wAgACAf/8AABAAEAAQABAAD/wAAAAAEAQQBB/8EAQP/ACAAIB//wAAD/gQBBAEEAQP+AAAAAAQBBAEH/wQBA/8AAAAAH//AIAAgACAAIAAgACAAAAAABAEEAQf/BAED/wAAH//AIAAgB/8AAQABAAEAAQAAAAAEAQQBB/8EAQP/AAAf/8AgACAH/wABB/4EAAP/AAAAAAAABAEEAQQBB/8EAQQBA/8AAAAAAAAf/8AAAAAAAAAAAAEIIQghCCEIIQ/hCCEIIQghCCEH4QABAAEAAQAAAAAIIQghCCEP4QghCCEH4QABAAAAIAAgAFABjAYDAAAAAAghCCEIIQ/hCCEIIQfhAAEAAAD4AAAH/wCIBwcAAAAAAAEJIQkhCSEJIQ/hySEJIQkhCSEH4QABAAEAAQAAAAAJIQkhCSEP4ckhCSEH4QABAAAH/wABB/4EAAP/AAAAAAABAQEBAQEBAQECgcKBAoEEQQRBCCEAAQABAAEAAAAAAQEBAQEBAoHCgQRBCCEAAQABBAEEAAQABAAD/wAAAAABAQEBAQECgcKBBEEIIQABAAAH/wABB/4EAAP/AAAAAAEBAQEBAQKBwoEEQQghAAEAAAf/BAEEAQQBA/8AAAAAAASBBIEEgQSBBIKHgoSChIREhESIJIAEgASABIAAAAAAAQEBAQEBAQEBAo8CgQKBBEEEQQghAAEAAQABAAAAAAEBAQEBAQKPAoEEQQghAAEAAAf/AAEAAQABAAEAAAAAAQEBAQEBAo8CgQRBCCEAAQABBAEEAAQABAAD/wAAAAABAQEBAQECjwKBBEEIIQABAAAH/wABB/4EAAP/A==',
+    'AAAAAAQEBAQEBAo8CgQRBCCEAAQAAB/8EAQQBBAED/wAAAAABAQEBAQECjwKBBEEIIQABAAAEAQQBB/8EAQP/AAAAAAEBAQEBAQKPAoEEQQghAAEAAAAgACAAUAGMBgMAAAAAAQEBAQEBAo8CgQRBCCEAAQAAA/4EAQQBBAED/gAAAAAABIEEgQSBBIEEgpyChIKEhESERIgkgASABIAEgAAAAAEEgQSBBIKcgoSERIgkgASAAAAQABAAKADGAwGAAAAAAAAAIAAgACAAUACIAQQGAwAgACAAIB//wAAAAAAAAAAAIAAgAFABjAYDACAAIB//wAAH/wABAAEAAQABAAAAAAAgACAAUAGMBgMAIAAgH//AAAQABAAEAAQAA/8AAAAAACAAIABQAYwGAwAgACAf/8AAACAAIABQAYwGAwAAAAAAIAAgAFABjAYDACAAIB//wAAD/gQBBAEEAQP+AAAAAAAgACAAUAGMBgMAAAAAH//AIAAgACAAIAAgACAAAAAAACAAIABQAYwGAwAAH//AIAAgB/8AAQf+BAAD/wAAAAAAAAAgACAAIABQAIgBBAYDAAAAAAAAH//AAAAAAAAAAAAgACAAUAGMBgMAAB//wAAAAAQBBAEH/wQBA/8AAAAAAAEBAQEBAQEBAQKBAoECgQRBBEEIIQABAAEAAQAAAAABAQEBAQECgQKBBEEIIQABAAAH/wABAAEAAQABAAAAAAEBAQEBAQKBAoEEQQghAAEAAAQBBAEH/wQBA/8AAAAAAAABBAEEAQQBBAKKAooEUQAAAAAAAB//wAAAAAAAAAABBAEEAQQCigxxgAAf/8AAAAAH/wABB/4EAAP/AAAAAAABBEEEQQRBBEEEQQRBCqEKoQqhEREAAQABAAEAAAAAAAEDgQRBCCEIIQghyCEIIQghBEEDgQABAAEAAQAAAAADgQRBCCEIIcghBEEDgQABAAEEAQQABAAEAAP/AAAAAAOBBEEIIQghyCEEQQOBAAEAAAQOBAAEP4QRA84AAAAAA4EEQQghyCEIIQRBw4EAAQAAB/8AAQABAAEAAQAAAAADgQRBCCHIIQghBEHDgQABAAAD/gQBBAEEAQP+AAAAAAABA4EEQQghCCEILwghCCEIIQRBA4EAAQABAAEAAAAAA4EEQQghCC8IIQRBA4EAAQAABEQERAfEBEoD8YAAAAADgQRBCCEILwghBEEDgQABAAAAIAAgAFABjAYDAAAAAAAEg4SERIgkiCSIPIgkiCSIJIREg4SABIAEgASAAAAAAAEDgQRBCCEILwghCCEILwghBEEDgQABAAEAAQAAAAADgQRBCC8IIQghBE8DgQABAAAH/wABAAEAAQABA==',
+    'AAAAAA4EEQQgvCCEIIQRPA4EAAQABBAEEAAQABAAD/wAAAAADgQRBCC8IIQghBE8DgQABAAAH/wABB/4EAAP/AAAAAAAAAfwCAgQBBAEEAQICAfwAIAAgACAf/8AAAAAAAAAAA/4EAQQBBAED/gAgACAf/8AABAAEAAQABAAD/wAAAAAD/gQBBAEEAQP+ACAAIB//wAAH/wABB/4EAAP/AAAAAAP+BAEEAQQBA/4AIAAgH//AAAAgACAAUAGMBgMAAAAAAAEDgQRBCCEIIQghxEEDgQEBAQEBAR/9AAEAAQAAAAAABIOEhESIJIgkiCeERIOEgQSBBIEEn/SABIAEgAAAAAAAAfwCAgQBBAEEAQICAfwAiACIAIgf/8AAAAAAAAAAA/4EAQQBBAED/gAAAAAf/8AgACAAIAAgACAAIAAAAAAD/gQBBAEEAQP+AAAAAB//wCAEIAQgBAAEAAP/AAAAAAfBCCEIIQghB8EAAQABH/0BAQEBAQ8BAQEBAQEAAAAAB8EIIQghCCEHwQABH/0BAQEPBQEEAAQABAAD/wAAAAAD/gQBBAEEAQP+AAAf/8CIAIgH/wABB/4EAAP/AAAAAAAAAfwCAgQBBAEEAQICAfwAAAAAAAAf/8AAAAAAAAAAA/4EAQQBBAED/gAAAAAf/8AABAAEAAQABAAD/wAAAAAD/gQBBAEEAQP+AAAf/8AAAAAH/wABB/4EAAP/AAAAAAP+BAEEAQQBA/4AAB//wAAAAAf/BAEEAQQBA/8AAAAAAAEDgQRBCCEIIQghBEEDgQABAAEAAR/9AAEAAQAAAAAAAQOBBEEIIQghCCEIIQghCCEEQQOBAAEAAQABAAAAAAOBBEEIIQghCCEEQQOBAAEAAQQBBAAEAAQAA/8AAAAAA4EEQQghCCEIIQRBA4EAAQAAB/8AAQf+BAAD/wAAAAADgQRBCCEIIQghBEEDgQABAAAH/wQBBAEEAQP/AAAAAAABD+EBAQEBAQECgcKBAoEEQQRBCCEAAQABAAEAAAAAD+EBAQEBAoHCgQRBCCEAAQAAB/8AAQABAAEAAQAAAAAP4QEBAQECgcKBBEEIIQABAAAH/wABB/4EAAP/AAAAAA/hAQEBAQKBwoEEQQghAAEAAAQBBAEH/wQBA/8AAAAAD+EBAQEBAoHCgQRBCCEAAQAAA/4EAQQBBAED/gAAAAAABI/kgQSBBIEEgoeChIKEhESERIgkgASABIAEgAAAAAABD+EBAQEBAQECjwKBAoEEQQRBCCEAAQABAAEAAAAAD+EBAQEBAo8CgQRBCCEAAQAAB/8AAQABAAEAAQAAAAAP4QEBAQECjwKBBEEIIQABAAEEAQQABAAEAAP/A==',
+    'AAAAAD+EBAQEBAo8CgQRBCCEAAQAABAEEAQf/BAED/wAAAAAP4QEBAQECjwKBBEEIIQABAAAD/gQBBAEEAQP+AAAAAAAEj+SBBIEEgQSCnIKEgoSERIREiCSABIAEgASAAAAAAAEP4QEBAQEBDwKBAoECjwRBBEEIIQABAAEAAQAAAAAP4QEBAQ8CgQKBBE8IIQABAAABBAEEAQQCigxxgAAAAAAAB/8AIAAgAFAAiAEEBgMAIAAgACAf/8AAAAAAAAAAB/8AIABQAYwGAwAgACAf/8AAB/8AAQABAAEAAQAAAAAH/wAgAFABjAYDACAAIB//wAAH/wABB/4EAAP/AAAAAAf/ACAAUAGMBgMAIAAgH//AAAP+BAEEAQQBA/4AAAAAB/8AIABQAYwGAwAAAAAf/8AgACAAIAAgACAAIAAAAAAH/wAgAFABjAYDAAAf/8AgACAH/wABB/4EAAP/AAAAAAf/ACAAUAGMBgMAAB//wCAAIAP+BAEEAQQBA/4AAAAAB/8AIABQAYwGAwAAH//AAAAAA/4EAQQBBAED/gAAAAAAAQ/hAQEBAQEBAoECgQKBBEEEQQghAAEAAQABAAAAAA/hAQEBAQKBAoEEQQghAAEAAAf/AAEAAQABAAEAAAAAD+EBAQEBAoECgQRBCCEAAQABBAEEAAQABAAD/wAAAAAP4QEBAQECgQKBBEEIIQABAAAH/wABB/4EAAP/AAAAAA/hAQEBAQKBAoEEQQghAAEAAAf/BAEEAQQBA/8AAAAAD+EBAQEBAoECgQRBCCEAAQAAACAAIABQAYwGAwAAAAAf8QRBBEEEQcqhCqEREQABAAAH/wABAAEAAQABAAAAAAABB8EAAQ/hAQEBAcKBAoEEQQRBCCEAAQABAAEAAAAAB8EAAQ/hAQHCgQRBCCEAAQAAB/8AAQf+BAAD/wAAAAAHwQABD+EBAcKBBEEIIQABAAAD/gQBBAEEAQP+AAAAAAfBAAEP4QEPAoEEQQghAAEAAAf/AAEAAQABAAEAAAAAB8EAAQ/hAQ8CgQRBCCEAAQABBAEEAAQABAAD/wAAAAAHwQABD+EBDwKBBEEIIQABAAAH/wABB/4EAAP/AAAAAAfBAAEP4QEPAoEEQQghAAEAAAQBBAEH/wQBA/8AAAAAB8EAAQ/hAQ8CgQRBCCEAAQAAA/4EAQQBBAED/gAAAAAABIfEgASP5IEEgRyChIKEhESERIgkgASABIAEgAAAAAABB8EAAQ/hAQ8BAQKBAo8EQQRBCCEAAQABAAEAAAAAB8EAAQ/vAQECgQRPCCEAAQAAAQQBBAEEAooMcYAAAAAAAAD4AAAH/wAgAFABjAYDACAAIAAgH//AAAAAA==',
+    'AAAAAACAH/wBQAYwGAwAgACAf/8AAB/8AAQABAAEAAQAAAAAAIAf/AFABjAYDACAAIB//wAAD/gQBBAEEAQP+AAAAAAABB8EAAQ/hAQECgQRBCCEBAQEBAQEf/QABAAEAAAAAACAH/wBQAYwGAwAAH//AIAAgB/8AAQABAAEAAQAAAAAAIAf/AFABjAYDAAAAAB//wCAEIAQgBAAEAAP/AAAAAAAgB/8AUAGMBgMAAB//wCAAIAP+BAEEAQQBA/4AAAAAAQEP4QKBBEEIIQABAAEf/QEBAQEBAQEBAQEBAQAAAAAAAQfBAAEP4QEBAQECgQKBBEEEQQghAAEAAQABAAAAAAfBAAEP4QEBAoEEQQghAAEAAQQBBAAEAAQAA/8AAAAAB8EAAQ/hAQECgQRBCCEAAQAAB/8AAQf+BAAD/wAAAAAAAQ/hACEAIQDhDyHAQQBBAIEDAQwBAAEAAQABAAAAAA/hACEAIQ/BwEEBgQ4BAAEAAAf/AAEH/gQAA/8AAAAAAAEP4QAhACEA7w8hAEEATwCBAwEMAQABAAEAAQAAAAAAAAf/AAEAAQf/AAEAAQABAAEAAAAAH//AAAAAAAAAAAABD+EAIQAhAOEPIQBBAEEAgQMBDAEAAQABAAEAAAAAAAEP4QgBCAEIAQ/ByAEIAQgBCAEH4QABAAEAAQAAAAAABI/kiASIBIgEj8eIBIgEiASIBIfkgASABIAEgAAAAAABD+EIAQgBCAEPzwgBCAEIAQgBB+EAAQABAAEAAAAAAAAH/wQABAAH/gQABAAD/wAgACAAIB//wAAAAAAAAAAAAQ/hCAEIAQ/BCAEIAQfhAQEBAQEBH/0AAQABAAAAAAf/BAAH/gQAA/8AAAAAH//AIAAgACAAIAAgACAAAAAAAAAH/wQABAAH/gQABAAD/wAAAAAAAB//wAAAAAAAAAAAAQ/hAAEEQQRBBEHEQQRBBEEEQQ/hAAEAAQABAAAAAA/hAAEEQQRBxEEEQQ/hAAEAAAf/AAEH/gQAA/8AAAAAAASP5IAEhESERIRHhESERIREhESP5IAEgASABIAAAAAABI/kgASERIREhFyERIREhESERI/kgASABIAEgAAAAA/kgASERIRchESERI/kgASABIIEggACAAIAAf+AAAAAAAEP4QABBEEETwRBBEEETwRBBEEP4QABAAEAAQAAAAAAAAf/AAABBAEEAQQBBAf/ACAAIAAgH//AAAAAAAAAAAf/AQQBBAEEB/8AIAAgH//AAAf/AAEAAQABAAEAAAAAAAAH/wAAAQQBBAEEAQQH/wCIAIgAiB//wAAAAAAAAAAH/wEEAQQBBAf/AAAf/8AgACAD/gQBBAEEAQP+A==',
+    'AAAAAB/8BBAEEAQQH/wAAH//AAAAAB/8AAQf+BAAD/wAAAAAAAQ/hAAEEQQRBBEEEQQRBBEEEQQ/hAAEAAQABAAAAAA/hAAEEQQRBBEEEQQ/hAAEAAAf/AAEH/gQAA/8AAAAAAAEDwQABD/EAAQPBxCEEIQQhBCEDwQABAAEAAQAAAAABAR/xAAEHwcghCCEHwQABAAEEAQQABAAEAAP/AAAAAAEBH/EAAQfByCEIIQfBAAEAAAf/AAEH/gQAA/8AAAAAAQEf8QABB8HIIQghB8EAAQAABAEEAQf/BAED/wAAAAAABIPEgASP9IAEg8eEJIQkhCSEJIPEgASABIAEgAAAAAEEn/SABIfHiCSIJIfEgASAAAH/AgCCAIIAgf8AAAAAAAAA+AAAB/8AAAH8AgICAgH8ACAAIB//wAAAAAAAAAAAIAf/AQQCAgH8ACAAIB//wAAEAQQBB/8EAQP/AAAAAAABB8EAAR/xAAEHwcghCCEHwQEBAQEf/QABAAEAAAAAAQEf8QRBCCHHwQEBAQEf/QAAB/8AAQABAAEAAQAAAAABAR/xBEEIIcfBAQEBAR/9AAEEAQQABAAEAAP/AAAAAAEBH/EEQQghx8EBAQEBH/0AAAf/AAEH/gQAA/8AAAAAAAEHwQABH/EAAQfBCCEIIQfBAQEBAR/9AAEAAQAAAAAAIAf/AQQCAgH8AAAAAB//wCAAIAAgACAAIAAgAAAAAAEBH/EEQQghB8EAAQABH/0BAQEBAQEBAQEBAQEAAAAAAQEf8QRBCCEHwQABH/0BAQEAB/8AAQf+BAAD/wAAAAAAAAD4AAAH/wAAAfwCAgICAfwAAAAAH//AAAAAAAAAAAAgB/8BBAICAfwAAAAAH//AAAQABAAEAAQAA/8AAAAAAAEDwQABD/EAAQPBBCEEIQQhBCEDwQABAAEAAQAAAAABAR/xAAEHwQghCCEHwQABAAAH/wQBBAEEAQP/A==',
   ],
 };
 

@@ -52,3 +52,4 @@ node tools/cdp.js "seed=4&ff=30" 1280,800 wait:5000 shot:check eval:"__cw.G.live
 | 날짜 | 변경 내용 | 대상 | 사유 |
 |---|---|---|---|
 | 2026-11-25 | 초기 구성 | 전체 | 조선워치 리노베이션 하네스 신규 구축 |
+| 2026-11-25 | 첫 실행 결과 반영: 고증 검수 수정(설계서 §9), 한글 폰트 구현 현황, 재배포 절차 | `chosun-world-bible`, `hangul-pixel-font`, `pages-deploy` | 실행 중 드러난 차이를 문서에 맞춤 |

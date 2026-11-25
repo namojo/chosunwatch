@@ -45,6 +45,31 @@ git worktree add --detach "$TMP" HEAD
 git worktree remove --force "$TMP"
 ```
 
+### 재배포 (gh-pages가 이미 있을 때)
+
+이력을 지우지 않고 기존 `gh-pages` 위에 새 커밋을 얹는다(강제 푸시 불필요).
+
+```bash
+SRC=$(git rev-parse --short HEAD)
+TMP=$(mktemp -d)
+git fetch -q origin gh-pages
+git worktree add -q --detach "$TMP" FETCH_HEAD
+(
+  cd "$TMP"
+  git checkout -q -B gh-pages
+  git checkout "$SRC" -- index.html .nojekyll LICENSE media vendor/LICENSE-three.txt vendor/LICENSE-unifont.txt
+  git add -A && git commit -q -m "Deploy $SRC" && git push origin gh-pages
+)
+git worktree remove --force "$TMP"
+```
+
+반영 확인은 상태 코드가 아니라 **내용 비교**로 한다(이전 버전도 200을 돌려준다):
+
+```bash
+git show HEAD:index.html | md5sum
+curl -sS "https://namojo.github.io/chosunwatch/?v=$RANDOM" | md5sum   # 같아질 때까지 30초 간격, 최대 8회
+```
+
 ## 푸시가 거부될 때
 
 세션에 따라 지정 브랜치 외 푸시가 막혀 있을 수 있다. **우회하지 않는다.** 대신:
